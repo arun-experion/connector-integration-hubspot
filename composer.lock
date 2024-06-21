@@ -72,8 +72,8 @@
             "version": "1.0.1",
             "source": {
                 "type": "git",
-                "url": "git@git.formassembly.com:Formassembly/connector-core.git",
-                "reference": "b1b24eb172753be08409f9d50421103da2180d04"
+                "url": "https://github.com/arun-experion/connector-core.git",
+                "reference": "8b59ce4a528e508184af50e78eb343a2740c2855"
             },
             "require": {
                 "ext-intl": "*",
