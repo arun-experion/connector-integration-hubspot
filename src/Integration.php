@@ -20,9 +20,11 @@ class Integration extends AbstractIntegration implements OAuthInterface
 
     public function discover(): IntegrationSchema
     {
+
         $schema = json_decode(file_get_contents(__DIR__."/../tests/testDiscover.json"),true);
         return new IntegrationSchema($schema);
         // TODO: Implement discover() method.
+        // return new HubspotSchema();
     }
 
     public function extract(RecordLocator $recordLocator, Mapping $mapping, ?RecordKey $scope): Response
