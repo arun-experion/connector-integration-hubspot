@@ -32,9 +32,9 @@
 
   <php>
     <ini name="memory_limit" value="512M" />
-    <env name="OAUTH_CLIENT_ID" value="6a13e5f5-e12e-4057-a50b-93d56bc538b7"/>
-    <env name="OAUTH_CLIENT_SECRET" value="abb25bcb-f0c2-4d83-beef-adc97adbc0bf"/>
-    <env name="OAUTH_ACCESS_TOKEN" value="pat-na1-a49bf2f9-4aea-48e8-9d58-a1ff8c0cabed" />
+    <env name="OAUTH_CLIENT_ID" value=""/>
+    <env name="OAUTH_CLIENT_SECRET" value=""/>
+    <env name="OAUTH_ACCESS_TOKEN" value="" />
     <env name="OAUTH_REFRESH_TOKEN" value=""/>
     <env name="OAUTH_EXPIRES" value=""/>
   </php>
