@@ -1,0 +1,57 @@
+name: Unit Tests
+
+on:
+  push:
+    branches: main
+  pull_request:
+    branches: main
+       
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: eng
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install PHP
+      run: |               
+        sudo yum update
+        sudo yum group install -y "Development Tools"
+        sudo amazon-linux-extras enable php8.1         
+        sudo amazon-linux-extras install epel 
+        sudo yum install -y php-devel
+        sudo yum install -y php-pear
+        sudo yum install -y php-mbstring
+        sudo yum install -y php-intl
+        sudo yum install -y php-gd
+        sudo yum install -y php-pdo
+        sudo pecl install xdebug
+        sudo echo 'zend_extension=xdebug' | sudo tee /etc/php.d/99-xdebug.ini        
+    - name: Install Composer
+      run: |              
+        sudo curl -sS https://getcomposer.org/installer | sudo php
+        sudo mv composer.phar /usr/local/bin/composer
+        sudo ln -s /usr/local/bin/composer /usr/bin/composer
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+
+    - name: Run test suite
+      run: composer run-script test-coverage
+
+    - name: Generate test coverage badge
+      uses: timkrase/phpunit-coverage-badge@v1.2.1
+      with:
+        report: 'coverage.xml'
+        coverage_badge_path: 'output/badge-coverage.svg'
+        push_badge: false
+
+    - name: Push badge to image-data branch
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        publish_dir: ./output
+        publish_branch: image-data
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        user_name: 'github-actions[bot]'
+        user_email: 'github-actions[bot]@users.noreply.github.com'
