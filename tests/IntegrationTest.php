@@ -11,4 +11,7 @@ final class IntegrationTest extends TestCase
     function testDiscover() {
         // TODO
     }
+    function testCreateCompany() {
+        
+    }
 }

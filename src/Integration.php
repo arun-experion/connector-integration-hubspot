@@ -26,6 +26,7 @@ class Integration extends AbstractIntegration
     public function load(RecordLocator $recordLocator, Mapping $mapping, ?RecordKey $scope): Response
     {
         // TODO: Implement load() method.
+
     }
 
 }
