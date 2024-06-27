@@ -18,7 +18,7 @@ class HubspotSchema extends IntegrationSchema
     /**
      * @var \GuzzleHttp\Client
      */
-    //private Client $client;
+    private Client $client;
 
     /**
      * @var bool|mixed  Prevents use of concurrency when making API calls. Only needed for unit tests in order to
@@ -32,9 +32,9 @@ class HubspotSchema extends IntegrationSchema
      * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Throwable
      */
-    public function __construct()
+    public function __construct(array $schema)
     {
-        
+        // $this->client = $httpClient;
 
         //  Concurrency should only be disabled for unit tests (to ensure predictable order of execution).
         //$this->disableConcurrentRequests = $this->client->getConfig()['config']['no_concurrent_requests'] ?? false;
@@ -44,6 +44,8 @@ class HubspotSchema extends IntegrationSchema
 
         // Retrieve the list of all Salesforce objects (called sObjects)
         $recordTypes = $this->getSalesforceSObjects();
+
+        var_dump($recordTypes);exit;
 
         // For each object, get its properties
         foreach ($this->describe($recordTypes) as $i => $properties) {
