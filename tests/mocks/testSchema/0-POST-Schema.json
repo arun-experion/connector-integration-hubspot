@@ -1,0 +1,97 @@
+{
+    "name": "accounts",
+    "description": "Accounts keep track of the financial accounts of our clients.",
+    "labels": {
+      "singular": "Account",
+      "plural": "Accounts"
+    },
+    "primaryDisplayProperty": "account_name",
+    "secondaryDisplayProperties": [
+       "account_number"
+    ],
+    "searchableProperties": [
+       "account_name",
+       "account_number",
+       "account_type",
+       "balance"
+    ],
+    "requiredProperties": [
+       "account_name",
+       "account_number",
+       "account_type",
+       "balance"
+    ],
+    "properties": [
+      {
+        "name": "account_name",
+        "label": "Account Name",
+        "type": "string",
+        "fieldType": "text"
+      },
+      {
+        "name": "account_number",
+        "label": "Account Number",
+        "type": "string",
+        "hasUniqueValue": true,
+        "fieldType": "text"
+      },
+      {
+        "name": "account_type",
+        "label": "Account Type",
+        "type": "enumeration",
+        "fieldType": "select",
+        "options": [
+          {
+            "label": "Checking",
+            "value": "checking"
+          },
+          {
+            "label": "Savings",
+            "value": "savings"
+          },
+          {
+            "label": "Credit",
+            "value": "credit"
+          }
+        ]
+      },
+      {
+        "name": "balance",
+        "label": "Balance",
+        "type": "number",
+        "fieldType": "number"
+      },
+      {
+        "name": "date_opened",
+        "label": "Date Opened",
+        "type": "date",
+        "fieldType": "date"
+      },
+      {
+        "name": "status",
+        "label": "Status",
+        "type": "enumeration",
+        "fieldType": "select",
+        "options": [
+          {
+            "label": "Active",
+            "value": "active"
+          },
+          {
+            "label": "Closed",
+            "value": "closed"
+          }
+        ]
+      },
+      {
+        "name": "notes",
+        "label": "Notes",
+        "type": "string",
+        "fieldType": "text"
+      }
+    ],
+    "associatedObjects": [
+      "CONTACT"
+    ]
+  }
+  

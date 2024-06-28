@@ -1,0 +1,432 @@
+{
+    "labels": {
+        "singular": "Account",
+        "plural": "Accounts"
+    },
+    "requiredProperties": [
+        "account_number",
+        "account_type",
+        "balance",
+        "account_name"
+    ],
+    "searchableProperties": [
+        "account_number",
+        "account_type",
+        "balance",
+        "account_name"
+    ],
+    "primaryDisplayProperty": "account_name",
+    "secondaryDisplayProperties": [
+        "account_number"
+    ],
+    "description": "Accounts keep track of the financial accounts of our clients.",
+    "archived": false,
+    "restorable": true,
+    "metaType": "PORTAL_SPECIFIC",
+    "id": "31689648",
+    "fullyQualifiedName": "p46582472_accounts",
+    "createdAt": "2024-06-28T12:00:43.211Z",
+    "updatedAt": "2024-06-28T12:00:43.211Z",
+    "createdByUserId": 67903795,
+    "updatedByUserId": 67903795,
+    "objectTypeId": "2-31689648",
+    "properties": [
+        {
+            "updatedAt": "2024-06-28T12:00:43.451Z",
+            "createdAt": "2024-06-28T12:00:43.451Z",
+            "name": "account_name",
+            "label": "Account Name",
+            "type": "string",
+            "fieldType": "text",
+            "description": "",
+            "groupName": "accounts_information",
+            "options": [],
+            "createdUserId": "67903795",
+            "updatedUserId": "67903795",
+            "displayOrder": -1,
+            "calculated": false,
+            "externalOptions": false,
+            "archived": false,
+            "hasUniqueValue": false,
+            "hidden": false,
+            "modificationMetadata": {
+                "archivable": true,
+                "readOnlyDefinition": false,
+                "readOnlyValue": false
+            },
+            "formField": false,
+            "dataSensitivity": "non_sensitive"
+        },
+        {
+            "updatedAt": "2024-06-28T12:00:43.451Z",
+            "createdAt": "2024-06-28T12:00:43.451Z",
+            "name": "account_type",
+            "label": "Account Type",
+            "type": "enumeration",
+            "fieldType": "select",
+            "description": "",
+            "groupName": "accounts_information",
+            "options": [
+                {
+                    "label": "Checking",
+                    "value": "checking",
+                    "displayOrder": 0,
+                    "hidden": false
+                },
+                {
+                    "label": "Savings",
+                    "value": "savings",
+                    "displayOrder": 1,
+                    "hidden": false
+                },
+                {
+                    "label": "Credit",
+                    "value": "credit",
+                    "displayOrder": 2,
+                    "hidden": false
+                }
+            ],
+            "createdUserId": "67903795",
+            "updatedUserId": "67903795",
+            "displayOrder": -1,
+            "calculated": false,
+            "externalOptions": false,
+            "archived": false,
+            "hasUniqueValue": false,
+            "hidden": false,
+            "modificationMetadata": {
+                "archivable": true,
+                "readOnlyDefinition": false,
+                "readOnlyValue": false
+            },
+            "formField": false,
+            "dataSensitivity": "non_sensitive"
+        },
+        {
+            "updatedAt": "2024-06-28T12:00:43.451Z",
+            "createdAt": "2024-06-28T12:00:43.451Z",
+            "name": "status",
+            "label": "Status",
+            "type": "enumeration",
+            "fieldType": "select",
+            "description": "",
+            "groupName": "accounts_information",
+            "options": [
+                {
+                    "label": "Active",
+                    "value": "active",
+                    "displayOrder": 0,
+                    "hidden": false
+                },
+                {
+                    "label": "Closed",
+                    "value": "closed",
+                    "displayOrder": 1,
+                    "hidden": false
+                }
+            ],
+            "createdUserId": "67903795",
+            "updatedUserId": "67903795",
+            "displayOrder": -1,
+            "calculated": false,
+            "externalOptions": false,
+            "archived": false,
+            "hasUniqueValue": false,
+            "hidden": false,
+            "modificationMetadata": {
+                "archivable": true,
+                "readOnlyDefinition": false,
+                "readOnlyValue": false
+            },
+            "formField": false,
+            "dataSensitivity": "non_sensitive"
+        },
+        {
+            "updatedAt": "2024-06-28T12:00:43.451Z",
+            "createdAt": "2024-06-28T12:00:43.451Z",
+            "name": "notes",
+            "label": "Notes",
+            "type": "string",
+            "fieldType": "text",
+            "description": "",
+            "groupName": "accounts_information",
+            "options": [],
+            "createdUserId": "67903795",
+            "updatedUserId": "67903795",
+            "displayOrder": -1,
+            "calculated": false,
+            "externalOptions": false,
+            "archived": false,
+            "hasUniqueValue": false,
+            "hidden": false,
+            "modificationMetadata": {
+                "archivable": true,
+                "readOnlyDefinition": false,
+                "readOnlyValue": false
+            },
+            "formField": false,
+            "dataSensitivity": "non_sensitive"
+        },
+        {
+            "updatedAt": "2024-06-28T12:00:43.451Z",
+            "createdAt": "2024-06-28T12:00:43.451Z",
+            "name": "account_number",
+            "label": "Account Number",
+            "type": "string",
+            "fieldType": "text",
+            "description": "",
+            "groupName": "accounts_information",
+            "options": [],
+            "createdUserId": "67903795",
+            "updatedUserId": "67903795",
+            "displayOrder": -1,
+            "calculated": false,
+            "externalOptions": false,
+            "archived": false,
+            "hasUniqueValue": true,
+            "hidden": false,
+            "modificationMetadata": {
+                "archivable": true,
+                "readOnlyDefinition": false,
+                "readOnlyValue": false
+            },
+            "formField": false,
+            "dataSensitivity": "non_sensitive"
+        },
+        {
+            "updatedAt": "2024-06-28T12:00:43.451Z",
+            "createdAt": "2024-06-28T12:00:43.451Z",
+            "name": "balance",
+            "label": "Balance",
+            "type": "number",
+            "fieldType": "number",
+            "description": "",
+            "groupName": "accounts_information",
+            "options": [],
+            "createdUserId": "67903795",
+            "updatedUserId": "67903795",
+            "displayOrder": -1,
+            "calculated": false,
+            "externalOptions": false,
+            "archived": false,
+            "hasUniqueValue": false,
+            "hidden": false,
+            "modificationMetadata": {
+                "archivable": true,
+                "readOnlyDefinition": false,
+                "readOnlyValue": false
+            },
+            "formField": false,
+            "dataSensitivity": "non_sensitive"
+        },
+        {
+            "updatedAt": "2024-06-28T12:00:43.451Z",
+            "createdAt": "2024-06-28T12:00:43.451Z",
+            "name": "date_opened",
+            "label": "Date Opened",
+            "type": "date",
+            "fieldType": "date",
+            "description": "",
+            "groupName": "accounts_information",
+            "options": [],
+            "createdUserId": "67903795",
+            "updatedUserId": "67903795",
+            "displayOrder": -1,
+            "calculated": false,
+            "externalOptions": false,
+            "archived": false,
+            "hasUniqueValue": false,
+            "hidden": false,
+            "modificationMetadata": {
+                "archivable": true,
+                "readOnlyDefinition": false,
+                "readOnlyValue": false
+            },
+            "formField": false,
+            "dataSensitivity": "non_sensitive"
+        }
+    ],
+    "associations": [
+        {
+            "fromObjectTypeId": "2-31689648",
+            "toObjectTypeId": "0-1",
+            "name": "accounts_to_contact",
+            "cardinality": "ONE_TO_MANY",
+            "inverseCardinality": "ONE_TO_MANY",
+            "id": "35",
+            "createdAt": null,
+            "updatedAt": null
+        },
+        {
+            "fromObjectTypeId": "0-1",
+            "toObjectTypeId": "2-31689648",
+            "name": "accounts_to_contact",
+            "cardinality": "ONE_TO_MANY",
+            "inverseCardinality": "ONE_TO_MANY",
+            "id": "36",
+            "createdAt": null,
+            "updatedAt": null
+        },
+        {
+            "fromObjectTypeId": "2-31689648",
+            "toObjectTypeId": "0-51",
+            "name": "accounts_to_conversation_session",
+            "cardinality": "ONE_TO_MANY",
+            "inverseCardinality": "ONE_TO_MANY",
+            "id": "19",
+            "createdAt": null,
+            "updatedAt": null
+        },
+        {
+            "fromObjectTypeId": "0-51",
+            "toObjectTypeId": "2-31689648",
+            "name": "accounts_to_conversation_session",
+            "cardinality": "ONE_TO_MANY",
+            "inverseCardinality": "ONE_TO_MANY",
+            "id": "20",
+            "createdAt": null,
+            "updatedAt": null
+        },
+        {
+            "fromObjectTypeId": "0-47",
+            "toObjectTypeId": "2-31689648",
+            "name": "accounts_to_meeting_event",
+            "cardinality": "ONE_TO_MANY",
+            "inverseCardinality": "ONE_TO_MANY",
+            "id": "22",
+            "createdAt": null,
+            "updatedAt": null
+        },
+        {
+            "fromObjectTypeId": "2-31689648",
+            "toObjectTypeId": "0-47",
+            "name": "accounts_to_meeting_event",
+            "cardinality": "ONE_TO_MANY",
+            "inverseCardinality": "ONE_TO_MANY",
+            "id": "21",
+            "createdAt": null,
+            "updatedAt": null
+        },
+        {
+            "fromObjectTypeId": "2-31689648",
+            "toObjectTypeId": "0-18",
+            "name": "accounts_to_communication",
+            "cardinality": "ONE_TO_MANY",
+            "inverseCardinality": "ONE_TO_MANY",
+            "id": "23",
+            "createdAt": null,
+            "updatedAt": null
+        },
+        {
+            "fromObjectTypeId": "0-18",
+            "toObjectTypeId": "2-31689648",
+            "name": "accounts_to_communication",
+            "cardinality": "ONE_TO_MANY",
+            "inverseCardinality": "ONE_TO_MANY",
+            "id": "24",
+            "createdAt": null,
+            "updatedAt": null
+        },
+        {
+            "fromObjectTypeId": "0-49",
+            "toObjectTypeId": "2-31689648",
+            "name": "accounts_to_email",
+            "cardinality": "ONE_TO_MANY",
+            "inverseCardinality": "ONE_TO_MANY",
+            "id": "26",
+            "createdAt": null,
+            "updatedAt": null
+        },
+        {
+            "fromObjectTypeId": "2-31689648",
+            "toObjectTypeId": "0-49",
+            "name": "accounts_to_email",
+            "cardinality": "ONE_TO_MANY",
+            "inverseCardinality": "ONE_TO_MANY",
+            "id": "25",
+            "createdAt": null,
+            "updatedAt": null
+        },
+        {
+            "fromObjectTypeId": "0-27",
+            "toObjectTypeId": "2-31689648",
+            "name": "accounts_to_task",
+            "cardinality": "ONE_TO_MANY",
+            "inverseCardinality": "ONE_TO_MANY",
+            "id": "28",
+            "createdAt": null,
+            "updatedAt": null
+        },
+        {
+            "fromObjectTypeId": "2-31689648",
+            "toObjectTypeId": "0-27",
+            "name": "accounts_to_task",
+            "cardinality": "ONE_TO_MANY",
+            "inverseCardinality": "ONE_TO_MANY",
+            "id": "27",
+            "createdAt": null,
+            "updatedAt": null
+        },
+        {
+            "fromObjectTypeId": "0-48",
+            "toObjectTypeId": "2-31689648",
+            "name": "accounts_to_call",
+            "cardinality": "ONE_TO_MANY",
+            "inverseCardinality": "ONE_TO_MANY",
+            "id": "30",
+            "createdAt": null,
+            "updatedAt": null
+        },
+        {
+            "fromObjectTypeId": "2-31689648",
+            "toObjectTypeId": "0-48",
+            "name": "accounts_to_call",
+            "cardinality": "ONE_TO_MANY",
+            "inverseCardinality": "ONE_TO_MANY",
+            "id": "29",
+            "createdAt": null,
+            "updatedAt": null
+        },
+        {
+            "fromObjectTypeId": "0-46",
+            "toObjectTypeId": "2-31689648",
+            "name": "accounts_to_note",
+            "cardinality": "ONE_TO_MANY",
+            "inverseCardinality": "ONE_TO_MANY",
+            "id": "32",
+            "createdAt": null,
+            "updatedAt": null
+        },
+        {
+            "fromObjectTypeId": "2-31689648",
+            "toObjectTypeId": "0-46",
+            "name": "accounts_to_note",
+            "cardinality": "ONE_TO_MANY",
+            "inverseCardinality": "ONE_TO_MANY",
+            "id": "31",
+            "createdAt": null,
+            "updatedAt": null
+        },
+        {
+            "fromObjectTypeId": "2-31689648",
+            "toObjectTypeId": "0-116",
+            "name": "accounts_to_postal_mail",
+            "cardinality": "ONE_TO_MANY",
+            "inverseCardinality": "ONE_TO_MANY",
+            "id": "33",
+            "createdAt": null,
+            "updatedAt": null
+        },
+        {
+            "fromObjectTypeId": "0-116",
+            "toObjectTypeId": "2-31689648",
+            "name": "accounts_to_postal_mail",
+            "cardinality": "ONE_TO_MANY",
+            "inverseCardinality": "ONE_TO_MANY",
+            "id": "34",
+            "createdAt": null,
+            "updatedAt": null
+        }
+    ],
+    "name": "accounts"
+}

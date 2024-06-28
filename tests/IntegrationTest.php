@@ -1,11 +1,15 @@
 <?php
 namespace Tests;
 
+use Connector\Integrations\Hubspot\HubspotSchema;
 use Connector\Integrations\Hubspot\Integration;
 use Connector\Schema\IntegrationSchema;
 use Connector\Type\JsonSchemaFormats;
 use Connector\Type\JsonSchemaTypes;
 use PHPUnit\Framework\TestCase;
+use GuzzleHttp\Psr7\Response;
+use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * @covers \Connector\Integrations\Hubspot\Integration
@@ -121,6 +125,21 @@ final class IntegrationTest extends TestCase
         $this->assertTrue($schema->hasProperty('deal','dealname'));
         $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('deal','dealname')->type);
         $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('deal','dealname')->format);
+    }
+
+    function testDiscoverSchema(){
+        $input = file_get_contents(__DIR__ . "/mocks/testSchema/0-POST-Schema.json");
+        if ($input === false) {
+            throw new RuntimeException("Failed to read input file.");
+        }
+        $inputArray = json_decode($input, true);
+        $schema=new  HubspotSchema($inputArray);
+        
+        $resultschema   = json_encode($schema,true, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT );
+
+        $this->assertJson($resultschema);
+        $this->assertTrue(file_get_contents(__DIR__ . "/testDiscover.json") === $resultschema, "Schema is different than what was expected.");
+
     }
 
 }
