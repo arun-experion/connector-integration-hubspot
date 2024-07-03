@@ -17,9 +17,6 @@ final class IntegrationTest extends TestCase
 {
 
     public array $oauthConfig = [];
-
-    
-
 protected function setUp(): void
 {
     $this->oauthConfig = [
