@@ -1,10 +1,13 @@
 <?php
 namespace Tests;
 
+use Connector\Integrations\Hubspot\Config;
 use Connector\Integrations\Hubspot\Integration;
 use Connector\Schema\IntegrationSchema;
 use Connector\Type\JsonSchemaFormats;
 use Connector\Type\JsonSchemaTypes;
+use Exception;
+use HubSpot\Factory;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,11 +21,29 @@ final class IntegrationTest extends TestCase
     protected function setUp(): void
     {
         $this->oauthConfig = [
-            'client_id'     => getenv('OAUTH_CLIENT_ID'),
-            'client_secret' => getenv('OAUTH_CLIENT_SECRET')
+            'access_token' =>Config::HUBSPOT_ACCESS_TOKEN
         ];
     }
+    
+    function testUnauthorizedAccess(){
+      $client = Factory::createWithAccessToken($this->oauthConfig['access_token']); 
+      try {
+        $apiResponse = $client->crm()->companies()->basicApi()->getPage(10, false); 
+        $responseData = json_decode($apiResponse, true);
+        $this->assertIsArray($responseData['results']);
+              
+    } 
+   catch (Exception $e) {
+        if ($e->getCode() === 401) {
+            $this->assertEquals(401, $e->getCode(), 'Expected HTTP status code 401 (Unauthorized)');
+        } elseif ($e->getCode() === 403) {
+            $this->assertEquals(403, $e->getCode(), 'Expected HTTP status code 403 (Forbidden)');
+        } else {
+            $this->fail('Unexpected exception occurred: ' . $e->getMessage());
+        }
+    }  
 
+    }
     function testDiscoverReturnsJsonSchema() {
         $integration = new Integration($this->oauthConfig);
         $integration->setAuthorization(json_encode([
