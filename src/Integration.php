@@ -1,6 +1,7 @@
 <?php
 
 namespace Connector\Integrations\Hubspot;
+require __DIR__."/../vendor/autoload.php";
 
 use Connector\Integrations\AbstractIntegration;
 use Connector\Integrations\Authorizations\OAuthInterface;
@@ -20,11 +21,9 @@ class Integration extends AbstractIntegration implements OAuthInterface
 
     public function discover(): IntegrationSchema
     {
-
-        $schema = json_decode(file_get_contents(__DIR__."/../tests/testDiscover.json"),true);
-        return new HubspotSchema($schema);
         // TODO: Implement discover() method.
-        // return new HubspotSchema();
+        $newHubSpotSchema = new HubspotSchema();
+        return $newHubSpotSchema;
     }
 
     public function extract(RecordLocator $recordLocator, Mapping $mapping, ?RecordKey $scope): Response
@@ -56,3 +55,6 @@ class Integration extends AbstractIntegration implements OAuthInterface
         // TODO: Implement getAuthorizedUserName() method.
     }
 }
+
+$integration = new Integration();
+$integration->discover();

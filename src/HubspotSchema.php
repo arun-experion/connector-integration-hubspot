@@ -3,96 +3,118 @@
 namespace Connector\Integrations\Hubspot;
 
 use Connector\Schema\Builder;
+use Connector\Schema\Builder\RecordType;
 use Connector\Schema\IntegrationSchema;
-use GuzzleHttp\Client;
-use HubSpot\Factory;
 use HubSpot\Client\Crm\Schemas\ApiException;
-use HubSpot\Client\Crm\Schemas\Model\ObjectSchemaEgg;
-use HubSpot\Client\Crm\Schemas\Model\ObjectTypePropertyCreate;
-use Connector\Integrations\Hubspot\Config;
+use HubSpot\Factory;
 
 class HubspotSchema extends IntegrationSchema
 {
     /**
-     * @var Client
+     * @var string Holds the generated HubSpot schema in JSON format.
      */
-    private Client $client;
+    private $HubSpotSchema;
 
-    /**
-     * @var bool Prevents use of concurrency when making API calls. Only needed for unit tests to request responses in a predictable order.
-     */
-    private bool $disableConcurrentRequests = false;
-
-    /**
-     * HubspotSchema constructor.
-     *
-     * @param array $schema
-     *
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \Throwable
-     */
-    public function __construct(array $schema)
+    public function __construct()
     {
-        $builder = new Builder("http://formassembly.com/integrations/salesforce", "Salesforce");
+        $this->HubSpotSchema = $this->buildJson();
+    }
 
-        $hubspotSchema = [];
-        $i =0;
-        foreach ($schema['items'] as $key => $item) {
-            if($i == 1){
-                break;
-            }
-            $properties = $item['properties'];
-            $hubSpotProperties = [];
-            
-            foreach ($properties as $property) {
-                $hubSpotProperties[] = [
-                    'name' => $property['name'],
-                    'label' => $property['title'],
-                    'type' => $property['type'] === 'string' ? 'string' : ($property['type'] === 'number' ? 'number' : 'unknown'),
-                    'fieldType' => 'text',
-                    'description' => $property['title'],
-                    'groupName' => 'accountinformation'
-                ];
-            }
-
-            $hubspotSchema[] = [
-                'name' => $key,
-                'labels' => $item['title'],
-                'properties' => $hubSpotProperties
-            ];
-            $i++;
-        }
-
+    public function buildJson(): array
+    {
         $client = Factory::createWithAccessToken(Config::HUBSPOT_ACCESS_TOKEN);
 
-        // Create and send the schema to HubSpot
-        foreach ($hubspotSchema as $schemaItem) {
-            $objectTypePropertyCreate = new ObjectTypePropertyCreate([
-                'label' => strtolower($schemaItem['labels']),
-                'name' => strtolower($schemaItem['name'])
-            ]);
-            $labels = [
-                'plural' => strtolower($schemaItem['labels']),
-                'singular' => strtolower($schemaItem['labels'])
-            ];
+        // Get name of CRM objects from getObjectSchema() and store the data returned 
+        $CRMObjects = $this->getObjectSchema($client);
 
-            $objectSchemaEgg = new ObjectSchemaEgg([
-                'required_properties' => [$schemaItem['properties'][0]['name']], // Use the first property as required property
-                'searchable_properties' => array_column($schemaItem['properties'], 'name'),
-                'secondary_display_properties' => array_column($schemaItem['properties'], 'name'),
-                'primary_display_property' => strtolower($schemaItem['name']),
-                'name' => strtolower($schemaItem['name']),
-                'description' => 'string',
-                'properties' => [$objectTypePropertyCreate],
-                'labels' => $labels,
-            ]);
+        // Get properties from combineProperties() and store the data returned 
+        $combinedObjectProperties = $this->combineProperties($client, $CRMObjects);
 
+        // Initialize the schema builder
+        $builder = new Builder("http://formassembly.com/integrations/hubspot", "Hubspot");
+
+        foreach ($CRMObjects as $object) {
+            $recordType = new RecordType($object);
+            $recordType->title = $object;
+            $builder->addRecordType($recordType);
+        }
+        $jsonStructure = $builder->toJSon();
+
+        // Decode jsonStructure to an array
+        $arrayJson = json_decode($jsonStructure, true);
+        
+        // Return the json built.
+        return $arrayJson;
+    }
+
+    /**
+     * Retrieves custom CRM objects from HubSpot.
+     *
+     * @param \HubSpot\Discovery\Discovery  $client 
+     *
+     * @return array An array containing all CRM objects.
+     *
+     * @throws ApiException If there's an error making API calls to retrieve CRM object schemas.
+     */
+    public function getObjectSchema($client)
+    {
+        // $standardCRMObjects contains standard objects from HubSpot
+        $standardCRMObjects = Config::STANDARD_CRM_OBJECTS;
+
+        // Making an api call to crm/v3/schemas to get all the custom objects 
+        try {
+            $apiResponse = $client->crm()->schemas()->coreApi()->getAll(false);
+
+            if (isset($apiResponse['results']) && is_array($apiResponse['results'])) {
+                foreach ($apiResponse['results'] as $results) {
+                    // Finding all the "name" inside "results" array from response.
+                    $customCRMObjects[] = $results['name'];
+                }
+
+                // $CRMObjects contains standard and custom objects from HubSpot
+                $CRMObjects = array_merge($standardCRMObjects, $customCRMObjects);
+                return $CRMObjects;
+            } else {
+                return ["No results found in the response of crm/v3/schemas."];
+            }
+        } catch (ApiException $e) {
+            return ["Exception when calling core_api->get_all: ",$e->getMessage()];
+        }
+    }
+
+    /**
+     * Combines properties schema for both standard and custom CRM objects from HubSpot.
+     *
+     * @param \\HubSpot\Discovery\Discovery $client
+     * @param array $CRMObjects
+     *
+     * @return array An array containing properties schema for all CRM objects.
+     *
+     * @throws ApiException If there's an error making API calls to retrieve properties.
+     */
+    public function combineProperties($client, $CRMObjects)
+    {
+        $combinedProperties = [];
+
+        foreach ($CRMObjects as $objectType) {
             try {
-                $apiResponse = $client->crm()->schemas()->coreApi()->create($objectSchemaEgg);
-                var_dump($apiResponse);
+                // Get the properties for standard and custom objects by a get request to /crm/v3/properties/{name} with all the names found
+                $apiResponse = $client->crm()->properties()->coreApi()->getAll($objectType);
+
+                if (isset($apiResponse['results']) && is_array($apiResponse['results'])) {
+                    foreach ($apiResponse['results'] as $result) {
+                        // Storing properties of standard and custom objects
+                        $combinedProperties[] = $result;
+                    }
+                } else {
+                    return ["No results found in the response of /crm/v3/properties/{name}."];
+                }
+
             } catch (ApiException $e) {
-                echo "Exception when calling core_api->create: ", $e->getMessage();
+                return ["Exception when calling core_api->get_all: ", $e->getMessage()];
             }
         }
+
+        return $combinedProperties;
     }
 }
