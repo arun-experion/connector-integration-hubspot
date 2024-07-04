@@ -1,10 +1,15 @@
 <?php
+
 namespace Tests;
 
+use Connector\Integrations\Hubspot\Config;
 use Connector\Integrations\Hubspot\Integration;
 use Connector\Schema\IntegrationSchema;
 use Connector\Type\JsonSchemaFormats;
 use Connector\Type\JsonSchemaTypes;
+use Exception;
+use GuzzleHttp\Psr7\Response;
+use HubSpot\Factory;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,17 +23,24 @@ final class IntegrationTest extends TestCase
     protected function setUp(): void
     {
         $this->oauthConfig = [
-            'client_id'     => getenv('OAUTH_CLIENT_ID'),
-            'client_secret' => getenv('OAUTH_CLIENT_SECRET')
+            'access_token' =>Config::HUBSPOT_ACCESS_TOKEN
         ];
+    }
+
+    function testUnauthorizedAccess()
+    {
+        $client = Factory::createWithAccessToken($this->oauthConfig['access_token']);
+        $apiResponse = $client->crm()->companies()->basicApi()->getPage(10, false);
+        $this->assertJson($apiResponse);
+        $this->assertArrayHasKey('results', $apiResponse);
     }
 
     function testDiscoverReturnsJsonSchema() {
         $integration = new Integration($this->oauthConfig);
         $integration->setAuthorization(json_encode([
-            "accessToken"  => getenv('OAUTH_ACCESS_TOKEN'),
-            "refreshToken" => getenv('OAUTH_REFRESH_TOKEN'),
-            "expires"      => (int) getenv('OAUTH_EXPIRES')]));
+                                                    "accessToken"  => getenv('OAUTH_ACCESS_TOKEN'),
+                                                    "refreshToken" => getenv('OAUTH_REFRESH_TOKEN'),
+                                                    "expires"      => (int) getenv('OAUTH_EXPIRES')]));
 
         $schema = $integration->discover();
         $this->assertInstanceOf(IntegrationSchema::class, $schema);
@@ -40,13 +52,12 @@ final class IntegrationTest extends TestCase
         $this->assertEquals('array',$schema->schema['type']);
         $this->assertArrayHasKey('items',$schema->schema);
     }
-
     function testDiscoverReturnsCompanyDefinition() {
         $integration = new Integration($this->oauthConfig);
         $integration->setAuthorization(json_encode([
-                                                       "accessToken"  => getenv('OAUTH_ACCESS_TOKEN'),
-                                                       "refreshToken" => getenv('OAUTH_REFRESH_TOKEN'),
-                                                       "expires"      => (int) getenv('OAUTH_EXPIRES')]));
+                                                    "accessToken"  => getenv('OAUTH_ACCESS_TOKEN'),
+                                                    "refreshToken" => getenv('OAUTH_REFRESH_TOKEN'),
+                                                    "expires"      => (int) getenv('OAUTH_EXPIRES')]));
 
         $schema = $integration->discover();
 
@@ -68,9 +79,9 @@ final class IntegrationTest extends TestCase
     function testDiscoverReturnsContactDefinition() {
         $integration = new Integration($this->oauthConfig);
         $integration->setAuthorization(json_encode([
-                                                       "accessToken"  => getenv('OAUTH_ACCESS_TOKEN'),
-                                                       "refreshToken" => getenv('OAUTH_REFRESH_TOKEN'),
-                                                       "expires"      => (int) getenv('OAUTH_EXPIRES')]));
+                                                    "accessToken"  => getenv('OAUTH_ACCESS_TOKEN'),
+                                                    "refreshToken" => getenv('OAUTH_REFRESH_TOKEN'),
+                                                    "expires"      => (int) getenv('OAUTH_EXPIRES')]));
 
         $schema = $integration->discover();
 
@@ -100,9 +111,9 @@ final class IntegrationTest extends TestCase
     function testDiscoverReturnsDealDefinition() {
         $integration = new Integration($this->oauthConfig);
         $integration->setAuthorization(json_encode([
-                                                       "accessToken"  => getenv('OAUTH_ACCESS_TOKEN'),
-                                                       "refreshToken" => getenv('OAUTH_REFRESH_TOKEN'),
-                                                       "expires"      => (int) getenv('OAUTH_EXPIRES')]));
+                                                    "accessToken"  => getenv('OAUTH_ACCESS_TOKEN'),
+                                                    "refreshToken" => getenv('OAUTH_REFRESH_TOKEN'),
+                                                    "expires"      => (int) getenv('OAUTH_EXPIRES')]));
 
         $schema = $integration->discover();
 
