@@ -23,7 +23,7 @@ final class IntegrationTest extends TestCase
     protected function setUp(): void
     {
         $this->oauthConfig = [
-            'access_token' => Config::HUBSPOT_ACCESS_TOKEN
+            'access_token' =>Config::HUBSPOT_ACCESS_TOKEN
         ];
     }
 
@@ -142,4 +142,5 @@ final class IntegrationTest extends TestCase
         $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('deal', 'dealname')->type);
         $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('deal', 'dealname')->format);
     }
+
 }
