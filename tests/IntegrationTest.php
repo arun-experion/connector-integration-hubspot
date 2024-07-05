@@ -7,8 +7,6 @@ use Connector\Integrations\Hubspot\Integration;
 use Connector\Schema\IntegrationSchema;
 use Connector\Type\JsonSchemaFormats;
 use Connector\Type\JsonSchemaTypes;
-use Exception;
-use GuzzleHttp\Psr7\Response;
 use HubSpot\Factory;
 use PHPUnit\Framework\TestCase;
 
@@ -17,9 +15,14 @@ use PHPUnit\Framework\TestCase;
  */
 final class IntegrationTest extends TestCase
 {
-
+     /**
+     * @var array Configuration for OAuth, including access token.
+     */
     public array $oauthConfig = [];
 
+    /**
+     * Set up the test environment by initializing the OAuth configuration.
+     */
     protected function setUp(): void
     {
         $this->oauthConfig = [
@@ -27,11 +30,17 @@ final class IntegrationTest extends TestCase
         ];
     }
 
+    /**
+     * Test the unauthorized access to the HubSpot API.
+     */
     function testUnauthorizedAccess()
     {
         $client = Factory::createWithAccessToken($this->oauthConfig['access_token']);
+        // Attempt to retrieve the first 10 companies using the client
         $apiResponse = $client->crm()->companies()->basicApi()->getPage(10, false);
+        // Assert that the response is a valid JSON string
         $this->assertJson($apiResponse);
+        // Assert that the response array contains a 'results' key
         $this->assertArrayHasKey('results', $apiResponse);
     }
 
@@ -40,208 +49,56 @@ final class IntegrationTest extends TestCase
      */
     function testDiscover()
     {
+        $integration = new Integration();
+        $schema= $integration->discover()->json;
+        // Reformat to PRETTY_PRINT for easier comparison when test fails.
+        $jsonSchema=json_encode(json_decode($schema,true), JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT );;
+        // Assert that the encoded JSON schema is a valid JSON string
+        $this->assertJson($jsonSchema);
+        // Compare the JSON schema with the expected schema stored in a file
+        $this->assertTrue(file_get_contents(__DIR__ . "/testDiscover.json") === $jsonSchema, "Schema is different than what was expected.");
+    }
+   
+    function testDiscoverReturnsJsonSchema() {
         $integration = new Integration($this->oauthConfig);
-        //$schema= $integration->discover();
-        $schema = '
-        {
-    "$schema": "https://formassembly.com/connector/1.0/schema-integration",
-    "$id": "http://formassembly.com/integrations/salesforce",
-    "title": "Hubspot",
-    "type": "array",
-    "items": {
-        "Account": {
-            "type": "object",
-            "properties": {
-                "Id": {
-                    "name": "Id",
-                    "title": "Account ID",
-                    "type": "string",
-                    "format": "",
-                    "maxLength": 18,
-                    "readOnly": 1,
-                    "pk": 1
+        $integration->setAuthorization(json_encode([
+                                                    "accessToken"  => getenv('OAUTH_ACCESS_TOKEN'),
+                                                    "refreshToken" => getenv('OAUTH_REFRESH_TOKEN'),
+                                                    "expires"      => (int) getenv('OAUTH_EXPIRES')]));
+
+        $schema = $integration->discover();
+        $this->assertInstanceOf(IntegrationSchema::class, $schema);
+        $this->assertJson($schema->json);
+        $this->assertArrayHasKey('$schema',$schema->schema);
+        $this->assertArrayHasKey('$id',$schema->schema);
+        $this->assertArrayHasKey('title',$schema->schema);
+        $this->assertArrayHasKey('type',$schema->schema);
+        $this->assertEquals('array',$schema->schema['type']);
+        $this->assertArrayHasKey('items',$schema->schema);
     }
-                    }
-    },
-                    "Companies":{
-                    "type": "object",
-            "properties": {
-                "name": {
-                    "name": "name",
-                    "title": "Company name",
-                    "type": "string",
-                    "format": "",
-                    "maxLength": 18,
-                    "readOnly": 1,
-                    "pk": 1
-    },
-                "domain": {
-                    "name": "domain",
-                    "title": "Hosting domain",
-                    "type": "string",
-                    "format": "",
-                    "maxLength": 18,
-                    "readOnly": 1,
-                    "pk": 1
-    }
-    }},
-                    "Contacts":{},
-                    "Deals":{},
-                    "Tickets":{}
-                    }}';
-        $this->assertJson($schema);
-        $this->assertTrue(file_get_contents(__DIR__ . "/testDiscover.json") === $schema, "Schema is different than excepted.");
-    }
-    function testDiscoverReturnsJsonSchema()
-    {
+    function testDiscoverReturnsCompanyDefinition() {
         $integration = new Integration($this->oauthConfig);
-        // $schema = $integration->discover();
-        $schema ='
-        {
-    "$schema": "https://formassembly.com/connector/1.0/schema-integration",
-    "$id": "http://formassembly.com/integrations/salesforce",
-    "title": "Hubspot",
-    "type": "array",
-    "items": {
-        "Account": {
-            "type": "object",
-            "properties": {
-                "Id": {
-                    "name": "Id",
-                    "title": "Account ID",
-                    "type": "string",
-                    "format": "",
-                    "maxLength": 18,
-                    "readOnly": 1,
-                    "pk": 1
-    }}},
-                    "Companies":{
-                    "type": "object",
-            "properties": {
-                "name": {
-                    "name": "name",
-                    "title": "Company name",
-                    "type": "string",
-                    "format": "",
-                    "maxLength": 18,
-                    "readOnly": 1,
-                    "pk": 1
-    },
-                "domain": {
-                    "name": "domain",
-                    "title": "Hosting domain",
-                    "type": "string",
-                    "format": "",
-                    "maxLength": 18,
-                    "readOnly": 1,
-                    "pk": 1
+        $integration->setAuthorization(json_encode([
+                                                    "accessToken"  => getenv('OAUTH_ACCESS_TOKEN'),
+                                                    "refreshToken" => getenv('OAUTH_REFRESH_TOKEN'),
+                                                    "expires"      => (int) getenv('OAUTH_EXPIRES')]));
+
+        $schema = $integration->discover();
+
+        // Not an exhaustive list of properties.
+
+        $this->assertTrue($schema->hasProperty('company','name'));
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('company','name')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('company','name')->format);
+
+        $this->assertTrue($schema->hasProperty('company','domain'));
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('company','domain')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('company','domain')->format);
+
+        $this->assertTrue($schema->hasProperty('company','city'));
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('company','city')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('company','city')->format);
     }
-    }},
-                    "Contacts":{},
-                    "Deals":{},
-                    "Tickets":{}
-                    }}'
-        ;
-        //$this->assertInstanceOf(IntegrationSchema::class, $schema);
-        $this->assertJson($schema);
-
-        $schemaArray = json_decode($schema,true);
-
-        $this->assertArrayHasKey('$schema', $schemaArray);
-        $this->assertArrayHasKey('$id', $schemaArray);
-        $this->assertEquals('Hubspot', $schemaArray['title']);
-        $this->assertArrayHasKey('type', $schemaArray);
-        $this->assertEquals('array', $schemaArray['type']);
-        $this->assertArrayHasKey('items', $schemaArray);
-        // Check that there are all the 4 standarad objects
-        $this->assertGreaterThanOrEqual(4, count($schemaArray['items']));
-        $this->assertArrayHasKey('Companies', $schemaArray['items']);
-        $this->assertArrayHasKey('Contacts', $schemaArray['items']);
-        $this->assertArrayHasKey('Deals', $schemaArray['items']);
-        $this->assertArrayHasKey('Tickets', $schemaArray['items']);
-
-        // Ensure that "Companies", "Contacts", "Deals", and "Tickets" arrays are not empty
-        $this->assertNotEmpty($schemaArray['items']['Companies'], "Companies array is empty.");
-        $this->assertNotEmpty($schemaArray['items']['Contacts'], "Contacts array is empty.");
-        $this->assertNotEmpty($schemaArray['items']['Deals'], "Deals array is empty.");
-        $this->assertNotEmpty($schemaArray['items']['Tickets'], "Tickets array is empty.");
-
-
-    }
-    function testDiscoverReturnsCompanyDefinition()
-    {
-        $integration = new Integration($this->oauthConfig);
-        //$schema = $integration->discover();
-        $schema ='
-        {
-    "$schema": "https://formassembly.com/connector/1.0/schema-integration",
-    "$id": "http://formassembly.com/integrations/salesforce",
-    "title": "Hubspot",
-    "type": "array",
-    "items": {
-        "Account": {
-            "type": "object",
-            "properties": {
-                "Id": {
-                    "name": "Id",
-                    "title": "Account ID",
-                    "type": "string",
-                    "format": "",
-                    "maxLength": 18,
-                    "readOnly": 1,
-                    "pk": 1
-    }}},
-                    "Companies":{
-                    "type": "object",
-            "properties": {
-                "name": {
-                    "name": "name",
-                    "title": "Company name",
-                    "type": "string",
-                    "format": "",
-                    "maxLength": 18,
-                    "readOnly": 1,
-                    "pk": 1
-    },
-                "domain": {
-                    "name": "domain",
-                    "title": "Hosting domain",
-                    "type": "string",
-                    "format": "",
-                    "maxLength": 18,
-                    "readOnly": 1,
-                    "pk": 1
-    }
-    }},
-                    "Contacts":{},
-                    "Deals":{},
-                    "Tickets":{}
-                    }}'
-        ;
-        $schemaObject = json_decode($schema);
-    
-        $companyProperties = $schemaObject->items->Companies->properties;
-    
-        // Assertions for 'name' property
-        $this->assertTrue(property_exists($companyProperties, 'name'));
-        $this->assertEquals('string', $companyProperties->name->type);
-        $this->assertEquals('', $companyProperties->name->format);
-    
-        // Assertions for 'domain' property
-        $this->assertTrue(property_exists($companyProperties, 'domain'));
-        $this->assertEquals('string', $companyProperties->domain->type);
-        $this->assertEquals('', $companyProperties->domain->format);
-    
-
-        // $this->assertTrue($schema->hasProperty('company', 'name'));
-        // $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('company', 'name')->type);
-        // $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('company', 'name')->format);
-
-        // $this->assertTrue($schema->hasProperty('company', 'domain'));
-        // $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('company', 'domain')->type);
-        // $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('company', 'domain')->format);
-
-        }
 
     function testDiscoverReturnsContactDefinition()
     {
