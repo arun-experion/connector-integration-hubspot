@@ -30,6 +30,7 @@ final class IntegrationTest extends TestCase
       try {
         $apiResponse = $client->crm()->companies()->basicApi()->getPage(10, false); 
         $responseData = json_decode($apiResponse, true);
+        // print_r($responseData);die;
         $this->assertIsArray($responseData['results']);
               
     } 
