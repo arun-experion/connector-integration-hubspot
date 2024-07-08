@@ -5,35 +5,26 @@ namespace Connector\Integrations\Hubspot;
 use Connector\Schema\Builder;
 use Connector\Schema\Builder\RecordType;
 use Connector\Schema\IntegrationSchema;
-use HubSpot\Client\Crm\Schemas\ApiException;
+use HubSpot\Client\Crm\Schemas\ApiException as SchemasApiException;
+use HubSpot\Client\Crm\Properties\ApiException as PropertiesApiException;
 use HubSpot\Factory;
 
 class HubspotSchema extends IntegrationSchema
 {
     /**
-     * @var string Holds the generated HubSpot schema
+     *  @var \HubSpot\Discovery\Discovery $client
      */
-    private $HubSpotSchema;
+    private $client;
 
     public function __construct()
     {
-        $this->HubSpotSchema = $this->buildJson();
-    }
-
-    /**
-     * Builds a JSON structure based on CRM object schema and properties.
-     *
-     * @return array An associative array in the required JSON format
-     */
-    public function buildJson(): array
-    {
-        $client = Factory::createWithAccessToken(Config::HUBSPOT_ACCESS_TOKEN);
+        $this->client = Factory::createWithAccessToken(Config::HUBSPOT_ACCESS_TOKEN);
 
         // Get name of CRM objects from getObjectSchema() and store the data returned 
-        $CRMObjects = $this->getObjectSchema($client);
+        $CRMObjects = $this->getObjectSchema($this->client);
 
         // Get properties from combineProperties() and store the data returned 
-        $combinedObjectProperties = $this->combineProperties($client, $CRMObjects);
+        $combinedObjectProperties = $this->combineProperties($this->client, $CRMObjects);
 
         // Initialize the schema builder
         $builder = new Builder("http://formassembly.com/integrations/hubspot", "Hubspot");
@@ -57,19 +48,17 @@ class HubspotSchema extends IntegrationSchema
                         $builder->addRecordType($recordType);
                     }
                 } else {
-                    return ["Empty CRM object properties"];
+                    print_r("Empty CRM object properties");
                 }  
             }
             $jsonStructure = $builder->toJSon();
     
-            // Decode jsonStructure to an array
-            $arrayJson = json_decode($jsonStructure, true);
             // DiscoverResult.json will contain the data in required JSON format
-            file_put_contents(__DIR__ . '/../DiscoverResult.json', json_encode($arrayJson, JSON_PRETTY_PRINT));
-    
-            return $arrayJson;
+            file_put_contents(__DIR__ . '/../DiscoverResult.json', json_encode(json_decode($jsonStructure, true), JSON_PRETTY_PRINT));
+
+            parent::__construct($builder->toArray());
         } else {
-            return ["No CRM objects Found"];
+            print_r("No CRM objects Found");
         }
         
     }
@@ -81,7 +70,7 @@ class HubspotSchema extends IntegrationSchema
      *
      * @return array An array containing all CRM objects.
      *
-     * @throws ApiException If there's an error making API calls to retrieve CRM object schemas.
+     * @throws SchemasApiException If there's an error making API calls to retrieve CRM object schemas.
      */
     public function getObjectSchema($client)
     {
@@ -104,7 +93,7 @@ class HubspotSchema extends IntegrationSchema
             } else {
                 return ["No results found in the response of crm/v3/schemas."];
             }
-        } catch (ApiException $e) {
+        } catch (SchemasApiException $e) {
             return ["Exception when calling core_api->get_all: ", $e->getMessage()];
         }
     }
@@ -112,12 +101,12 @@ class HubspotSchema extends IntegrationSchema
     /**
      * Combines properties schema for both standard and custom CRM objects from HubSpot.
      *
-     * @param \\HubSpot\Discovery\Discovery $client
+     * @param \HubSpot\Discovery\Discovery $client
      * @param array $CRMObjects
      *
      * @return array An array containing properties schema for all CRM objects.
      *
-     * @throws ApiException If there's an error making API calls to retrieve properties.
+     * @throws PropertiesApiException If there's an error making API calls to retrieve properties.
      */
     public function combineProperties($client, $CRMObjects)
     {
@@ -135,7 +124,7 @@ class HubspotSchema extends IntegrationSchema
                 } else {
                     return ["No results found in the response of /crm/v3/properties/{fullyQualifiedName}."];
                 }
-            } catch (ApiException $e) {
+            } catch (PropertiesApiException $e) {
                 return ["Exception when calling core_api->get_all: ", $e->getMessage()];
             }
         }
