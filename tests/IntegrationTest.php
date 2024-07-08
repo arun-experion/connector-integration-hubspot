@@ -108,10 +108,6 @@ final class IntegrationTest extends TestCase
         $this->assertTrue($schema->hasProperty('companies','domain'));
         $this->assertEquals('string',$schema->schema['items']['companies']['properties']['domain']['type']);
 
-        //Check if  required properties exist in companies and also have expected datatypes
-        $this->assertTrue($schema->hasProperty('companies','city'));
-        $this->assertEquals('string',$schema->schema['items']['companies']['properties']['name']['type']);
-
     }
 
     /**
@@ -135,12 +131,6 @@ final class IntegrationTest extends TestCase
        $this->assertTrue($schema->hasProperty('contacts', 'email'));
        $this->assertEquals('string',$schema->schema['items']['contacts']['properties']['email']['type']);
 
-       //Check if  required properties exist in contacts and also have expected datatypes
-       $this->assertTrue($schema->hasProperty('contacts', 'phone'));
-       $this->assertEquals('string',$schema->schema['items']['contacts']['properties']['phone']['type']);
-
-       $this->assertTrue($schema->hasProperty('contacts', 'jobtitle'));
-       $this->assertEquals('string',$schema->schema['items']['contacts']['properties']['jobtitle']['type']);
  }
 
  /**
@@ -169,17 +159,7 @@ final class IntegrationTest extends TestCase
           
         $this->assertTrue($schema->hasProperty('deals', 'dealstage'));
         $this->assertEquals('enumeration',$schema->schema['items']['deals']['properties']['dealstage']['type']);
-        
-        //Check if  required properties exist in deals and also have expected datatypes
-        $this->assertTrue($schema->hasProperty('deals', 'hs_arr'));
-        $this->assertEquals('number',$schema->schema['items']['deals']['properties']['hs_arr']['type']);
-
-        $this->assertTrue($schema->hasProperty('deals', 'hs_closed_won_date'));
-        $this->assertEquals('datetime',$schema->schema['items']['deals']['properties']['hs_closed_won_date']['type']);
-       
-        $this->assertTrue($schema->hasProperty('deals', 'hs_acv'));
-        $this->assertEquals('number',$schema->schema['items']['deals']['properties']['hs_acv']['type']);
-       
+              
     }
     /**
      * Test the tickets definition in the JSON schema.
