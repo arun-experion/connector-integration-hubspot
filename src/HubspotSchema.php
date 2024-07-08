@@ -11,7 +11,7 @@ use HubSpot\Factory;
 class HubspotSchema extends IntegrationSchema
 {
     /**
-     * @var string Holds the generated HubSpot schema in JSON format.
+     * @var string Holds the generated HubSpot schema
      */
     private $HubSpotSchema;
 
@@ -20,6 +20,11 @@ class HubspotSchema extends IntegrationSchema
         $this->HubSpotSchema = $this->buildJson();
     }
 
+    /**
+     * Builds a JSON structure based on CRM object schema and properties.
+     *
+     * @return array An associative array in the required JSON format
+     */
     public function buildJson(): array
     {
         $client = Factory::createWithAccessToken(Config::HUBSPOT_ACCESS_TOKEN);
@@ -33,17 +38,30 @@ class HubspotSchema extends IntegrationSchema
         // Initialize the schema builder
         $builder = new Builder("http://formassembly.com/integrations/hubspot", "Hubspot");
 
+        // Iterating through each of the standard and custom CRM Objects
         foreach ($CRMObjects as $object) {
             $recordType = new RecordType($object);
             $recordType->title = $object;
-            $builder->addRecordType($recordType);
+
+            // For setting the properties
+            foreach ($combinedObjectProperties as $key => $properties) {
+                if ($object == $key) {
+                    foreach ($properties as $property) {
+                        $property = json_decode($property, true);
+                        $recordType->addProperty($property['name'], $property);
+                        $recordType->setTags([$object]);
+                    }
+                }
+                $builder->addRecordType($recordType);
+            }
         }
         $jsonStructure = $builder->toJSon();
 
         // Decode jsonStructure to an array
         $arrayJson = json_decode($jsonStructure, true);
-        
-        // Return the json built.
+        // DiscoverResult.json will contain the data in required JSON format
+        file_put_contents(__DIR__ . '/../DiscoverResult.json', json_encode($arrayJson, JSON_PRETTY_PRINT));
+
         return $arrayJson;
     }
 
@@ -78,7 +96,7 @@ class HubspotSchema extends IntegrationSchema
                 return ["No results found in the response of crm/v3/schemas."];
             }
         } catch (ApiException $e) {
-            return ["Exception when calling core_api->get_all: ",$e->getMessage()];
+            return ["Exception when calling core_api->get_all: ", $e->getMessage()];
         }
     }
 
@@ -100,21 +118,18 @@ class HubspotSchema extends IntegrationSchema
             try {
                 // Get the properties for standard and custom objects by a get request to /crm/v3/properties/{name} with all the names found
                 $apiResponse = $client->crm()->properties()->coreApi()->getAll($objectType);
-
                 if (isset($apiResponse['results']) && is_array($apiResponse['results'])) {
                     foreach ($apiResponse['results'] as $result) {
                         // Storing properties of standard and custom objects
-                        $combinedProperties[] = $result;
+                        $combinedProperties[$objectType][] = $result;
                     }
                 } else {
                     return ["No results found in the response of /crm/v3/properties/{name}."];
                 }
-
             } catch (ApiException $e) {
                 return ["Exception when calling core_api->get_all: ", $e->getMessage()];
             }
         }
-
         return $combinedProperties;
     }
 }
