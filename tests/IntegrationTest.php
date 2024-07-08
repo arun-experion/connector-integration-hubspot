@@ -57,109 +57,160 @@ final class IntegrationTest extends TestCase
         // Assert that the encoded JSON schema is a valid JSON string
         $this->assertJson($jsonSchema);
         // Compare the JSON schema with the expected schema stored in a file
-        $this->assertTrue(file_get_contents(__DIR__ . "/testDiscover.json") === $jsonSchema, "Schema is different than excepted.");
+        $this->assertTrue(file_get_contents(__DIR__ . "DiscoverResult.json") === $jsonSchema, "Schema is different than excepted.");
     }
    
+    /**
+     * Test the JSON schema returned by the HubspotSchema class.
+     * 
+     * This function verifies that the JSON schema contains the required keys 
+     * and the correct structure, ensuring that the schema meets the expected format.
+    */
     function testDiscoverReturnsJsonSchema() {
-        $integration = new Integration($this->oauthConfig);
-        $integration->setAuthorization(json_encode([
-                                                    "accessToken"  => getenv('OAUTH_ACCESS_TOKEN'),
-                                                    "refreshToken" => getenv('OAUTH_REFRESH_TOKEN'),
-                                                    "expires"      => (int) getenv('OAUTH_EXPIRES')]));
-
+        $integration = new Integration();
         $schema = $integration->discover();
         $this->assertInstanceOf(IntegrationSchema::class, $schema);
         $this->assertJson($schema->json);
+        // Check if the given key exists in the JSON schema
         $this->assertArrayHasKey('$schema',$schema->schema);
         $this->assertArrayHasKey('$id',$schema->schema);
         $this->assertArrayHasKey('title',$schema->schema);
         $this->assertArrayHasKey('type',$schema->schema);
         $this->assertEquals('array',$schema->schema['type']);
         $this->assertArrayHasKey('items',$schema->schema);
-    }
-    function testDiscoverReturnsCompanyDefinition() {
-        $integration = new Integration($this->oauthConfig);
-        $integration->setAuthorization(json_encode([
-                                                    "accessToken"  => getenv('OAUTH_ACCESS_TOKEN'),
-                                                    "refreshToken" => getenv('OAUTH_REFRESH_TOKEN'),
-                                                    "expires"      => (int) getenv('OAUTH_EXPIRES')]));
 
+        // Verify that the 'items' array contains at least 4 elements
+        //To Ensure that all standard objects are present in schema
+         $this->assertGreaterThanOrEqual(4, count($schema->schema['items']), 'The items array should contain at least 4 arrays.');
+
+        // Check if 'items' array contains standard objects key
+        $this->assertArrayHasKey('companies', $schema->schema['items'], "Item  should contain a 'companies' key.");
+        $this->assertArrayHasKey('contacts', $schema->schema['items'], "Item  should contain a 'contacts' key.");
+        $this->assertArrayHasKey('deals', $schema->schema['items'], "Item  should contain a 'deals' key.");
+        $this->assertArrayHasKey('tickets', $schema->schema['items'], "Item  should contain a 'tickets' key.");
+  
+    }
+
+    /**
+     * Test the company definition in the JSON schema.
+     * 
+     * This function verifies that the 'companies' object in the schema contains 
+     * the expected properties and that these properties have the correct data types.
+    */
+    function testDiscoverReturnsCompanyDefinition() {
+        $integration = new Integration();
         $schema = $integration->discover();
 
-        // Not an exhaustive list of properties.
+        //Check if  default properties exist in companies and also have expected datatypes
+        $this->assertTrue($schema->hasProperty('companies','name'));
+        $this->assertEquals('string',$schema->schema['items']['companies']['properties']['name']['type']);
 
-        $this->assertTrue($schema->hasProperty('company','name'));
-        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('company','name')->type);
-        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('company','name')->format);
+        $this->assertTrue($schema->hasProperty('companies','domain'));
+        $this->assertEquals('string',$schema->schema['items']['companies']['properties']['domain']['type']);
 
-        $this->assertTrue($schema->hasProperty('company','domain'));
-        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('company','domain')->type);
-        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('company','domain')->format);
+        //Check if  required properties exist in companies and also have expected datatypes
+        $this->assertTrue($schema->hasProperty('companies','city'));
+        $this->assertEquals('string',$schema->schema['items']['companies']['properties']['name']['type']);
 
-        $this->assertTrue($schema->hasProperty('company','city'));
-        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('company','city')->type);
-        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('company','city')->format);
     }
 
+    /**
+     * Test the contacts definition in the JSON schema.
+     * 
+     * This function verifies that the 'contacts' object in the schema contains 
+     * the expected properties and that these properties have the correct data types.
+     */
     function testDiscoverReturnsContactDefinition()
     {
         $integration = new Integration($this->oauthConfig);
-        $integration->setAuthorization(json_encode([
-            "accessToken" => getenv('OAUTH_ACCESS_TOKEN'),
-            "refreshToken" => getenv('OAUTH_REFRESH_TOKEN'),
-            "expires" => (int) getenv('OAUTH_EXPIRES')
-        ]));
-
         $schema = $integration->discover();
 
-        // Not an exhaustive list of properties.
+       //Check if the  default properties exist in contacts and also have expected datatypes
+       $this->assertTrue($schema->hasProperty('contacts', 'firstname'));
+       $this->assertEquals('string',$schema->schema['items']['contacts']['properties']['firstname']['type']);
 
-        $this->assertTrue($schema->hasProperty('contact', 'email'));
-        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('contact', 'email')->type);
-        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('contact', 'email')->format);
+       $this->assertTrue($schema->hasProperty('contacts', 'lastname'));
+       $this->assertEquals('string',$schema->schema['items']['contacts']['properties']['lastname']['type']);
 
-        $this->assertTrue($schema->hasProperty('contact', 'firstname'));
-        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('contact', 'firstname')->type);
-        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('contact', 'firstname')->format);
+       $this->assertTrue($schema->hasProperty('contacts', 'email'));
+       $this->assertEquals('string',$schema->schema['items']['contacts']['properties']['email']['type']);
 
-        $this->assertTrue($schema->hasProperty('contact', 'lastname'));
-        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('contact', 'lastname')->type);
-        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('contact', 'lastname')->format);
+       //Check if  required properties exist in contacts and also have expected datatypes
+       $this->assertTrue($schema->hasProperty('contacts', 'phone'));
+       $this->assertEquals('string',$schema->schema['items']['contacts']['properties']['phone']['type']);
 
-        $this->assertTrue($schema->hasProperty('contact', 'phone'));
-        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('contact', 'phone')->type);
-        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('contact', 'phone')->format);
+       $this->assertTrue($schema->hasProperty('contacts', 'jobtitle'));
+       $this->assertEquals('string',$schema->schema['items']['contacts']['properties']['jobtitle']['type']);
+ }
 
-        $this->assertTrue($schema->hasProperty('contact', 'jobtitle'));
-        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('contact', 'jobtitle')->type);
-        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('contact', 'jobtitle')->format);
-    }
-
+ /**
+ * Test the deals definition in the JSON schema.
+ * 
+ * This function verifies that the 'deals' object in the schema contains 
+ * the expected properties and that these properties have the correct data types.
+  */
     function testDiscoverReturnsDealDefinition()
     {
         $integration = new Integration($this->oauthConfig);
-        $integration->setAuthorization(json_encode([
-            "accessToken" => getenv('OAUTH_ACCESS_TOKEN'),
-            "refreshToken" => getenv('OAUTH_REFRESH_TOKEN'),
-            "expires" => (int) getenv('OAUTH_EXPIRES')
-        ]));
-
         $schema = $integration->discover();
 
-        // Not an exhaustive list of properties.
+        //Check if the  default properties exist in deals and also have expected datatypes
+        $this->assertTrue($schema->hasProperty('deals', 'dealname'));
+        $this->assertEquals('string',$schema->schema['items']['deals']['properties']['dealname']['type']);
+        
+        $this->assertTrue($schema->hasProperty('deals', 'amount'));
+        $this->assertEquals('number',$schema->schema['items']['deals']['properties']['amount']['type']);
+        
+        $this->assertTrue($schema->hasProperty('deals', 'closedate'));
+        $this->assertEquals('datetime',$schema->schema['items']['deals']['properties']['closedate']['type']);
+        
+        $this->assertTrue($schema->hasProperty('deals', 'pipeline'));
+        $this->assertEquals('enumeration',$schema->schema['items']['deals']['properties']['pipeline']['type']);
+          
+        $this->assertTrue($schema->hasProperty('deals', 'dealstage'));
+        $this->assertEquals('enumeration',$schema->schema['items']['deals']['properties']['dealstage']['type']);
+        
+        //Check if  required properties exist in deals and also have expected datatypes
+        $this->assertTrue($schema->hasProperty('deals', 'hs_arr'));
+        $this->assertEquals('number',$schema->schema['items']['deals']['properties']['hs_arr']['type']);
 
-        $this->assertTrue($schema->hasProperty('deal', 'hs_acv'));
-        $this->assertEquals(JsonSchemaTypes::Number, $schema->getDataType('deal', 'hs_acv')->type);
-
-        $this->assertTrue($schema->hasProperty('deal', 'hs_arr'));
-        $this->assertEquals(JsonSchemaTypes::Number, $schema->getDataType('deal', 'hs_arr')->type);
-
-        $this->assertTrue($schema->hasProperty('deal', 'hs_closed_won_date'));
-        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('deal', 'hs_closed_won_date')->type);
-        $this->assertEquals(JsonSchemaFormats::DateTime, $schema->getDataType('deal', 'hs_closed_won_date')->format);
-
-        $this->assertTrue($schema->hasProperty('deal', 'dealname'));
-        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('deal', 'dealname')->type);
-        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('deal', 'dealname')->format);
+        $this->assertTrue($schema->hasProperty('deals', 'hs_closed_won_date'));
+        $this->assertEquals('datetime',$schema->schema['items']['deals']['properties']['hs_closed_won_date']['type']);
+       
+        $this->assertTrue($schema->hasProperty('deals', 'hs_acv'));
+        $this->assertEquals('number',$schema->schema['items']['deals']['properties']['hs_acv']['type']);
+       
     }
+    /**
+     * Test the tickets definition in the JSON schema.
+     * 
+     * This function verifies that the 'tickets' object in the schema contains 
+     * the expected properties and that these properties have the correct data types.
+     */
+function testDiscoverReturnsTicketDefinition() {
+
+    $integration = new Integration($this->oauthConfig);
+    $schema = $integration->discover();
+
+    //Check if the  default properties exist in deals and also have expected datatypes
+    $this->assertTrue($schema->hasProperty('tickets', 'content'));
+    $this->assertEquals('string',$schema->schema['items']['tickets']['properties']['content']['type']);
+
+    $this->assertTrue($schema->hasProperty('tickets', 'hs_pipeline'));
+    $this->assertEquals('enumeration',$schema->schema['items']['tickets']['properties']['hs_pipeline']['type']);
+    
+    $this->assertTrue($schema->hasProperty('tickets', 'hs_pipeline_stage'));
+    $this->assertEquals('enumeration',$schema->schema['items']['tickets']['properties']['hs_pipeline_stage']['type']);
+
+    $this->assertTrue($schema->hasProperty('tickets', 'hs_ticket_category'));
+    $this->assertEquals('enumeration',$schema->schema['items']['tickets']['properties']['hs_ticket_category']['type']);
+
+    $this->assertTrue($schema->hasProperty('tickets', 'hs_ticket_priority'));
+    $this->assertEquals('enumeration',$schema->schema['items']['tickets']['properties']['hs_ticket_priority']['type']);
+
+    $this->assertTrue($schema->hasProperty('tickets', 'subject'));
+    $this->assertEquals('string',$schema->schema['items']['tickets']['properties']['subject']['type']);
+
+  
+}
 }
