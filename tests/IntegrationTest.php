@@ -51,13 +51,11 @@ final class IntegrationTest extends TestCase
     function testDiscover()
     {
         $integration = new Integration();
-        $schema= $integration->discover()->json;
+        $schema= $integration->discover()->schema;
         // Reformat to PRETTY_PRINT for easier comparison when test fails.
-        $jsonSchema=json_encode(json_decode($schema,true), JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT );;
-        // Assert that the encoded JSON schema is a valid JSON string
-        $this->assertJson($jsonSchema);
+        $jsonSchema=json_encode($schema,JSON_PRETTY_PRINT);
         // Compare the JSON schema with the expected schema stored in a file
-        $this->assertTrue(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json") === $jsonSchema, "Schema is different than excepted.");
+        $this->assertTrue(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json") == $jsonSchema, "Schema is different than excepted.");
     }
    
     /**
