@@ -79,7 +79,7 @@ final class IntegrationTest extends TestCase
 
         // Verify that the 'items' array contains at least 4 elements
         //To Ensure that all standard objects are present in schema
-         $this->assertGreaterThanOrEqual(4, count($schema->schema['items']), 'The items array should contain at least 4 arrays.');
+        $this->assertGreaterThanOrEqual(4, count($schema->schema['items']), 'The items array should contain at least 4 arrays.');
 
         // Check if 'items' array contains standard objects key
         $this->assertArrayHasKey('companies', $schema->schema['items'], "Item  should contain a 'companies' key.");
@@ -116,7 +116,7 @@ final class IntegrationTest extends TestCase
      */
     function testDiscoverReturnsContactDefinition()
     {
-        $integration = new Integration($this->oauthConfig);
+        $integration = new Integration();
         $schema = $integration->discover();
 
        //Check if the  default properties exist in contacts and also have expected datatypes
@@ -139,7 +139,7 @@ final class IntegrationTest extends TestCase
   */
     function testDiscoverReturnsDealDefinition()
     {
-        $integration = new Integration($this->oauthConfig);
+        $integration = new Integration();
         $schema = $integration->discover();
 
         //Check if the  default properties exist in deals and also have expected datatypes
@@ -167,7 +167,7 @@ final class IntegrationTest extends TestCase
      */
 function testDiscoverReturnsTicketDefinition() {
 
-    $integration = new Integration($this->oauthConfig);
+    $integration = new Integration();
     $schema = $integration->discover();
 
     //Check if the  default properties exist in deals and also have expected datatypes
@@ -188,7 +188,6 @@ function testDiscoverReturnsTicketDefinition() {
 
     $this->assertTrue($schema->hasProperty('tickets', 'subject'));
     $this->assertEquals('string',$schema->schema['items']['tickets']['properties']['subject']['type']);
-
-  
+ 
 }
 }
