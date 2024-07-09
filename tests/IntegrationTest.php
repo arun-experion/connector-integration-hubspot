@@ -4,6 +4,8 @@ namespace Tests;
 
 use Connector\Integrations\Hubspot\Config;
 use Connector\Integrations\Hubspot\Integration;
+use Connector\Mapping;
+use Connector\Record\RecordLocator;
 use Connector\Schema\IntegrationSchema;
 use Connector\Type\JsonSchemaFormats;
 use Connector\Type\JsonSchemaTypes;
@@ -129,7 +131,7 @@ final class IntegrationTest extends TestCase
        $this->assertTrue($schema->hasProperty('contacts', 'email'));
        $this->assertEquals('string',$schema->schema['items']['contacts']['properties']['email']['type']);
 
- }
+    }
 
  /**
  * Test the deals definition in the JSON schema.
@@ -165,7 +167,7 @@ final class IntegrationTest extends TestCase
      * This function verifies that the 'tickets' object in the schema contains 
      * the expected properties and that these properties have the correct data types.
      */
-function testDiscoverReturnsTicketDefinition() {
+    function testDiscoverReturnsTicketDefinition() {
 
     $integration = new Integration();
     $schema = $integration->discover();
@@ -189,5 +191,25 @@ function testDiscoverReturnsTicketDefinition() {
     $this->assertTrue($schema->hasProperty('tickets', 'subject'));
     $this->assertEquals('string',$schema->schema['items']['tickets']['properties']['subject']['type']);
  
-}
+   }
+
+   function testCreateRecord(){
+    $integration = new Integration();
+    $schema = json_decode(file_get_contents(__DIR__."/schemas/DiscoverResult.json"),true);
+    $integration->setSchema(new IntegrationSchema($schema));
+    $integration->begin();
+
+    $recordLocator = new RecordLocator(["recordType" => 'companies']);
+    $mapping = new Mapping([
+        "name"=> "HubSpot",  
+        "domain"=> "hubspot.com",
+        "city"=> "Cambridge",
+        "industry"=> "Technology",
+        "phone"=> "555-555-555",
+        "state"=> "Massachusetts",
+        "lifecyclestage"=> "51439524"
+        ]);
+    $response= $integration->load($recordLocator, $mapping,null);
+    $this->assertEquals('@{fa0.id}', $response->getRecordKey()->recordId);
+   }
 }
