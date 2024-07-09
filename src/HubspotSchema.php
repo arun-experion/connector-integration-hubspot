@@ -82,7 +82,8 @@ class HubspotSchema extends IntegrationSchema
                     // Finding all the "fullyQualifiedName" inside "results" array from response.
                     $customCRMObjects[] = $results['fully_qualified_name'];
                 }
-
+                // Sorting the custom CRM objects by fully_qualified_name in ascending order
+                sort($customCRMObjects);
                 // $crmObjects contains standard and custom objects from HubSpot
                 $crmObjects = array_merge($standardCRMObjects, $customCRMObjects);
                 return $crmObjects;
