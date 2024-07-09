@@ -7,31 +7,27 @@ use Connector\Schema\Builder\RecordType;
 use Connector\Schema\IntegrationSchema;
 use HubSpot\Client\Crm\Schemas\ApiException as SchemasApiException;
 use HubSpot\Client\Crm\Properties\ApiException as PropertiesApiException;
-use HubSpot\Factory;
+use HubSpot\Discovery\Discovery;
 
 class HubspotSchema extends IntegrationSchema
 {
     /**
-     *  @var \HubSpot\Discovery\Discovery $client
+     * @param \HubSpot\Discovery\Discovery $client
      */
-    private $client;
-
-    public function __construct()
+    public function __construct(Discovery $client)
     {
-        $this->client = Factory::createWithAccessToken(Config::HUBSPOT_ACCESS_TOKEN);
-
         // Get name of CRM objects from getObjectSchema() and store the data returned 
-        $CRMObjects = $this->getObjectSchema($this->client);
+        $crmObjects = $this->getObjectSchema($client);
 
         // Get properties from combineProperties() and store the data returned 
-        $combinedObjectProperties = $this->combineProperties($this->client, $CRMObjects);
+        $combinedObjectProperties = $this->combineProperties($client, $crmObjects);
 
         // Initialize the schema builder
         $builder = new Builder("http://formassembly.com/integrations/hubspot", "Hubspot");
 
         // Iterating through each of the standard and custom CRM Objects
-        if(!empty($CRMObjects)){
-            foreach ($CRMObjects as $object) {
+        if(!empty($crmObjects)){
+            foreach ($crmObjects as $object) {
                 $recordType = new RecordType($object);
                 $recordType->title = $object;
     
@@ -81,15 +77,16 @@ class HubspotSchema extends IntegrationSchema
         try {
             $apiResponse = $client->crm()->schemas()->coreApi()->getAll(false);
 
-            if (!empty($apiResponse['results']) && (isset($apiResponse['results']) && is_array($apiResponse['results']))) {
+            if (!empty($apiResponse['results']) && is_array($apiResponse['results'])) {
                 foreach ($apiResponse['results'] as $results) {
                     // Finding all the "fullyQualifiedName" inside "results" array from response.
                     $customCRMObjects[] = $results['fully_qualified_name'];
                 }
-
-                // $CRMObjects contains standard and custom objects from HubSpot
-                $CRMObjects = array_merge($standardCRMObjects, $customCRMObjects);
-                return $CRMObjects;
+                // Sorting the custom CRM objects by fully_qualified_name in ascending order
+                sort($customCRMObjects);
+                // $crmObjects contains standard and custom objects from HubSpot
+                $crmObjects = array_merge($standardCRMObjects, $customCRMObjects);
+                return $crmObjects;
             } else {
                 return ["No results found in the response of crm/v3/schemas."];
             }
@@ -102,21 +99,21 @@ class HubspotSchema extends IntegrationSchema
      * Combines properties schema for both standard and custom CRM objects from HubSpot.
      *
      * @param \HubSpot\Discovery\Discovery $client
-     * @param array $CRMObjects
+     * @param array $crmObjects
      *
      * @return array An array containing properties schema for all CRM objects.
      *
      * @throws PropertiesApiException If there's an error making API calls to retrieve properties.
      */
-    public function combineProperties($client, $CRMObjects)
+    public function combineProperties($client, $crmObjects)
     {
         $combinedProperties = [];
 
-        foreach ($CRMObjects as $objectType) {
+        foreach ($crmObjects as $objectType) {
             try {
                 // Get the properties for standard and custom objects by a get request to /crm/v3/properties/{fullyQualifiedName} with all the names found
                 $apiResponse = $client->crm()->properties()->coreApi()->getAll($objectType);
-                if (!empty($apiResponse['results']) && (isset($apiResponse['results']) && is_array($apiResponse['results']))) {
+                if (!empty($apiResponse['results']) && is_array($apiResponse['results'])) {
                     foreach ($apiResponse['results'] as $result) {
                         // Storing properties of standard and custom objects
                         $combinedProperties[$objectType][] = $result;
