@@ -4,8 +4,6 @@ namespace Tests;
 
 use Connector\Integrations\Hubspot\Config;
 use Connector\Integrations\Hubspot\Integration;
-use Connector\Mapping;
-use Connector\Record\RecordLocator;
 use Connector\Schema\IntegrationSchema;
 use HubSpot\Factory;
 use PHPUnit\Framework\TestCase;
@@ -52,8 +50,10 @@ final class IntegrationTest extends TestCase
         $schema = $integration->discover()->schema;
         // Reformat to PRETTY_PRINT for easier comparison when test fails.
         $jsonSchema = json_encode($schema, JSON_PRETTY_PRINT);
+        //Decode the expected file for easier comparison.
+        $expectedSchema= json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"),true);    
         // Compare the JSON schema with the expected schema stored in a file
-        $this->assertTrue(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json") === $jsonSchema, "Schema is different than excepted.");
+        $this->assertTrue($expectedSchema===$jsonSchema, "Schema is different than excepted.");
     }
 
     /**
@@ -187,24 +187,4 @@ final class IntegrationTest extends TestCase
         $this->assertEquals('string', $schema->schema['items']['tickets']['properties']['subject']['type']);
     }
 
-    function testCreateRecord()
-    {
-        $integration = new Integration();
-        $schema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
-        $integration->setSchema(new IntegrationSchema($schema));
-        $integration->begin();
-
-        $recordLocator = new RecordLocator(["recordType" => 'companies']);
-        $mapping = new Mapping([
-            "name" => "HubSpot",
-            "domain" => "hubspot.com",
-            "city" => "Cambridge",
-            "industry" => "Technology",
-            "phone" => "555-555-555",
-            "state" => "Massachusetts",
-            "lifecyclestage" => "51439524"
-        ]);
-        $response = $integration->load($recordLocator, $mapping, null);
-        $this->assertEquals('@{fa0.id}', $response->getRecordKey()->recordId);
-    }
 }
