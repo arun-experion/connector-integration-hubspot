@@ -8,10 +8,8 @@ use Connector\Integrations\Authorizations\OAuthInterface;
 use Connector\Integrations\Authorizations\OAuthTrait;
 use Connector\Integrations\Response;
 use Connector\Mapping;
-use Connector\Record;
 use Connector\Record\RecordKey;
 use Connector\Record\RecordLocator;
-use Connector\Record\Recordset;
 use Connector\Schema\IntegrationSchema;
 use HubSpot\Factory;
 use League\OAuth2\Client\Provider\AbstractProvider;
@@ -69,5 +67,3 @@ class Integration extends AbstractIntegration implements OAuthInterface
     }
 }
 
-$integration = new Integration();
-$integration->discover();
