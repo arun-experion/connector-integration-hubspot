@@ -158,7 +158,7 @@ final class IntegrationTest extends TestCase
 
 
         $this->assertTrue($schema->hasProperty('deals', 'closedate'));
-        $this->assertEquals(JsonSchemaTypes::Number, $schema->getDataType('deals', 'closedate')->type);
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('deals', 'closedate')->type);
         $this->assertEquals(JsonSchemaFormats::Date, $schema->getDataType('deals', 'closedate')->format);
 
 
