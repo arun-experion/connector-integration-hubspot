@@ -4,6 +4,8 @@ namespace Tests;
 use Connector\Integrations\Hubspot\Config;
 use Connector\Integrations\Hubspot\Integration;
 use Connector\Schema\IntegrationSchema;
+use Connector\Type\JsonSchemaFormats;
+use Connector\Type\JsonSchemaTypes;
 use HubSpot\Factory;
 use PHPUnit\Framework\TestCase;
 
@@ -48,11 +50,11 @@ final class IntegrationTest extends TestCase
         $integration = new Integration();
         $schema = $integration->discover()->schema;
         // Reformat to PRETTY_PRINT for easier comparison when test fails.
-        $jsonSchema = json_decode(json_encode($schema, JSON_PRETTY_PRINT),true);
+        $jsonSchema = json_decode(json_encode($schema, JSON_PRETTY_PRINT), true);
         //Decode the expected file for easier comparison.
-        $expectedSchema= json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"),true);    
+        $expectedSchema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
         // Compare the JSON schema with the expected schema stored in a file
-        $this->assertTrue($expectedSchema===$jsonSchema, "Schema is different than expected.");
+        $this->assertTrue($expectedSchema === $jsonSchema, "Schema is different than expected.");
     }
 
     /**
@@ -99,10 +101,12 @@ final class IntegrationTest extends TestCase
 
         //Check if  default properties exist in companies and also have expected datatypes
         $this->assertTrue($schema->hasProperty('companies', 'name'));
-        $this->assertEquals('string', $schema->schema['items']['companies']['properties']['name']['type']);
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('companies', 'name')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('companies', 'name')->format);
 
         $this->assertTrue($schema->hasProperty('companies', 'domain'));
-        $this->assertEquals('string', $schema->schema['items']['companies']['properties']['domain']['type']);
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('companies', 'domain')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('companies', 'domain')->format);
     }
 
     /**
@@ -118,13 +122,16 @@ final class IntegrationTest extends TestCase
 
         //Check if the  default properties exist in contacts and also have expected datatypes
         $this->assertTrue($schema->hasProperty('contacts', 'firstname'));
-        $this->assertEquals('string', $schema->schema['items']['contacts']['properties']['firstname']['type']);
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('contacts', 'firstname')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('contacts', 'firstname')->format);
 
         $this->assertTrue($schema->hasProperty('contacts', 'lastname'));
-        $this->assertEquals('string', $schema->schema['items']['contacts']['properties']['lastname']['type']);
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('contacts', 'lastname')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('contacts', 'lastname')->format);
 
         $this->assertTrue($schema->hasProperty('contacts', 'email'));
-        $this->assertEquals('string', $schema->schema['items']['contacts']['properties']['email']['type']);
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('contacts', 'email')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('contacts', 'email')->format);
     }
 
     /**
@@ -140,19 +147,27 @@ final class IntegrationTest extends TestCase
 
         //Check if the  default properties exist in deals and also have expected datatypes
         $this->assertTrue($schema->hasProperty('deals', 'dealname'));
-        $this->assertEquals('string', $schema->schema['items']['deals']['properties']['dealname']['type']);
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('deals', 'dealname')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('deals', 'dealname')->format);
+
 
         $this->assertTrue($schema->hasProperty('deals', 'amount'));
-        $this->assertEquals('number', $schema->schema['items']['deals']['properties']['amount']['type']);
+        $this->assertEquals(JsonSchemaTypes::Number, $schema->getDataType('deals', 'amount')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('deals', 'amount')->format);
+
 
         $this->assertTrue($schema->hasProperty('deals', 'closedate'));
-        $this->assertEquals('datetime', $schema->schema['items']['deals']['properties']['closedate']['type']);
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('deals', 'closedate')->type);
+        $this->assertEquals(JsonSchemaFormats::Date, $schema->getDataType('deals', 'closedate')->format);
+
 
         $this->assertTrue($schema->hasProperty('deals', 'pipeline'));
-        $this->assertEquals('enumeration', $schema->schema['items']['deals']['properties']['pipeline']['type']);
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('deals', 'pipeline')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('deals', 'pipeline')->format);
 
         $this->assertTrue($schema->hasProperty('deals', 'dealstage'));
-        $this->assertEquals('enumeration', $schema->schema['items']['deals']['properties']['dealstage']['type']);
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('deals', 'dealstage')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('deals', 'dealstage')->format);
     }
     /**
      * Test the tickets definition in the JSON schema.
@@ -168,22 +183,28 @@ final class IntegrationTest extends TestCase
 
         //Check if the  default properties exist in deals and also have expected datatypes
         $this->assertTrue($schema->hasProperty('tickets', 'content'));
-        $this->assertEquals('string', $schema->schema['items']['tickets']['properties']['content']['type']);
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('tickets', 'content')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('tickets', 'content')->format);
+
 
         $this->assertTrue($schema->hasProperty('tickets', 'hs_pipeline'));
-        $this->assertEquals('enumeration', $schema->schema['items']['tickets']['properties']['hs_pipeline']['type']);
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('tickets', 'hs_pipeline')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('tickets', 'hs_pipeline')->format);
 
         $this->assertTrue($schema->hasProperty('tickets', 'hs_pipeline_stage'));
-        $this->assertEquals('enumeration', $schema->schema['items']['tickets']['properties']['hs_pipeline_stage']['type']);
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('tickets', 'hs_pipeline_stage')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('tickets', 'hs_pipeline_stage')->format);
 
         $this->assertTrue($schema->hasProperty('tickets', 'hs_ticket_category'));
-        $this->assertEquals('enumeration', $schema->schema['items']['tickets']['properties']['hs_ticket_category']['type']);
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('tickets', 'hs_ticket_category')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('tickets', 'hs_ticket_category')->format);
 
         $this->assertTrue($schema->hasProperty('tickets', 'hs_ticket_priority'));
-        $this->assertEquals('enumeration', $schema->schema['items']['tickets']['properties']['hs_ticket_priority']['type']);
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('tickets', 'hs_ticket_priority')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('tickets', 'hs_ticket_priority')->format);
 
         $this->assertTrue($schema->hasProperty('tickets', 'subject'));
-        $this->assertEquals('string', $schema->schema['items']['tickets']['properties']['subject']['type']);
+        $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('tickets', 'subject')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('tickets', 'subject')->format);
     }
-
 }
