@@ -67,5 +67,3 @@ class Integration extends AbstractIntegration implements OAuthInterface
     }
 }
 
-$integration = new Integration();
-$integration->discover();
