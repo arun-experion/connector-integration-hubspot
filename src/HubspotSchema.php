@@ -47,10 +47,6 @@ class HubspotSchema extends IntegrationSchema
                     print_r("Empty CRM object properties");
                 }  
             }
-            $jsonStructure = $builder->toJSon();
-    
-            // DiscoverResult.json will contain the data in required JSON format
-            file_put_contents(__DIR__ . '/../DiscoverResult.json', json_encode(json_decode($jsonStructure, true), JSON_PRETTY_PRINT));
 
             parent::__construct($builder->toArray());
         } else {
@@ -68,7 +64,7 @@ class HubspotSchema extends IntegrationSchema
      *
      * @throws SchemasApiException If there's an error making API calls to retrieve CRM object schemas.
      */
-    public function getObjectSchema($client)
+    public function getObjectSchema(Discovery $client)
     {
         // $standardCRMObjects contains standard objects from HubSpot
         $standardCRMObjects = Config::STANDARD_CRM_OBJECTS;
@@ -105,7 +101,7 @@ class HubspotSchema extends IntegrationSchema
      *
      * @throws PropertiesApiException If there's an error making API calls to retrieve properties.
      */
-    public function combineProperties($client, $crmObjects)
+    public function combineProperties(Discovery $client, array $crmObjects)
     {
         $combinedProperties = [];
 

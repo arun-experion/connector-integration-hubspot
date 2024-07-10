@@ -119,26 +119,20 @@ $integration->setSchema(new IntegrationSchema($schema));
 $integration->begin();
 
 // $recordLocator = new RecordLocator(["recordType" => 'p46520094_Obj_schema']);
-$recordLocator = new RecordLocator(["recordType" => 'companies']);
+$recordLocator = new RecordLocator(["recordType" => 'deals']);
 
 // Mock data
 if($recordLocator->recordType == 'companies'){
     $mapping = new Mapping([
-        "name" => "HubSpot",  
-        "domain" => "hubspot.com",
-        "city" => "Cambridge",
-        "phone" => "555-555-555",
-        'industry' =>"ACCOUNTING",
+        
+        
         "state" => "Massachusetts"
     ]);
 } else if($recordLocator->recordType == 'contacts'){
     $mapping = new Mapping([
-        "email" => "example@hubspot.com",
-        "firstname" => "Jane",
-        "lastname" => "Doe",
+        
         "phone" => "(555) 555-5555",
         "company" => "HubSpot",
-        "website" => "hubspot.com",
         "lifecyclestage" => "marketingqualifiedlead"
     ]);
 } else if($recordLocator->recordType == 'deals'){
