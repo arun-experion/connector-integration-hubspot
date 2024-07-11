@@ -16,6 +16,9 @@ use HubSpot\Client\Crm\Schemas\ApiException as SchemasApiException;
 
 class Create
 {
+    /**
+     * @var string $log
+     */
     private string $log;
 
     /**
@@ -38,11 +41,6 @@ class Create
         $this->scope = $scope;
     }
 
-    public function isBatchable(): bool
-    {
-        return true;
-    }
-
     /**
      * @param \HubSpot\Discovery\Discovery $client
      * 
@@ -58,7 +56,7 @@ class Create
                 $requiredProperties = ["companies" => ['name', 'domain']];
                 break;
             case "contacts":
-                $requiredProperties = ["contacts" => 'email', 'firstname', 'lastname'];
+                $requiredProperties = ["contacts" => ['email', 'firstname', 'lastname']];
                 break;
             case "deals":
                 $requiredProperties = ["deals" => ['dealname', 'dealstage']];
@@ -69,7 +67,7 @@ class Create
             default:
                 $requiredProperties = [ $this->recordLocator->recordType => $this->findRequiredProperties($client)];
         }
-
+        
         if($this->recordLocator->recordType == 'companies' || $this->recordLocator->recordType == 'contacts') {
             // For companies and contacts not all fields in $requiredProperties are mandatory 
             $mappingKeys = array_keys($this->mappingAsArray());
@@ -94,9 +92,11 @@ class Create
                     } catch (GuzzleException $exception) {
                         throw new InvalidExecutionPlan($exception->getMessage());
                     }
+                } else {
+                    throw new InvalidExecutionPlan("Validation error: Required keys are missing");
                 }
-            } catch(Exception $e){
-                throw new Exception($e->getMessage());
+            } catch(InvalidExecutionPlan $e){
+                throw new InvalidExecutionPlan($e->getMessage());
             }
 
         } 
@@ -124,9 +124,11 @@ class Create
                     } catch (GuzzleException $exception) {
                         throw new InvalidExecutionPlan($exception->getMessage());
                     }
+                } else {
+                    throw new InvalidExecutionPlan("Validation error: Required keys are missing");
                 }
-            } catch(Exception $e){
-                throw new Exception($e->getMessage());
+            } catch(InvalidExecutionPlan $e){
+                throw new InvalidExecutionPlan($e->getMessage());
             }
         }                
          
@@ -150,21 +152,20 @@ class Create
      * @return array
      * @throws SchemasApiException 
      */
-    public function findRequiredProperties(Discovery $client)
+    public function findRequiredProperties(Discovery $client): array
     {
         // Making an api call to crm/v3/schemas to get required properties for the record
         try {
             $apiResponse = $client->crm()->schemas()->coreApi()->getById($this->recordLocator->recordType);
             $apiResponse = json_decode($apiResponse, true);
-
             if (!empty($apiResponse) && is_array($apiResponse)) {
                 $requiredProperties = $apiResponse['requiredProperties'];
                 return $requiredProperties;
             } else {
-                return ["No response generated for crm/v3/schemas/" . $this->recordLocator->recordType];
+                throw new InvalidExecutionPlan("No response found for crm/v3/schemas/", $this->recordLocator->recordType);
             }
         } catch (SchemasApiException $e) {
-            return ["Exception when calling core_api->get_all: ", $e->getMessage()];
+            throw new SchemasApiException("Exception when calling core_api->get_all: ", $e->getMessage());
         }
     }
 }

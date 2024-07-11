@@ -64,7 +64,6 @@ class Integration extends AbstractIntegration implements OAuthInterface
             throw new InvalidExecutionPlan("Unknown operation type");
         }
         
-        
         try {
             $result = $action->execute($this->client);
             $this->log('Created ' . $recordLocator->recordType . ' ' . $result->getLoadedRecordKey()->recordId);
@@ -124,7 +123,7 @@ $recordLocator = new RecordLocator(["recordType" => 'deals']);
 // Mock data
 if($recordLocator->recordType == 'companies'){
     $mapping = new Mapping([
-        
+        "name" => "Validation",
         
         "state" => "Massachusetts"
     ]);
@@ -139,7 +138,7 @@ if($recordLocator->recordType == 'companies'){
     $mapping = new Mapping([
         "amount" => "1500.00",
         "closedate" => "2019-12-07T16:50:06.678Z",
-        "dealname" => "New deal",
+        "dealname" => "New deal2",
         "pipeline" => "default",
         "dealstage" => "contractsent"
     ]);
