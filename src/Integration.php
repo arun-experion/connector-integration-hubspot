@@ -14,12 +14,10 @@ use Connector\Record\RecordKey;
 use Connector\Record\RecordLocator;
 use Connector\Record\Recordset;
 use Connector\Schema\IntegrationSchema;
-use Exception;
 use HubSpot\Factory;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
-
-
+use HubSpot\Client\Crm\Schemas\ApiException as SchemasApiException;
 
 class Integration extends AbstractIntegration implements OAuthInterface
 {
@@ -35,6 +33,9 @@ class Integration extends AbstractIntegration implements OAuthInterface
         $this->client = Factory::createWithAccessToken(Config::HUBSPOT_ACCESS_TOKEN);
     }
 
+    /**
+     * @throws InvalidExecutionPlan
+     */
     public function discover(): IntegrationSchema
     {
         $hubspotSchema = new HubspotSchema($this->client);
@@ -46,6 +47,16 @@ class Integration extends AbstractIntegration implements OAuthInterface
         // TODO: Implement extract() method.
     }
 
+    /**
+     * @param \Connector\Record\RecordLocator  $recordLocator
+     * @param \Connector\Mapping               $mapping
+     * @param \Connector\Record\RecordKey|null $scope
+     *
+     * @return \Connector\Integrations\Response
+     * 
+     * @throws \Connector\Exceptions\InvalidSchemaException
+     * @throws SchemasApiException
+     */ 
     public function load(RecordLocator $recordLocator, Mapping $mapping, ?RecordKey $scope): Response
     {
         $response = new Response();
@@ -67,7 +78,7 @@ class Integration extends AbstractIntegration implements OAuthInterface
         try {
             $result = $action->execute($this->client);
             $this->log('Created ' . $recordLocator->recordType . ' ' . $result->getLoadedRecordKey()->recordId);
-        } catch (Exception $e) {
+        } catch (InvalidExecutionPlan $e) {
             throw new InvalidExecutionPlan($e->getMessage());
         }
 
@@ -111,51 +122,3 @@ class Integration extends AbstractIntegration implements OAuthInterface
         return $mapping;
     }
 }
-
-$integration = new Integration();
-$schema = json_decode(file_get_contents(__DIR__."/../DiscoverResult.json"),true);
-$integration->setSchema(new IntegrationSchema($schema));
-$integration->begin();
-
-// $recordLocator = new RecordLocator(["recordType" => 'p46520094_Obj_schema']);
-$recordLocator = new RecordLocator(["recordType" => 'deals']);
-
-// Mock data
-if($recordLocator->recordType == 'companies'){
-    $mapping = new Mapping([
-        "name" => "Validation",
-        
-        "state" => "Massachusetts"
-    ]);
-} else if($recordLocator->recordType == 'contacts'){
-    $mapping = new Mapping([
-        
-        "phone" => "(555) 555-5555",
-        "company" => "HubSpot",
-        "lifecyclestage" => "marketingqualifiedlead"
-    ]);
-} else if($recordLocator->recordType == 'deals'){
-    $mapping = new Mapping([
-        "amount" => "1500.00",
-        "closedate" => "2019-12-07T16:50:06.678Z",
-        "dealname" => "New deal2",
-        "pipeline" => "default",
-        "dealstage" => "contractsent"
-    ]);
-} else if($recordLocator->recordType == 'tickets'){
-    $mapping = new Mapping([
-        "hs_pipeline" => "0",
-        "hs_pipeline_stage" => "1",
-        "hs_ticket_priority" => "HIGH",
-        "subject" => "troubleshoot report"
-    ]);
-} else{
-    $mapping = new Mapping([
-        "condition" => "used",
-        "date_received" => "1582416000000",
-        "year" => "2019",
-        "make" => "Nissan",
-        "model" => "GTR"
-    ]);
-}
-$integration->load($recordLocator, $mapping, null);

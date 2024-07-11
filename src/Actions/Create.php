@@ -10,7 +10,6 @@ use Connector\Operation\Result;
 use Connector\Record\RecordKey;
 use GuzzleHttp\Exception\GuzzleException;
 use HubSpot\Discovery\Discovery;
-use Exception;
 use GuzzleHttp\Client;
 use HubSpot\Client\Crm\Schemas\ApiException as SchemasApiException;
 
@@ -44,25 +43,27 @@ class Create
     /**
      * @param \HubSpot\Discovery\Discovery $client
      * 
-     * @throws Exception
+     * @return \Connector\Operation\Result
+     * 
+     * @throws InvalidExecutionPlan
      */
-    public function execute(Discovery $client)
+    public function execute(Discovery $client): Result
     {
         $httpClient = new Client();
 
         // Setting the required properties for standard and custom objects
         switch ($this->recordLocator->recordType) {
             case "companies":
-                $requiredProperties = ["companies" => ['name', 'domain']];
+                $requiredProperties = Config::REQUIRED_COMPANIES_PROPERTIES;
                 break;
             case "contacts":
-                $requiredProperties = ["contacts" => ['email', 'firstname', 'lastname']];
+                $requiredProperties = Config::REQUIRED_CONTACTS_PROPERTIES;
                 break;
             case "deals":
-                $requiredProperties = ["deals" => ['dealname', 'dealstage']];
+                $requiredProperties = Config::REQUIRED_DEALS_PROPERTIES;
                 break;
             case "tickets":
-                $requiredProperties = ["tickets" => ['subject', 'hs_pipeline_stage']];
+                $requiredProperties = Config::REQUIRED_TICKETS_PROPERTIES;
                 break;
             default:
                 $requiredProperties = [ $this->recordLocator->recordType => $this->findRequiredProperties($client)];
@@ -136,6 +137,9 @@ class Create
         return (new Result())->setLoadedRecordKey(new RecordKey($response->id, $this->recordLocator->recordType));
     }
 
+    /**
+     * @return array
+     */
     private function mappingAsArray(): array
     {
         $map = [];
@@ -149,8 +153,11 @@ class Create
      * Fetches the required properties for a custom CRM object
      *
      * @param Discovery $client The Discovery client used to make API calls.
+     * 
      * @return array
-     * @throws SchemasApiException 
+     * 
+     * @throws InvalidExecutionPlan
+     * @throws SchemasApiException If exception arises during calling of core_api->getById()
      */
     public function findRequiredProperties(Discovery $client): array
     {
@@ -165,7 +172,7 @@ class Create
                 throw new InvalidExecutionPlan("No response found for crm/v3/schemas/", $this->recordLocator->recordType);
             }
         } catch (SchemasApiException $e) {
-            throw new SchemasApiException("Exception when calling core_api->get_all: ", $e->getMessage());
+            throw new SchemasApiException("Exception when calling core_api->getById: ", $e->getMessage());
         }
     }
 }
