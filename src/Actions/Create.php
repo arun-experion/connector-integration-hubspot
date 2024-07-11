@@ -94,7 +94,8 @@ class Create
                         throw new InvalidExecutionPlan($exception->getMessage());
                     }
                 } else {
-                    throw new InvalidExecutionPlan("Validation error: Required keys are missing");
+                    $exceptionMessage = "Validation error: Required keys are missing: " . json_encode($requiredKeys);
+                    throw new InvalidExecutionPlan($exceptionMessage);
                 }
             } catch(InvalidExecutionPlan $e){
                 throw new InvalidExecutionPlan($e->getMessage());
@@ -126,7 +127,8 @@ class Create
                         throw new InvalidExecutionPlan($exception->getMessage());
                     }
                 } else {
-                    throw new InvalidExecutionPlan("Validation error: Required keys are missing");
+                    $exceptionMessage = "Validation error: Required keys are missing: " . json_encode(array_values(array_diff($requiredKeys, $mappingKeys)));
+                    throw new InvalidExecutionPlan($exceptionMessage);
                 }
             } catch(InvalidExecutionPlan $e){
                 throw new InvalidExecutionPlan($e->getMessage());
