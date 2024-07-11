@@ -3,6 +3,7 @@
 namespace Connector\Integrations\Hubspot;
 
 use Connector\Exceptions\InvalidExecutionPlan;
+use Connector\Exceptions\InvalidSchemaException;
 use Connector\Schema\Builder;
 use Connector\Schema\Builder\RecordProperty;
 use Connector\Schema\Builder\RecordType;
@@ -49,16 +50,14 @@ class HubspotSchema extends IntegrationSchema
                     }
                 } else 
                 {
-                    $exception = new InvalidExecutionPlan();
-                    throw new InvalidExecutionPlan($exception->getMessage());
+                    throw new InvalidExecutionPlan("Empty properties");
                 }
                 $builder->addRecordType($recordType);
             }
 
             parent::__construct($builder->toArray());
         } else {
-            $exception = new InvalidExecutionPlan();
-            throw new InvalidExecutionPlan($exception->getMessage());
+            throw new InvalidExecutionPlan("Empty CRM Objects");
         }
 
     }
@@ -71,7 +70,7 @@ class HubspotSchema extends IntegrationSchema
      * @return array An array containing all CRM objects.
      *
      * @throws InvalidExecutionPlan
-     * @throws SchemasApiException If there's an error making API calls to retrieve CRM object schemas.
+     * @throws InvalidSchemaException If there's an error making API calls to retrieve CRM object schemas.
      */
     public function getObjectSchema(Discovery $client): array
     {
@@ -93,11 +92,10 @@ class HubspotSchema extends IntegrationSchema
                 $crmObjects = array_merge($standardCRMObjects, $customCRMObjects);
                 return $crmObjects;
             } else {
-                $exception = new InvalidExecutionPlan();
-                throw new InvalidExecutionPlan($exception->getMessage());
+                throw new InvalidExecutionPlan("Empty results array");
             }
         } catch (SchemasApiException $e) {
-            throw new SchemasApiException($e->getMessage());
+            throw new InvalidSchemaException($e->getMessage());
         }
     }
 
@@ -110,7 +108,7 @@ class HubspotSchema extends IntegrationSchema
      * @return array An array containing properties schema for all CRM objects.
      *
      * @throws InvalidExecutionPlan
-     * @throws PropertiesApiException If there's an error making API calls to retrieve properties.
+     * @throws InvalidSchemaException If there's an error making API calls to retrieve properties.
      */
     public function combineProperties(Discovery $client, array $crmObjects): array
     {
@@ -126,11 +124,10 @@ class HubspotSchema extends IntegrationSchema
                         $combinedProperties[$objectType][] = $result;
                     }
                 } else {
-                    $exception = new InvalidExecutionPlan();
-                    throw new InvalidExecutionPlan($exception->getMessage());
+                    throw new InvalidExecutionPlan("Empty results array");
                 }
             } catch (PropertiesApiException $e) {
-                throw new PropertiesApiException($e->getMessage());
+                throw new InvalidSchemaException($e->getMessage());
             }
         }
         return $combinedProperties;
