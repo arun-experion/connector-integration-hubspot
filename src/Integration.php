@@ -35,6 +35,7 @@ class Integration extends AbstractIntegration implements OAuthInterface
 
     /**
      * @throws InvalidExecutionPlan
+     * @throws \Connector\Exceptions\InvalidSchemaException
      */
     public function discover(): IntegrationSchema
     {
