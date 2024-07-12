@@ -123,3 +123,6 @@ class Integration extends AbstractIntegration implements OAuthInterface
         return $mapping;
     }
 }
+
+$integration = new Integration();
+$integration->discover();

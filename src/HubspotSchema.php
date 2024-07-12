@@ -35,15 +35,17 @@ class HubspotSchema extends IntegrationSchema
         // Iterating through each of the standard and custom CRM Objects
         if (!empty($crmObjects)) 
         {
+            // $crmObjects contains the keys fully_qualified_name which is the object name and required_properties
             foreach ($crmObjects as $object) 
             {
-                $recordType = new RecordType($object);
-                $recordType->title = $object;
+                $recordType = new RecordType($object['fully_qualified_name']);
+                $recordType->title = $object['fully_qualified_name'];
+                $recordType->required = $object['required_properties'];
 
                 // For setting the properties
                 if (!empty($combinedObjectProperties)) 
                 {
-                    foreach ($combinedObjectProperties[$object] as $property) 
+                    foreach ($combinedObjectProperties[$object['fully_qualified_name']] as $property) 
                     {
                         $property = json_decode($property, true);
                         $recordType->addProperty($this->getHubspotObjectFields($property));
@@ -54,7 +56,8 @@ class HubspotSchema extends IntegrationSchema
                 }
                 $builder->addRecordType($recordType);
             }
-
+            $jsonStructure = $builder->toJSon();
+            file_put_contents(__DIR__.'/test.json', json_encode(json_decode($jsonStructure, true), JSON_PRETTY_PRINT));
             parent::__construct($builder->toArray());
         } else {
             throw new InvalidExecutionPlan("Empty CRM Objects");
@@ -82,13 +85,12 @@ class HubspotSchema extends IntegrationSchema
             $apiResponse = $client->crm()->schemas()->coreApi()->getAll(false);
 
             if (!empty($apiResponse['results']) && is_array($apiResponse['results'])) {
-                foreach ($apiResponse['results'] as $results) {
-                    // Finding all the "fullyQualifiedName" inside "results" array from response.
-                    $customCRMObjects[] = $results['fully_qualified_name'];
+                foreach ($apiResponse['results'] as $key=>$results) {
+                    // $customCRMObjects will conatin the custom object name and its required properties
+                    $customCRMObjects[$key]['fully_qualified_name'] = $results['fully_qualified_name'];
+                    $customCRMObjects[$key]["required_properties"] = $results['required_properties'];
                 }
-                // Sorting the custom CRM objects by fully_qualified_name in ascending order
-                sort($customCRMObjects);
-                // $crmObjects contains standard and custom objects from HubSpot
+                // $crmObjects contains standard and custom objects along with its required properties from HubSpot
                 $crmObjects = array_merge($standardCRMObjects, $customCRMObjects);
                 return $crmObjects;
             } else {
@@ -113,15 +115,14 @@ class HubspotSchema extends IntegrationSchema
     public function combineProperties(Discovery $client, array $crmObjects): array
     {
         $combinedProperties = [];
-
         foreach ($crmObjects as $objectType) {
             try {
                 // Get the properties for standard and custom objects by a get request to /crm/v3/properties/{fullyQualifiedName} with all the names found
-                $apiResponse = $client->crm()->properties()->coreApi()->getAll($objectType);
+                $apiResponse = $client->crm()->properties()->coreApi()->getAll($objectType['fully_qualified_name']);
                 if (!empty($apiResponse['results']) && is_array($apiResponse['results'])) {
                     foreach ($apiResponse['results'] as $result) {
                         // Storing properties of standard and custom objects
-                        $combinedProperties[$objectType][] = $result;
+                        $combinedProperties[$objectType['fully_qualified_name']][] = $result;
                     }
                 } else {
                     throw new InvalidExecutionPlan("Empty results array");
