@@ -56,8 +56,7 @@ class HubspotSchema extends IntegrationSchema
                 }
                 $builder->addRecordType($recordType);
             }
-            $jsonStructure = $builder->toJSon();
-            file_put_contents(__DIR__.'/test.json', json_encode(json_decode($jsonStructure, true), JSON_PRETTY_PRINT));
+            
             parent::__construct($builder->toArray());
         } else {
             throw new InvalidExecutionPlan("Empty CRM Objects");
