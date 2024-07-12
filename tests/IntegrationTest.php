@@ -241,7 +241,7 @@ final class IntegrationTest extends TestCase
 
         // Check if recordType is in standard custom objects
         $recordType = $response->getRecordKey()->recordType;
-        $this->assertEquals($recordType, Config::STANDARD_CRM_OBJECTS[1]['fully_qualified_name'], "Record type should be one of " . implode(', ', Config::STANDARD_CRM_OBJECTS));
+        $this->assertEquals($recordType, Config::STANDARD_CRM_OBJECTS[1]['fully_qualified_name']);
 
         // Check if URL is in the correct format and contains the recordId
         $expectedUrlFormat = "https://api.hubapi.com/crm/v3/objects/" . $recordType . "/" . $recordId;
