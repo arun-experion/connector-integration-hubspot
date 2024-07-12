@@ -14,10 +14,10 @@ use Connector\Record\RecordKey;
 use Connector\Record\RecordLocator;
 use Connector\Record\Recordset;
 use Connector\Schema\IntegrationSchema;
+use HubSpot\Client\Crm\Objects\ApiException;
 use HubSpot\Factory;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
-use HubSpot\Client\Crm\Schemas\ApiException as SchemasApiException;
 
 class Integration extends AbstractIntegration implements OAuthInterface
 {
@@ -56,7 +56,6 @@ class Integration extends AbstractIntegration implements OAuthInterface
      * @return \Connector\Integrations\Response
      * 
      * @throws \Connector\Exceptions\InvalidSchemaException
-     * @throws SchemasApiException
      */ 
     public function load(RecordLocator $recordLocator, Mapping $mapping, ?RecordKey $scope): Response
     {
@@ -79,7 +78,7 @@ class Integration extends AbstractIntegration implements OAuthInterface
         try {
             $result = $action->execute($this->client);
             $this->log('Created ' . $recordLocator->recordType . ' ' . $result->getLoadedRecordKey()->recordId);
-        } catch (InvalidExecutionPlan $e) {
+        } catch (ApiException $e) {
             throw new InvalidExecutionPlan($e->getMessage());
         }
 
