@@ -1,0 +1,292 @@
+{
+    "$schema": "https:\/\/formassembly.com\/connector\/1.0\/schema-integration",
+    "$id": "http:\/\/formassembly.com\/integrations\/hubspot",
+    "title": "Hubspot",
+    "type": "array",
+    "items": {
+        "p46520094_cars": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "name": "color",
+                    "title": "Color",
+                    "type": "string",
+                    "format": ""
+                },
+                "condition": {
+                    "name": "condition",
+                    "title": "Condition",
+                    "type": "string",
+                    "format": "",
+                    "oneOf": [
+                        {
+                            "const": "new",
+                            "title": "New"
+                        },
+                        {
+                            "const": "used",
+                            "title": "Used"
+                        }
+                    ]
+                },
+                "date_received": {
+                    "name": "date_received",
+                    "title": "Date received",
+                    "type": "string",
+                    "format": "date"
+                },
+                "hs_all_accessible_team_ids": {
+                    "name": "hs_all_accessible_team_ids",
+                    "title": "All teams",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_all_assigned_business_unit_ids": {
+                    "name": "hs_all_assigned_business_unit_ids",
+                    "title": "Business units",
+                    "type": "string",
+                    "format": ""
+                },
+                "hs_all_owner_ids": {
+                    "name": "hs_all_owner_ids",
+                    "title": "All owner ids",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_all_team_ids": {
+                    "name": "hs_all_team_ids",
+                    "title": "All team ids",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_created_by_user_id": {
+                    "name": "hs_created_by_user_id",
+                    "title": "Created by user ID",
+                    "type": "number",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_createdate": {
+                    "name": "hs_createdate",
+                    "title": "Object create date\/time",
+                    "type": "string",
+                    "format": "date",
+                    "readOnly": 1
+                },
+                "hs_lastmodifieddate": {
+                    "name": "hs_lastmodifieddate",
+                    "title": "Object last modified date\/time",
+                    "type": "string",
+                    "format": "date",
+                    "readOnly": 1
+                },
+                "hs_merged_object_ids": {
+                    "name": "hs_merged_object_ids",
+                    "title": "Merged record IDs",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_id": {
+                    "name": "hs_object_id",
+                    "title": "Record ID",
+                    "type": "number",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source": {
+                    "name": "hs_object_source",
+                    "title": "Record Creation Source",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source_detail_1": {
+                    "name": "hs_object_source_detail_1",
+                    "title": "Record Source Detail 1",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source_detail_2": {
+                    "name": "hs_object_source_detail_2",
+                    "title": "Record Source Detail 2",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source_detail_3": {
+                    "name": "hs_object_source_detail_3",
+                    "title": "Record Source Detail 3",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source_id": {
+                    "name": "hs_object_source_id",
+                    "title": "Record Creation Source ID",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source_label": {
+                    "name": "hs_object_source_label",
+                    "title": "Record Source",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source_user_id": {
+                    "name": "hs_object_source_user_id",
+                    "title": "Record Creation Source User ID",
+                    "type": "number",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_pinned_engagement_id": {
+                    "name": "hs_pinned_engagement_id",
+                    "title": "Pinned Engagement ID",
+                    "type": "number",
+                    "format": ""
+                },
+                "hs_read_only": {
+                    "name": "hs_read_only",
+                    "title": "Read Only Object",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_shared_team_ids": {
+                    "name": "hs_shared_team_ids",
+                    "title": "Shared Team IDs",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_shared_user_ids": {
+                    "name": "hs_shared_user_ids",
+                    "title": "Shared User IDs",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_unique_creation_key": {
+                    "name": "hs_unique_creation_key",
+                    "title": "Unique creation key",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_updated_by_user_id": {
+                    "name": "hs_updated_by_user_id",
+                    "title": "Updated by user ID",
+                    "type": "number",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_user_ids_of_all_notification_followers": {
+                    "name": "hs_user_ids_of_all_notification_followers",
+                    "title": "User IDs of all notification followers",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_user_ids_of_all_notification_unfollowers": {
+                    "name": "hs_user_ids_of_all_notification_unfollowers",
+                    "title": "User IDs of all notification unfollowers",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_user_ids_of_all_owners": {
+                    "name": "hs_user_ids_of_all_owners",
+                    "title": "User IDs of all owners",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_was_imported": {
+                    "name": "hs_was_imported",
+                    "title": "Performed in an import",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hubspot_owner_assigneddate": {
+                    "name": "hubspot_owner_assigneddate",
+                    "title": "Owner Assigned Date",
+                    "type": "string",
+                    "format": "date",
+                    "readOnly": 1
+                },
+                "hubspot_owner_id": {
+                    "name": "hubspot_owner_id",
+                    "title": "Owner",
+                    "type": "string",
+                    "format": ""
+                },
+                "hubspot_team_id": {
+                    "name": "hubspot_team_id",
+                    "title": "HubSpot Team",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "make": {
+                    "name": "make",
+                    "title": "Make",
+                    "type": "string",
+                    "format": ""
+                },
+                "mileage": {
+                    "name": "mileage",
+                    "title": "Mileage",
+                    "type": "number",
+                    "format": ""
+                },
+                "model": {
+                    "name": "model",
+                    "title": "Model",
+                    "type": "string",
+                    "format": ""
+                },
+                "notes": {
+                    "name": "notes",
+                    "title": "Notes",
+                    "type": "string",
+                    "format": ""
+                },
+                "price": {
+                    "name": "price",
+                    "title": "Price",
+                    "type": "number",
+                    "format": ""
+                },
+                "vin": {
+                    "name": "vin",
+                    "title": "VIN",
+                    "type": "string",
+                    "format": ""
+                },
+                "year": {
+                    "name": "year",
+                    "title": "Year",
+                    "type": "number",
+                    "format": ""
+                }
+            },
+            "title": "p46520094_cars",
+            "required": [
+                "year",
+                "vin",
+                "model",
+                "make"
+            ],
+            "additionalProperties": false
+        }
+    },
+    "$defs": []
+}
