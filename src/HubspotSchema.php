@@ -89,7 +89,6 @@ class HubspotSchema extends IntegrationSchema
                     $customCRMObjects[$key]['fully_qualified_name'] = $results['fully_qualified_name'];
                     $customCRMObjects[$key]["required_properties"] = $results['required_properties'];
                 }
-                sort($customCRMObjects);
                 // $crmObjects contains standard and custom objects along with its required properties from HubSpot
                 $crmObjects = array_merge($standardCRMObjects, $customCRMObjects);
                 return $crmObjects;

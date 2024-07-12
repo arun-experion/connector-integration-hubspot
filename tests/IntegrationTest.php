@@ -425,7 +425,7 @@ final class IntegrationTest extends TestCase
         $response = $integration->load($recordLocator, $mapping, null);
 
         $recordType = $response->getRecordKey()->recordType;
-        //Check if the recordType in load is present in custom object list
+        //Check if the recordType in load is present in list of objects
         $this->assertContains($recordType, $listObject);
 
         // Check that all required properties are present in the mapping
