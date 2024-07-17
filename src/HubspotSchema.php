@@ -33,25 +33,19 @@ class HubspotSchema extends IntegrationSchema
         $builder = new Builder("http://formassembly.com/integrations/hubspot", "Hubspot");
 
         // Iterating through each of the standard and custom CRM Objects
-        if (!empty($crmObjects)) 
-        {
+        if (!empty($crmObjects)) {
             // $crmObjects contains the keys fully_qualified_name which is the object name and required_properties
-            foreach ($crmObjects as $object) 
-            {
+            foreach ($crmObjects as $object) {
                 $recordType = new RecordType($object['fully_qualified_name']);
                 $recordType->title = $object['fully_qualified_name'];
-                $recordType->required = $object['required_properties'];
 
                 // For setting the properties
-                if (!empty($combinedObjectProperties)) 
-                {
-                    foreach ($combinedObjectProperties[$object['fully_qualified_name']] as $property) 
-                    {
+                if (!empty($combinedObjectProperties)) {
+                    foreach ($combinedObjectProperties[$object['fully_qualified_name']] as $property) {
                         $property = json_decode($property, true);
-                        $recordType->addProperty($this->getHubspotObjectFields($property));
+                        $recordType->addProperty($this->getHubspotObjectFields($property, $object));
                     }
-                } else 
-                {
+                } else {
                     throw new InvalidExecutionPlan("Empty properties");
                 }
                 $builder->addRecordType($recordType);
@@ -76,15 +70,20 @@ class HubspotSchema extends IntegrationSchema
      */
     public function getObjectSchema(Discovery $client): array
     {
-        // $standardCRMObjects contains standard objects from HubSpot
-        $standardCRMObjects = Config::STANDARD_CRM_OBJECTS;
+        // $standardCRMObjects contains standard objects and its required properties from HubSpot
+        $standardCRMObjects = [
+            ["fully_qualified_name" => "contacts", 'required_properties' => ['email', 'firstname', 'lastname']],
+            ["fully_qualified_name" => "companies", 'required_properties' => ['name', 'domain']],
+            ["fully_qualified_name" => "deals", 'required_properties' => ['dealname', 'dealstage']],
+            ["fully_qualified_name" => "tickets", 'required_properties' => ['subject', 'hs_pipeline_stage']]
+        ];
 
         // Making an api call to crm/v3/schemas to get all the custom objects 
         try {
             $apiResponse = $client->crm()->schemas()->coreApi()->getAll(false);
 
             if (!empty($apiResponse['results']) && is_array($apiResponse['results'])) {
-                foreach ($apiResponse['results'] as $key=>$results) {
+                foreach ($apiResponse['results'] as $key => $results) {
                     // $customCRMObjects will conatin the custom object name and its required properties
                     $customCRMObjects[$key]['fully_qualified_name'] = $results['fully_qualified_name'];
                     $customCRMObjects[$key]["required_properties"] = $results['required_properties'];
@@ -137,9 +136,10 @@ class HubspotSchema extends IntegrationSchema
      * Retrieves a RecordProperty object representing HubSpot object fields based on provided property data.
      *
      * @param array $property An array containing property data
+     * @param array $object An array containing object and its required properties
      * @return Builder\RecordProperty A RecordProperty object representing HubSpot object fields.
      */
-    public function getHubspotObjectFields(array $property): RecordProperty
+    public function getHubspotObjectFields(array $property, array $object): RecordProperty
     {
         $attributes = [
             "name" => $property['name'],
@@ -148,6 +148,12 @@ class HubspotSchema extends IntegrationSchema
             "format" => $this->getFormatFromProperty($property['fieldType'])
         ];
 
+        // If the field is a required key
+        if(in_array($property['name'], $object['required_properties'])){
+            // Providing a required key into the property
+            $attributes = array_merge($attributes, ["required" => true]);
+        }
+        
         if ($property['type'] === 'enumeration') {
             foreach ($property['options'] as $options) {
                 $attributes['oneOf'][] = [
@@ -157,7 +163,7 @@ class HubspotSchema extends IntegrationSchema
             }
         }
 
-        if($property['modificationMetadata']['readOnlyValue'] === true) {
+        if ($property['modificationMetadata']['readOnlyValue'] === true) {
             $attributes['readOnly'] = 1;
         }
 
@@ -212,6 +218,3 @@ class HubspotSchema extends IntegrationSchema
         return $format;
     }
 }
-
-
-
