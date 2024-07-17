@@ -67,13 +67,13 @@ final class IntegrationTest extends TestCase
 
         //Get the custom objects name from discover()
         $keys1=(array_keys($schema['items']));
-        $actualCustomObject1=isset($keys[4])?$keys[4]:null;
-        $actualCustomObject2=isset($keys[5])?$keys[5]:null;
-        $actualCustomObject3=isset($keys[6])?$keys[6]:null;
+        $actualCustomObject1=isset($keys1[4])?$keys1[4]:null;
+        $actualCustomObject2=isset($keys1[5])?$keys1[5]:null;
+        $actualCustomObject3=isset($keys1[6])?$keys1[6]:null;
         // Assert that the keys match the expected values
-        $this->assertEquals($actualCustomObject1, $expectedcustomObject1, "Item  should contain a custom object.");
-        $this->assertEquals($actualCustomObject2, $expectedcustomObject2, "Item  should contain a custom object.");
-        $this->assertEquals($actualCustomObject3, $expectedcustomObject3, "Item  should contain a custom object.");
+        $this->assertEquals($actualCustomObject1, $expectedcustomObject1, "Item  should contain a ".$keys[4]." object.");
+        $this->assertEquals($actualCustomObject2, $expectedcustomObject2, "Item  should contain a ".$keys[5]." object.");
+        $this->assertEquals($actualCustomObject3, $expectedcustomObject3, "Item  should contain a ".$keys[6]." object.");
 
     }
 
