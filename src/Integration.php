@@ -1,7 +1,8 @@
 <?php
 
 namespace Connector\Integrations\Hubspot;
-require __DIR__."/../vendor/autoload.php";
+
+require __DIR__ . "/../vendor/autoload.php";
 
 use Connector\Exceptions\InvalidExecutionPlan;
 use Connector\Integrations\AbstractIntegration;
@@ -43,9 +44,29 @@ class Integration extends AbstractIntegration implements OAuthInterface
         return $hubspotSchema;
     }
 
+    /**
+     * @param \Connector\Record\RecordLocator  $recordLocator
+     * @param \Connector\Mapping               $mapping
+     * @param \Connector\Record\RecordKey|null $scope
+     *
+     * @return \Connector\Integrations\Response
+     */
     public function extract(RecordLocator $recordLocator, Mapping $mapping, ?RecordKey $scope): Response
     {
         // TODO: Implement extract() method.
+
+        // Recast to Hubspot child class
+        $recordLocator = new HubspotRecordLocator($recordLocator, $this->getSchema());
+
+        $action = new Actions\Select($recordLocator, $mapping, $scope);
+
+        $result = $action->execute();
+
+        $this->log('Selected ' . $recordLocator->recordType . ' ' . $result->getLoadedRecordKey()->recordId);
+
+        $res = (new Response())->setRecordset($result->getExtractedRecordSet());
+        file_put_contents(__DIR__ . '/test.json', json_encode($res, JSON_PRETTY_PRINT));
+        return (new Response())->setRecordset($result->getExtractedRecordSet());
     }
 
     /**
@@ -56,7 +77,7 @@ class Integration extends AbstractIntegration implements OAuthInterface
      * @return \Connector\Integrations\Response
      * 
      * @throws \Connector\Exceptions\InvalidSchemaException
-     */ 
+     */
     public function load(RecordLocator $recordLocator, Mapping $mapping, ?RecordKey $scope): Response
     {
         $response = new Response();
@@ -64,17 +85,17 @@ class Integration extends AbstractIntegration implements OAuthInterface
         // Recast to Hubspot child class
         // $recordLocator->recordType should contain the fullyQualifiedName of the CRM Object record that is to be created
         $recordLocator = new HubspotRecordLocator($recordLocator, $this->getSchema());
-        
+
         // Mapping may contain fully-qualified names (remove record type and keep only property name)
         $mapping = $this->normalizeMapping($mapping);
 
         // Initially, trying to create only. $recordLocator should contain $type which indicates the type of operation
-        if($recordLocator->isCreate()){
+        if ($recordLocator->isCreate()) {
             $action = new Actions\Create($recordLocator, $mapping, $scope);
         } else {
             throw new InvalidExecutionPlan("Unknown operation type");
         }
-        
+
         try {
             $result = $action->execute($this->client);
             $this->log('Created ' . $recordLocator->recordType . ' ' . $result->getLoadedRecordKey()->recordId);
@@ -82,11 +103,12 @@ class Integration extends AbstractIntegration implements OAuthInterface
             throw new InvalidExecutionPlan($e->getMessage());
         }
 
-        $recordset   = new Recordset();
-        $recordset[] = new Record($result->getLoadedRecordKey(),
+        $recordset = new Recordset();
+        $recordset[] = new Record(
+            $result->getLoadedRecordKey(),
             [
-                'FormAssemblyConnectorResult:Id'  => $result->getLoadedRecordKey()->recordId,
-                'FormAssemblyConnectorResult:Url' => Config::BASE_URL. 'crm/v' . Config::API_VERSION . '/objects/' . $recordLocator->recordType . '/' . $result->getLoadedRecordKey()->recordId,
+                'FormAssemblyConnectorResult:Id' => $result->getLoadedRecordKey()->recordId,
+                'FormAssemblyConnectorResult:Url' => Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' . $recordLocator->recordType . '/' . $result->getLoadedRecordKey()->recordId,
             ]
         );
 
@@ -114,11 +136,24 @@ class Integration extends AbstractIntegration implements OAuthInterface
 
     private function normalizeMapping(Mapping $mapping): Mapping
     {
-        foreach($mapping as $item) {
-            if($this->schema->isFullyQualifiedName($item->key)) {
+        foreach ($mapping as $item) {
+            if ($this->schema->isFullyQualifiedName($item->key)) {
                 $item->key = $this->schema->getPropertyNameFromFQN($item->key);
             }
         }
         return $mapping;
     }
 }
+
+$integration = new Integration();
+$schema = json_decode(file_get_contents(__DIR__ . "/../tests/schemas/DiscoverResult.json"), true);
+$integration->setSchema(new IntegrationSchema($schema));
+$integration->begin();
+
+// Configure the operation query and mapping
+$query = [['filters'=>[["name", "operator" => "EQ", "value" => "Nissan"], ["propertyName" => "name", "operator" => "EQ", "value" => "BMW"]]], ["filters" => ["propertyName" => "year", "operator" => "EQ", "value" => 2019]]];
+$recordLocator = new RecordLocator(["recordType" => 'p46520094_Obj_schema', "query" => $query]);
+$mapping = new Mapping(["make" => null, "model" => null]);
+
+// Extract the data from Salesforce
+$response = $integration->extract($recordLocator, $mapping, null);

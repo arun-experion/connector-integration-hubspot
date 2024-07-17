@@ -3,7 +3,7 @@ namespace Connector\Integrations\Hubspot;
 
 class Config
 {
-    public const HUBSPOT_ACCESS_TOKEN = '';
+    public const HUBSPOT_ACCESS_TOKEN = 'pat-na1-1d681633-88b2-4bc5-a23f-8205986b4736';
 
     public const API_VERSION = '3';
 

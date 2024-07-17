@@ -12,6 +12,8 @@ class HubspotRecordLocator extends RecordLocator
      * @var OperationTypes $type Type of Operation (create, update, select)
      */
     public OperationTypes $type = OperationTypes::Create;
+
+    public  $query;
     
     /**
      * @param mixed|null                               $params
