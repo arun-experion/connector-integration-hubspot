@@ -58,6 +58,23 @@ final class IntegrationTest extends TestCase
         $expectedSchema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
         // Compare the JSON schema with the expected schema stored in a file
         $this->assertTrue($expectedSchema === $jsonSchema, "Schema is different than expected.");
+
+        //Get the custom objects name from expected results
+        $keys = array_keys($expectedSchema['items']);    
+        $expectedcustomObject1 = $keys[4];
+        $expectedcustomObject2 = isset($keys[5])?$keys[5]:null;
+        $expectedcustomObject3 = isset($keys[6])?$keys[6]:null;
+
+        //Get the custom objects name from discover()
+        $keys1=(array_keys($schema['items']));
+        $actualCustomObject1=$keys1[4];
+        $actualCustomObject2=isset($keys[5])?$keys[5]:null;
+        $actualCustomObject3=isset($keys[6])?$keys[6]:null;
+        // Assert that the keys match the expected values
+        $this->assertEquals($actualCustomObject1, $expectedcustomObject1, "Item  should contain a custom object.");
+        $this->assertEquals($actualCustomObject2, $expectedcustomObject2, "Item  should contain a custom object.");
+        $this->assertEquals($actualCustomObject3, $expectedcustomObject3, "Item  should contain a custom object.");
+
     }
 
     /**
@@ -210,6 +227,7 @@ final class IntegrationTest extends TestCase
         $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('tickets', 'subject')->type);
         $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('tickets', 'subject')->format);
     }
+
 
     /*
      * Test the load functionality of the integration.
