@@ -58,6 +58,23 @@ final class IntegrationTest extends TestCase
         $expectedSchema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
         // Compare the JSON schema with the expected schema stored in a file
         $this->assertTrue($expectedSchema === $jsonSchema, "Schema is different than expected.");
+
+        //Get the custom objects name from expected results
+        $keys = array_keys($expectedSchema['items']);    
+        $expectedcustomObject1 = isset($keys[4])?$keys[4]:null;
+        $expectedcustomObject2 = isset($keys[5])?$keys[5]:null;
+        $expectedcustomObject3 = isset($keys[6])?$keys[6]:null;
+
+        //Get the custom objects name from discover()
+        $keys1=(array_keys($schema['items']));
+        $actualCustomObject1=isset($keys1[4])?$keys1[4]:null;
+        $actualCustomObject2=isset($keys1[5])?$keys1[5]:null;
+        $actualCustomObject3=isset($keys1[6])?$keys1[6]:null;
+        // Assert that the keys match the expected values
+        $this->assertEquals($actualCustomObject1, $expectedcustomObject1, "Item  should contain a ".$keys[4]." object.");
+        $this->assertEquals($actualCustomObject2, $expectedcustomObject2, "Item  should contain a ".$keys[5]." object.");
+        $this->assertEquals($actualCustomObject3, $expectedcustomObject3, "Item  should contain a ".$keys[6]." object.");
+
     }
 
     /**
