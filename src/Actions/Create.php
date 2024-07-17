@@ -2,7 +2,7 @@
 
 namespace Connector\Integrations\Hubspot\Actions;
 
-use Connector\Exceptions\InvalidExecutionPlan;
+use Connector\Exceptions\InvalidMappingException;
 use Connector\Integrations\Hubspot\Config;
 use Connector\Integrations\Hubspot\HubspotRecordLocator;
 use Connector\Integrations\Hubspot\HubspotSchema;
@@ -12,6 +12,7 @@ use Connector\Record\RecordKey;
 use GuzzleHttp\Exception\GuzzleException;
 use HubSpot\Discovery\Discovery;
 use GuzzleHttp\Client;
+use Connector\Exceptions\AbortedOperationException;
 
 class Create
 {
@@ -45,7 +46,8 @@ class Create
      * 
      * @return \Connector\Operation\Result
      * 
-     * @throws InvalidExecutionPlan
+     * @throws InvalidMappingException
+     * @throws \Connector\Exceptions\AbortedOperationException
      */
     public function execute(Discovery $client): Result
     {
@@ -54,11 +56,15 @@ class Create
         $hubspotSchema = new HubspotSchema($client);
         $hubspotSchemaArray = json_decode(json_encode($hubspotSchema), true);
 
-        // $requiredProperties contains the items from 'required' key inside the HubspotSchema
-        $requiredProperties = $hubspotSchemaArray['schema']['items'][$this->recordLocator->recordType]['required'] ?? [];
-
+        // $requiredProperties contains the items from 'required' key inside the properties of fields
+        foreach($hubspotSchemaArray['schema']['items'][$this->recordLocator->recordType]['properties'] as $property){
+            if(array_key_exists('required', $property)){
+                $requiredProperties[] = $property['name'];
+            }
+        }
+        
         if ($this->recordLocator->recordType == 'companies' || $this->recordLocator->recordType == 'contacts') {
-            // For companies and contacts not all fields in $requiredProperties are mandatory 
+            // Companies and Contacts must include at least one field from $requiredProperties. At least one of the fields in $requiredProperties is mandatory.
             $mappingKeys = array_keys($this->mappingAsArray());
 
             // Checking any of the required keys are there in mapping
@@ -77,12 +83,12 @@ class Create
 
                     $response = json_decode($response->getBody());
                 } catch (GuzzleException $exception) {
-                    throw new InvalidExecutionPlan($exception->getMessage());
+                    throw new AbortedOperationException($exception->getMessage());
                 }
             } 
             else {
                 $exceptionMessage = "Validation error: Required keys are missing: " . json_encode($requiredProperties);
-                throw new InvalidExecutionPlan($exceptionMessage);
+                throw new InvalidMappingException($exceptionMessage);
             }
         } 
         else {
@@ -105,12 +111,12 @@ class Create
 
                     $response = json_decode($response->getBody());
                 } catch (GuzzleException $exception) {
-                    throw new InvalidExecutionPlan($exception->getMessage());
+                    throw new AbortedOperationException($exception->getMessage());
                 }
             } 
             else {
                 $exceptionMessage = "Validation error: Required keys are missing: " . json_encode(array_values(array_diff($requiredProperties, $mappingKeys)));
-                throw new InvalidExecutionPlan($exceptionMessage);
+                throw new InvalidMappingException($exceptionMessage);
             }
         }
 
