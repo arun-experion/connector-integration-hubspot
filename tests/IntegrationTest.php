@@ -59,22 +59,6 @@ final class IntegrationTest extends TestCase
         // Compare the JSON schema with the expected schema stored in a file
         $this->assertTrue($expectedSchema === $jsonSchema, "Schema is different than expected.");
 
-        //Get the custom objects name from expected results
-        $keys = array_keys($expectedSchema['items']);    
-        $expectedcustomObject1 = isset($keys[4])?$keys[4]:null;
-        $expectedcustomObject2 = isset($keys[5])?$keys[5]:null;
-        $expectedcustomObject3 = isset($keys[6])?$keys[6]:null;
-
-        //Get the custom objects name from discover()
-        $keys1=(array_keys($schema['items']));
-        $actualCustomObject1=isset($keys1[4])?$keys1[4]:null;
-        $actualCustomObject2=isset($keys1[5])?$keys1[5]:null;
-        $actualCustomObject3=isset($keys1[6])?$keys1[6]:null;
-        // Assert that the keys match the expected values
-        $this->assertEquals($actualCustomObject1, $expectedcustomObject1, "Item  should contain a ".$keys[4]." object.");
-        $this->assertEquals($actualCustomObject2, $expectedcustomObject2, "Item  should contain a ".$keys[5]." object.");
-        $this->assertEquals($actualCustomObject3, $expectedcustomObject3, "Item  should contain a ".$keys[6]." object.");
-
     }
 
     /**
@@ -99,7 +83,7 @@ final class IntegrationTest extends TestCase
 
         // Verify that the 'items' array contains at least 4 elements
         //To Ensure that all standard objects are present in schema
-        $this->assertGreaterThanOrEqual(count(Config::STANDARD_CRM_OBJECTS), count($schema->schema['items']), 'The items array should contain at least 4 arrays.');
+        $this->assertGreaterThanOrEqual(4, count($schema->schema['items']), 'The items array should contain at least 4 arrays.');
 
         // Check if 'items' array contains standard objects key
         $this->assertArrayHasKey('companies', $schema->schema['items'], "Item  should contain a 'companies' key.");
@@ -227,6 +211,36 @@ final class IntegrationTest extends TestCase
         $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('tickets', 'subject')->type);
         $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('tickets', 'subject')->format);
     }
+    /**
+     * Test the custom objects .
+     * 
+     * This function verifies that the 'custom' object are present in the schema.
+     * Check expected properties contain atleast one required Property.
+     */
+    function testDiscoverCustomObject(){
+        $integration = new Integration();
+        $schema = $integration->discover()->schema;
+    
+        //Decode the expected file for easier comparison.
+        $expectedSchema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
+
+        //Get the custom objects name from expected results
+        $expectedKeys = array_keys($expectedSchema['items']);    
+        $expectedcustomObject1 = isset($expectedKeys[4])?$expectedKeys[4]:null;
+        $expectedcustomObject2 = isset($expectedKeys[5])?$expectedKeys[5]:null;
+        $expectedcustomObject3 = isset($expectedKeys[6])?$expectedKeys[6]:null;
+
+        //Get the custom objects name from discover()
+        $actualKeys=(array_keys($schema['items']));
+        $actualCustomObject1=isset($actualKeys[4])?$actualKeys[4]:null;
+        $actualCustomObject2=isset($actualKeys[5])?$actualKeys[5]:null;
+        $actualCustomObject3=isset($actualKeys[6])?$actualKeys[6]:null;
+        // Assert that the keys match the expected values
+        $this->assertEquals($actualCustomObject1, $expectedcustomObject1, "Item  should contain a ".$expectedKeys[4]." object.");
+        $this->assertEquals($actualCustomObject2, $expectedcustomObject2, "Item  should contain a ".$expectedKeys[5]." object.");
+        $this->assertEquals($actualCustomObject3, $expectedcustomObject3, "Item  should contain a ".$expectedKeys[6]." object.");
+
+}
 
     /*
      * Test the load functionality of the integration.
@@ -258,7 +272,7 @@ final class IntegrationTest extends TestCase
 
         // Check if recordType is in standard custom objects
         $recordType = $response->getRecordKey()->recordType;
-        $this->assertEquals($recordType, Config::STANDARD_CRM_OBJECTS[1]['fully_qualified_name']);
+        $this->assertEquals($recordType, 'companies');
 
         // Check if URL is in the correct format and contains the recordId
         $expectedUrlFormat = "https://api.hubapi.com/crm/v3/objects/" . $recordType . "/" . $recordId;
@@ -277,7 +291,6 @@ final class IntegrationTest extends TestCase
     {
         $integration = new Integration();
         $schema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
-        $hubspotSchemaArray = json_decode(json_encode($integration->discover()), true);
         $integration->setSchema(new IntegrationSchema($schema));
         $integration->begin();
 
@@ -290,14 +303,13 @@ final class IntegrationTest extends TestCase
             'industry' => "ACCOUNTING",
             "state" => "Massachusetts"
         ]);
-        $requiredProperties = $hubspotSchemaArray['schema']['items'][$recordLocator->recordType]['required'];
 
         //Check the missing required fields
-        $this->assertTrue($mapping->hasItem($requiredProperties[0]) || $mapping->hasItem($requiredProperties[1]));
+        $this->assertTrue($mapping->hasItem('name') || $mapping->hasItem('domain'));
         $response = $integration->load($recordLocator, $mapping, null);
         // Check if recordType is in standard custom objects
         $recordType = $response->getRecordKey()->recordType;
-        $this->assertEquals($recordType, Config::STANDARD_CRM_OBJECTS[1]['fully_qualified_name'], "Record type should be one of companies");
+        $this->assertEquals($recordType, 'companies', "Record type should be one of companies");
     }
 
     /**
@@ -308,7 +320,6 @@ final class IntegrationTest extends TestCase
     {
         $integration = new Integration();
         $schema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
-        $hubspotSchemaArray = json_decode(json_encode($integration->discover()), true);
         $integration->setSchema(new IntegrationSchema($schema));
         $integration->begin();
 
@@ -321,14 +332,13 @@ final class IntegrationTest extends TestCase
             "company" => "HubSpot",
             "website" => "hubspot.com"
         ]);
-        $requiredProperties = $hubspotSchemaArray['schema']['items'][$recordLocator->recordType]['required'];
 
         //Check the missing required fields
-        $this->assertTrue($mapping->hasItem($requiredProperties[0]) || $mapping->hasItem($requiredProperties[1]) || $mapping->hasItem($requiredProperties[2]));
+        $this->assertTrue($mapping->hasItem('email') || $mapping->hasItem('firstname') || $mapping->hasItem('lastname'));
         $response = $integration->load($recordLocator, $mapping, null);
         // Check if recordType is in standard custom objects
         $recordType = $response->getRecordKey()->recordType;
-        $this->assertEquals($recordType, Config::STANDARD_CRM_OBJECTS[0]['fully_qualified_name'], "Record type should be one of contacts");
+        $this->assertEquals($recordType, 'contacts', "Record type should be one of contacts");
     }
 
     /**
@@ -339,7 +349,6 @@ final class IntegrationTest extends TestCase
     {
         $integration = new Integration();
         $schema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
-        $hubspotSchemaArray = json_decode(json_encode($integration->discover()), true);
         $integration->setSchema(new IntegrationSchema($schema));
         $integration->begin();
 
@@ -353,16 +362,14 @@ final class IntegrationTest extends TestCase
             "dealstage" => "contractsent"
         ]);
 
-        $requiredProperties = $hubspotSchemaArray['schema']['items'][$recordLocator->recordType]['required'];
-
         //Check the missing required fields
-        foreach ($requiredProperties as $requiredProperty) {
-            $this->assertTrue($mapping->hasItem($requiredProperty));
-        }
+        $this->assertTrue($mapping->hasItem('dealstage'));
+        $this->assertTrue($mapping->hasItem('dealname'));
+        
         $response = $integration->load($recordLocator, $mapping, null);
         // Check if recordType is in standard custom objects
         $recordType = $response->getRecordKey()->recordType;
-        $this->assertEquals($recordType, Config::STANDARD_CRM_OBJECTS[2]['fully_qualified_name'], "Record type should be one of deals");
+        $this->assertEquals($recordType, 'deals', "Record type should be one of deals");
     }
 
     /**
@@ -375,7 +382,6 @@ final class IntegrationTest extends TestCase
         $schema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
         $integration->setSchema(new IntegrationSchema($schema));
         $integration->begin();
-        $hubspotSchemaArray = json_decode(json_encode($integration->discover()), true);
         $recordLocator = new RecordLocator(["recordType" => 'tickets']);
 
         $mapping = new Mapping([
@@ -384,16 +390,15 @@ final class IntegrationTest extends TestCase
             "hs_ticket_priority" => "HIGH",
             "subject" => "troubleshoot report"
         ]);
-        $requiredProperties = $hubspotSchemaArray['schema']['items'][$recordLocator->recordType]['required'];
 
-        //Check the missing required fields
-        foreach ($requiredProperties as $requiredProperty) {
-            $this->assertTrue($mapping->hasItem($requiredProperty));
-        }
+        //Check the missing required fields   
+        $this->assertTrue($mapping->hasItem('subject'));
+        $this->assertTrue($mapping->hasItem('hs_pipeline_stage'));
+
         $response = $integration->load($recordLocator, $mapping, null);
         // Check if recordType is in standard custom objects
         $recordType = $response->getRecordKey()->recordType;
-        $this->assertEquals($recordType, Config::STANDARD_CRM_OBJECTS[3]['fully_qualified_name'], "Record type should be one of tickets");
+        $this->assertEquals($recordType, 'tickets', "Record type should be one of tickets");
     }
 
     /**
@@ -409,7 +414,11 @@ final class IntegrationTest extends TestCase
         //Get the name of the excepted custom schema
         $customObject = array_keys($customSchema['items'])[0];
         //fetch the required properties of excepted schema
-        $mappingArray = $customSchema['items'][$customObject]['required'];
+        foreach ($customSchema['items'][$customObject]['properties'] as $propertyKey => $propertyValue) {
+            if (isset($propertyValue['required'])) {
+                $mappingArray[] = $propertyKey;
+            }
+        }
         //initialize an array for mapping
         $baseData = [];
         //set the mapping parameters according to the required properties
@@ -431,8 +440,11 @@ final class IntegrationTest extends TestCase
         }
 
         //Fetch the required properties of actual custom schema
-        $requiredProperties = $hubspotSchema['items'][$customObject]['required'];
-
+        foreach ($hubspotSchema['items'][$customObject]['properties'] as $propertyKey => $propertyValue) {
+            if (isset($propertyValue['required'])) {
+                $requiredProperties[] = $propertyKey;
+            }
+        }
         $integration->setSchema(new IntegrationSchema($schema));
         $integration->begin();
         $recordLocator = new RecordLocator(["recordType" => $customObject]);
