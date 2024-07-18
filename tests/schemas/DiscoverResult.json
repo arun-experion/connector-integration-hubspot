@@ -109,8 +109,7 @@
                     "name": "email",
                     "title": "Email",
                     "type": "string",
-                    "format": "",
-                    "required": true
+                    "format": ""
                 },
                 "engagements_last_meeting_booked": {
                     "name": "engagements_last_meeting_booked",
@@ -177,8 +176,7 @@
                     "name": "firstname",
                     "title": "First Name",
                     "type": "string",
-                    "format": "",
-                    "required": true
+                    "format": ""
                 },
                 "followercount": {
                     "name": "followercount",
@@ -2834,6 +2832,118 @@
                     "format": "",
                     "readOnly": 1
                 },
+                "hs_role": {
+                    "name": "hs_role",
+                    "title": "Role",
+                    "type": "string",
+                    "format": "",
+                    "oneOf": [
+                        {
+                            "const": "accounting",
+                            "title": "Accounting"
+                        },
+                        {
+                            "const": "administrative",
+                            "title": "Administrative"
+                        },
+                        {
+                            "const": "business_development",
+                            "title": "Business Development"
+                        },
+                        {
+                            "const": "communications",
+                            "title": "Communications"
+                        },
+                        {
+                            "const": "consulting",
+                            "title": "Consulting"
+                        },
+                        {
+                            "const": "customer_service",
+                            "title": "Customer Service"
+                        },
+                        {
+                            "const": "design",
+                            "title": "Design"
+                        },
+                        {
+                            "const": "education",
+                            "title": "Education"
+                        },
+                        {
+                            "const": "engineering",
+                            "title": "Engineering"
+                        },
+                        {
+                            "const": "entrepreneurship",
+                            "title": "Entrepreneurship"
+                        },
+                        {
+                            "const": "finance",
+                            "title": "Finance"
+                        },
+                        {
+                            "const": "health_professional",
+                            "title": "Health Professional"
+                        },
+                        {
+                            "const": "human_resources",
+                            "title": "Human Resources"
+                        },
+                        {
+                            "const": "information_technology",
+                            "title": "Information Technology"
+                        },
+                        {
+                            "const": "legal",
+                            "title": "Legal"
+                        },
+                        {
+                            "const": "marketing",
+                            "title": "Marketing"
+                        },
+                        {
+                            "const": "operations",
+                            "title": "Operations"
+                        },
+                        {
+                            "const": "product",
+                            "title": "Product"
+                        },
+                        {
+                            "const": "project_management",
+                            "title": "Project Management"
+                        },
+                        {
+                            "const": "public_relations",
+                            "title": "Public Relations"
+                        },
+                        {
+                            "const": "quality_assurance",
+                            "title": "Quality Assurance"
+                        },
+                        {
+                            "const": "real_estate",
+                            "title": "Real Estate"
+                        },
+                        {
+                            "const": "recruiting",
+                            "title": "Recruiting"
+                        },
+                        {
+                            "const": "research",
+                            "title": "Research"
+                        },
+                        {
+                            "const": "sales",
+                            "title": "Sales"
+                        },
+                        {
+                            "const": "support",
+                            "title": "Support"
+                        }
+                    ]
+                },
                 "hs_sa_first_engagement_date": {
                     "name": "hs_sa_first_engagement_date",
                     "title": "Date of first engagement",
@@ -3024,6 +3134,46 @@
                     "format": "",
                     "readOnly": 1
                 },
+                "hs_seniority": {
+                    "name": "hs_seniority",
+                    "title": "seniority",
+                    "type": "string",
+                    "format": "",
+                    "oneOf": [
+                        {
+                            "const": "vp",
+                            "title": "VP"
+                        },
+                        {
+                            "const": "director",
+                            "title": "Director"
+                        },
+                        {
+                            "const": "entry",
+                            "title": "Entry"
+                        },
+                        {
+                            "const": "executive",
+                            "title": "Executive"
+                        },
+                        {
+                            "const": "manager",
+                            "title": "Manager"
+                        },
+                        {
+                            "const": "owner",
+                            "title": "Owner"
+                        },
+                        {
+                            "const": "partner",
+                            "title": "Partner"
+                        },
+                        {
+                            "const": "senior",
+                            "title": "Senior"
+                        }
+                    ]
+                },
                 "hs_sequences_actively_enrolled_count": {
                     "name": "hs_sequences_actively_enrolled_count",
                     "title": "Number of sequences actively enrolled",
@@ -3114,6 +3264,458 @@
                     "type": "number",
                     "format": "",
                     "readOnly": 1
+                },
+                "hs_sub_role": {
+                    "name": "hs_sub_role",
+                    "title": "Sub Role",
+                    "type": "string",
+                    "format": "",
+                    "oneOf": [
+                        {
+                            "const": "account_executive",
+                            "title": "Account Executive"
+                        },
+                        {
+                            "const": "account_manager",
+                            "title": "Account Manager"
+                        },
+                        {
+                            "const": "accountant",
+                            "title": "Accountant"
+                        },
+                        {
+                            "const": "accounting",
+                            "title": "Accounting"
+                        },
+                        {
+                            "const": "accounting_manager",
+                            "title": "Accounting Manager"
+                        },
+                        {
+                            "const": "administrative_assistant",
+                            "title": "Administrative Assistant"
+                        },
+                        {
+                            "const": "appraisal",
+                            "title": "Appraisal"
+                        },
+                        {
+                            "const": "architect_it",
+                            "title": "Architect IT"
+                        },
+                        {
+                            "const": "assistant",
+                            "title": "Assistant"
+                        },
+                        {
+                            "const": "attorney",
+                            "title": "Attorney"
+                        },
+                        {
+                            "const": "auditor",
+                            "title": "Auditor"
+                        },
+                        {
+                            "const": "brand_marketing",
+                            "title": "Brand Marketing"
+                        },
+                        {
+                            "const": "business_analyst",
+                            "title": "Business Analyst"
+                        },
+                        {
+                            "const": "business_consultant",
+                            "title": "Business Consultant"
+                        },
+                        {
+                            "const": "business_manager",
+                            "title": "Business Manager"
+                        },
+                        {
+                            "const": "chief_financial_officer",
+                            "title": "Chief Financial Officer"
+                        },
+                        {
+                            "const": "communications_manager",
+                            "title": "Communications Manager"
+                        },
+                        {
+                            "const": "community",
+                            "title": "Community"
+                        },
+                        {
+                            "const": "content_marketing",
+                            "title": "Content Marketing"
+                        },
+                        {
+                            "const": "contracts",
+                            "title": "Contracts"
+                        },
+                        {
+                            "const": "creative",
+                            "title": "Creative"
+                        },
+                        {
+                            "const": "customer_service_specialist",
+                            "title": "Customer Service Specialist"
+                        },
+                        {
+                            "const": "customer_success",
+                            "title": "Customer Success"
+                        },
+                        {
+                            "const": "data_it",
+                            "title": "Data IT"
+                        },
+                        {
+                            "const": "data_science_engineer",
+                            "title": "Data Science Engineer"
+                        },
+                        {
+                            "const": "database_administrator",
+                            "title": "Database Administrator"
+                        },
+                        {
+                            "const": "design_engineer",
+                            "title": "Design Engineer"
+                        },
+                        {
+                            "const": "development_specialist",
+                            "title": "Development Specialist"
+                        },
+                        {
+                            "const": "devops_engineer",
+                            "title": "Devops Engineer"
+                        },
+                        {
+                            "const": "digital_marketing",
+                            "title": "Digital Marketing"
+                        },
+                        {
+                            "const": "director_of_development",
+                            "title": "Director of Development"
+                        },
+                        {
+                            "const": "editorial",
+                            "title": "Editorial"
+                        },
+                        {
+                            "const": "electrical_engineer",
+                            "title": "Electrical Engineer"
+                        },
+                        {
+                            "const": "engineering_manager",
+                            "title": "Engineering Manager"
+                        },
+                        {
+                            "const": "events",
+                            "title": "Events"
+                        },
+                        {
+                            "const": "executive_assistant",
+                            "title": "Executive Assistant"
+                        },
+                        {
+                            "const": "facilities",
+                            "title": "Facilities"
+                        },
+                        {
+                            "const": "fashion_design",
+                            "title": "Fashion Design"
+                        },
+                        {
+                            "const": "field_marketing",
+                            "title": "Field Marketing"
+                        },
+                        {
+                            "const": "financial_analyst",
+                            "title": "Financial Analyst"
+                        },
+                        {
+                            "const": "financial_controller",
+                            "title": "Financial Controller"
+                        },
+                        {
+                            "const": "fitness",
+                            "title": "Fitness"
+                        },
+                        {
+                            "const": "founder",
+                            "title": "Founder"
+                        },
+                        {
+                            "const": "general_counsel",
+                            "title": "General Counsel"
+                        },
+                        {
+                            "const": "general_manager",
+                            "title": "General Manager"
+                        },
+                        {
+                            "const": "general_partner",
+                            "title": "General Partner"
+                        },
+                        {
+                            "const": "graphic_design",
+                            "title": "Graphic Design"
+                        },
+                        {
+                            "const": "human_resources_specialist",
+                            "title": "Human Resources Specialist"
+                        },
+                        {
+                            "const": "information_technology_specialist",
+                            "title": "Information Technology Specialist"
+                        },
+                        {
+                            "const": "investment",
+                            "title": "Investment"
+                        },
+                        {
+                            "const": "investment_banker",
+                            "title": "Investment Banker"
+                        },
+                        {
+                            "const": "journalist",
+                            "title": "Journalist"
+                        },
+                        {
+                            "const": "key_account_manager",
+                            "title": "Key Account Manager"
+                        },
+                        {
+                            "const": "law_enforcement",
+                            "title": "Law Enforcement"
+                        },
+                        {
+                            "const": "lawyer",
+                            "title": "Lawyer"
+                        },
+                        {
+                            "const": "logistics_manager",
+                            "title": "Logistics Manager"
+                        },
+                        {
+                            "const": "management",
+                            "title": "Management"
+                        },
+                        {
+                            "const": "marketing_specialist",
+                            "title": "Marketing Specialist"
+                        },
+                        {
+                            "const": "mechanical_engineer",
+                            "title": "Mechanical Engineer"
+                        },
+                        {
+                            "const": "medical_doctor",
+                            "title": "Medical Doctor"
+                        },
+                        {
+                            "const": "network_engineer",
+                            "title": "Network Engineer"
+                        },
+                        {
+                            "const": "nurse",
+                            "title": "Nurse"
+                        },
+                        {
+                            "const": "office_management",
+                            "title": "Office Management"
+                        },
+                        {
+                            "const": "office_manager",
+                            "title": "Office Manager"
+                        },
+                        {
+                            "const": "operational_specialist",
+                            "title": "Operational Specialist"
+                        },
+                        {
+                            "const": "owner",
+                            "title": "Owner"
+                        },
+                        {
+                            "const": "paralegal",
+                            "title": "Paralegal"
+                        },
+                        {
+                            "const": "principal",
+                            "title": "Principal"
+                        },
+                        {
+                            "const": "product_design",
+                            "title": "Product Design"
+                        },
+                        {
+                            "const": "product_manager",
+                            "title": "Product Manager"
+                        },
+                        {
+                            "const": "product_marketing",
+                            "title": "Product Marketing"
+                        },
+                        {
+                            "const": "production_manager",
+                            "title": "Production Manager"
+                        },
+                        {
+                            "const": "professor",
+                            "title": "Professor"
+                        },
+                        {
+                            "const": "program_coordinator",
+                            "title": "Program Coordinator"
+                        },
+                        {
+                            "const": "program_manager",
+                            "title": "Program Manager"
+                        },
+                        {
+                            "const": "project_engineer",
+                            "title": "Project Engineer"
+                        },
+                        {
+                            "const": "project_manager",
+                            "title": "Project Manager"
+                        },
+                        {
+                            "const": "property_manager",
+                            "title": "Property Manager"
+                        },
+                        {
+                            "const": "qa_engineer",
+                            "title": "QA engineer"
+                        },
+                        {
+                            "const": "qa_it",
+                            "title": "QA IT"
+                        },
+                        {
+                            "const": "quality_assurance_manager",
+                            "title": "Quality Assurance Manager"
+                        },
+                        {
+                            "const": "quality_assurance_specialist",
+                            "title": "Quality Assurance Specialist"
+                        },
+                        {
+                            "const": "realtor",
+                            "title": "Realtor"
+                        },
+                        {
+                            "const": "recruiter",
+                            "title": "Recruiter"
+                        },
+                        {
+                            "const": "relationship_manager",
+                            "title": "Relationship Manager"
+                        },
+                        {
+                            "const": "research_analyst",
+                            "title": "Research Analyst"
+                        },
+                        {
+                            "const": "risk_compliance",
+                            "title": "Risk Compliance"
+                        },
+                        {
+                            "const": "sales_executive",
+                            "title": "Sales Executive"
+                        },
+                        {
+                            "const": "sales_operations",
+                            "title": "Sales Operations"
+                        },
+                        {
+                            "const": "sales_specialist",
+                            "title": "Sales Specialist"
+                        },
+                        {
+                            "const": "salesperson",
+                            "title": "Salesperson"
+                        },
+                        {
+                            "const": "secretary",
+                            "title": "Secretary"
+                        },
+                        {
+                            "const": "social_marketing",
+                            "title": "Social Marketing"
+                        },
+                        {
+                            "const": "software_engineer",
+                            "title": "Software Engineer"
+                        },
+                        {
+                            "const": "strategy",
+                            "title": "Strategy"
+                        },
+                        {
+                            "const": "student",
+                            "title": "Student"
+                        },
+                        {
+                            "const": "support",
+                            "title": "Support"
+                        },
+                        {
+                            "const": "support_specialist",
+                            "title": "Support Specialist"
+                        },
+                        {
+                            "const": "system_administrator",
+                            "title": "System Administrator"
+                        },
+                        {
+                            "const": "system_analyst",
+                            "title": "System Analyst"
+                        },
+                        {
+                            "const": "systems_engineer",
+                            "title": "Systems Engineer"
+                        },
+                        {
+                            "const": "talent",
+                            "title": "Talent"
+                        },
+                        {
+                            "const": "tax_audit",
+                            "title": "Tax Audit"
+                        },
+                        {
+                            "const": "teacher",
+                            "title": "Teacher"
+                        },
+                        {
+                            "const": "technical_manager",
+                            "title": "Technical Manager"
+                        },
+                        {
+                            "const": "technical_support_specialist",
+                            "title": "Technical Support Specialist"
+                        },
+                        {
+                            "const": "therapist",
+                            "title": "Therapist"
+                        },
+                        {
+                            "const": "training",
+                            "title": "Training"
+                        },
+                        {
+                            "const": "video",
+                            "title": "Video"
+                        },
+                        {
+                            "const": "web_developer",
+                            "title": "Web Developer"
+                        },
+                        {
+                            "const": "writer",
+                            "title": "Writer"
+                        }
+                    ]
                 },
                 "hs_testpurge": {
                     "name": "hs_testpurge",
@@ -5731,8 +6333,7 @@
                     "name": "lastname",
                     "title": "Last Name",
                     "type": "string",
-                    "format": "",
-                    "required": true
+                    "format": ""
                 },
                 "lifecyclestage": {
                     "name": "lifecyclestage",
@@ -6127,8 +6728,7 @@
                     "name": "domain",
                     "title": "Company Domain Name",
                     "type": "string",
-                    "format": "",
-                    "required": true
+                    "format": ""
                 },
                 "engagements_last_meeting_booked": {
                     "name": "engagements_last_meeting_booked",
@@ -7965,8 +8565,7 @@
                     "name": "name",
                     "title": "Company name",
                     "type": "string",
-                    "format": "",
-                    "required": true
+                    "format": ""
                 },
                 "notes_last_contacted": {
                     "name": "notes_last_contacted",
@@ -9785,15 +10384,13 @@
                     "name": "dealname",
                     "title": "Deal Name",
                     "type": "string",
-                    "format": "",
-                    "required": true
+                    "format": ""
                 },
                 "dealstage": {
                     "name": "dealstage",
                     "title": "Deal Stage",
                     "type": "string",
-                    "format": "",
-                    "required": true
+                    "format": ""
                 },
                 "dealtype": {
                     "name": "dealtype",
@@ -12003,8 +12600,7 @@
                     "name": "hs_pipeline_stage",
                     "title": "Ticket status",
                     "type": "string",
-                    "format": "",
-                    "required": true
+                    "format": ""
                 },
                 "hs_primary_company": {
                     "name": "hs_primary_company",
@@ -12508,8 +13104,7 @@
                     "name": "subject",
                     "title": "Ticket name",
                     "type": "string",
-                    "format": "",
-                    "required": true
+                    "format": ""
                 },
                 "tags": {
                     "name": "tags",
@@ -12533,470 +13128,6 @@
                 }
             },
             "title": "tickets",
-            "additionalProperties": false
-        },
-        "p46520094_Obj_schema": {
-            "type": "object",
-            "properties": {
-                "condition": {
-                    "name": "condition",
-                    "title": "Condition",
-                    "type": "string",
-                    "format": "",
-                    "oneOf": [
-                        {
-                            "const": "new",
-                            "title": "New"
-                        },
-                        {
-                            "const": "used",
-                            "title": "Used"
-                        }
-                    ]
-                },
-                "date_received": {
-                    "name": "date_received",
-                    "title": "Date received",
-                    "type": "string",
-                    "format": "date"
-                },
-                "hs_all_accessible_team_ids": {
-                    "name": "hs_all_accessible_team_ids",
-                    "title": "All teams",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_all_assigned_business_unit_ids": {
-                    "name": "hs_all_assigned_business_unit_ids",
-                    "title": "Business units",
-                    "type": "string",
-                    "format": ""
-                },
-                "hs_all_owner_ids": {
-                    "name": "hs_all_owner_ids",
-                    "title": "All owner ids",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_all_team_ids": {
-                    "name": "hs_all_team_ids",
-                    "title": "All team ids",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_created_by_user_id": {
-                    "name": "hs_created_by_user_id",
-                    "title": "Created by user ID",
-                    "type": "number",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_createdate": {
-                    "name": "hs_createdate",
-                    "title": "Object create date\/time",
-                    "type": "string",
-                    "format": "date",
-                    "readOnly": 1
-                },
-                "hs_lastmodifieddate": {
-                    "name": "hs_lastmodifieddate",
-                    "title": "Object last modified date\/time",
-                    "type": "string",
-                    "format": "date",
-                    "readOnly": 1
-                },
-                "hs_merged_object_ids": {
-                    "name": "hs_merged_object_ids",
-                    "title": "Merged record IDs",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_object_id": {
-                    "name": "hs_object_id",
-                    "title": "Record ID",
-                    "type": "number",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_object_source": {
-                    "name": "hs_object_source",
-                    "title": "Record Creation Source",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_object_source_detail_1": {
-                    "name": "hs_object_source_detail_1",
-                    "title": "Record Source Detail 1",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_object_source_detail_2": {
-                    "name": "hs_object_source_detail_2",
-                    "title": "Record Source Detail 2",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_object_source_detail_3": {
-                    "name": "hs_object_source_detail_3",
-                    "title": "Record Source Detail 3",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_object_source_id": {
-                    "name": "hs_object_source_id",
-                    "title": "Record Creation Source ID",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_object_source_label": {
-                    "name": "hs_object_source_label",
-                    "title": "Record Source",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_object_source_user_id": {
-                    "name": "hs_object_source_user_id",
-                    "title": "Record Creation Source User ID",
-                    "type": "number",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_pinned_engagement_id": {
-                    "name": "hs_pinned_engagement_id",
-                    "title": "Pinned Engagement ID",
-                    "type": "number",
-                    "format": ""
-                },
-                "hs_read_only": {
-                    "name": "hs_read_only",
-                    "title": "Read Only Object",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_shared_team_ids": {
-                    "name": "hs_shared_team_ids",
-                    "title": "Shared Team IDs",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_shared_user_ids": {
-                    "name": "hs_shared_user_ids",
-                    "title": "Shared User IDs",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_unique_creation_key": {
-                    "name": "hs_unique_creation_key",
-                    "title": "Unique creation key",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_updated_by_user_id": {
-                    "name": "hs_updated_by_user_id",
-                    "title": "Updated by user ID",
-                    "type": "number",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_user_ids_of_all_notification_followers": {
-                    "name": "hs_user_ids_of_all_notification_followers",
-                    "title": "User IDs of all notification followers",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_user_ids_of_all_notification_unfollowers": {
-                    "name": "hs_user_ids_of_all_notification_unfollowers",
-                    "title": "User IDs of all notification unfollowers",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_user_ids_of_all_owners": {
-                    "name": "hs_user_ids_of_all_owners",
-                    "title": "User IDs of all owners",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_was_imported": {
-                    "name": "hs_was_imported",
-                    "title": "Performed in an import",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hubspot_owner_assigneddate": {
-                    "name": "hubspot_owner_assigneddate",
-                    "title": "Owner Assigned Date",
-                    "type": "string",
-                    "format": "date",
-                    "readOnly": 1
-                },
-                "hubspot_owner_id": {
-                    "name": "hubspot_owner_id",
-                    "title": "Owner",
-                    "type": "string",
-                    "format": ""
-                },
-                "hubspot_team_id": {
-                    "name": "hubspot_team_id",
-                    "title": "HubSpot Team",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "make": {
-                    "name": "make",
-                    "title": "Make",
-                    "type": "string",
-                    "format": "",
-                    "required": true
-                },
-                "model": {
-                    "name": "model",
-                    "title": "Model",
-                    "type": "string",
-                    "format": "",
-                    "required": true
-                },
-                "year": {
-                    "name": "year",
-                    "title": "Year",
-                    "type": "number",
-                    "format": "",
-                    "required": true
-                }
-            },
-            "title": "p46520094_Obj_schema",
-            "additionalProperties": false
-        },
-        "p46520094_CarSpot": {
-            "type": "object",
-            "properties": {
-                "date_received": {
-                    "name": "date_received",
-                    "title": "Date received",
-                    "type": "string",
-                    "format": "",
-                    "required": true
-                },
-                "hs_all_accessible_team_ids": {
-                    "name": "hs_all_accessible_team_ids",
-                    "title": "All teams",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_all_assigned_business_unit_ids": {
-                    "name": "hs_all_assigned_business_unit_ids",
-                    "title": "Business units",
-                    "type": "string",
-                    "format": ""
-                },
-                "hs_all_owner_ids": {
-                    "name": "hs_all_owner_ids",
-                    "title": "All owner ids",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_all_team_ids": {
-                    "name": "hs_all_team_ids",
-                    "title": "All team ids",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_created_by_user_id": {
-                    "name": "hs_created_by_user_id",
-                    "title": "Created by user ID",
-                    "type": "number",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_createdate": {
-                    "name": "hs_createdate",
-                    "title": "Object create date\/time",
-                    "type": "string",
-                    "format": "date",
-                    "readOnly": 1
-                },
-                "hs_lastmodifieddate": {
-                    "name": "hs_lastmodifieddate",
-                    "title": "Object last modified date\/time",
-                    "type": "string",
-                    "format": "date",
-                    "readOnly": 1
-                },
-                "hs_merged_object_ids": {
-                    "name": "hs_merged_object_ids",
-                    "title": "Merged record IDs",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_object_id": {
-                    "name": "hs_object_id",
-                    "title": "Record ID",
-                    "type": "number",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_object_source": {
-                    "name": "hs_object_source",
-                    "title": "Record Creation Source",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_object_source_detail_1": {
-                    "name": "hs_object_source_detail_1",
-                    "title": "Record Source Detail 1",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_object_source_detail_2": {
-                    "name": "hs_object_source_detail_2",
-                    "title": "Record Source Detail 2",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_object_source_detail_3": {
-                    "name": "hs_object_source_detail_3",
-                    "title": "Record Source Detail 3",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_object_source_id": {
-                    "name": "hs_object_source_id",
-                    "title": "Record Creation Source ID",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_object_source_label": {
-                    "name": "hs_object_source_label",
-                    "title": "Record Source",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_object_source_user_id": {
-                    "name": "hs_object_source_user_id",
-                    "title": "Record Creation Source User ID",
-                    "type": "number",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_pinned_engagement_id": {
-                    "name": "hs_pinned_engagement_id",
-                    "title": "Pinned Engagement ID",
-                    "type": "number",
-                    "format": ""
-                },
-                "hs_read_only": {
-                    "name": "hs_read_only",
-                    "title": "Read Only Object",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_shared_team_ids": {
-                    "name": "hs_shared_team_ids",
-                    "title": "Shared Team IDs",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_shared_user_ids": {
-                    "name": "hs_shared_user_ids",
-                    "title": "Shared User IDs",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_unique_creation_key": {
-                    "name": "hs_unique_creation_key",
-                    "title": "Unique creation key",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_updated_by_user_id": {
-                    "name": "hs_updated_by_user_id",
-                    "title": "Updated by user ID",
-                    "type": "number",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_user_ids_of_all_notification_followers": {
-                    "name": "hs_user_ids_of_all_notification_followers",
-                    "title": "User IDs of all notification followers",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_user_ids_of_all_notification_unfollowers": {
-                    "name": "hs_user_ids_of_all_notification_unfollowers",
-                    "title": "User IDs of all notification unfollowers",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_user_ids_of_all_owners": {
-                    "name": "hs_user_ids_of_all_owners",
-                    "title": "User IDs of all owners",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hs_was_imported": {
-                    "name": "hs_was_imported",
-                    "title": "Performed in an import",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                },
-                "hubspot_owner_assigneddate": {
-                    "name": "hubspot_owner_assigneddate",
-                    "title": "Owner Assigned Date",
-                    "type": "string",
-                    "format": "date",
-                    "readOnly": 1
-                },
-                "hubspot_owner_id": {
-                    "name": "hubspot_owner_id",
-                    "title": "Owner",
-                    "type": "string",
-                    "format": ""
-                },
-                "hubspot_team_id": {
-                    "name": "hubspot_team_id",
-                    "title": "HubSpot Team",
-                    "type": "string",
-                    "format": "",
-                    "readOnly": 1
-                }
-            },
-            "title": "p46520094_CarSpot",
             "additionalProperties": false
         },
         "p46520094_cars": {
@@ -13278,6 +13409,470 @@
                 }
             },
             "title": "p46520094_cars",
+            "additionalProperties": false
+        },
+        "p46520094_CarSpot": {
+            "type": "object",
+            "properties": {
+                "date_received": {
+                    "name": "date_received",
+                    "title": "Date received",
+                    "type": "string",
+                    "format": "",
+                    "required": true
+                },
+                "hs_all_accessible_team_ids": {
+                    "name": "hs_all_accessible_team_ids",
+                    "title": "All teams",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_all_assigned_business_unit_ids": {
+                    "name": "hs_all_assigned_business_unit_ids",
+                    "title": "Business units",
+                    "type": "string",
+                    "format": ""
+                },
+                "hs_all_owner_ids": {
+                    "name": "hs_all_owner_ids",
+                    "title": "All owner ids",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_all_team_ids": {
+                    "name": "hs_all_team_ids",
+                    "title": "All team ids",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_created_by_user_id": {
+                    "name": "hs_created_by_user_id",
+                    "title": "Created by user ID",
+                    "type": "number",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_createdate": {
+                    "name": "hs_createdate",
+                    "title": "Object create date\/time",
+                    "type": "string",
+                    "format": "date",
+                    "readOnly": 1
+                },
+                "hs_lastmodifieddate": {
+                    "name": "hs_lastmodifieddate",
+                    "title": "Object last modified date\/time",
+                    "type": "string",
+                    "format": "date",
+                    "readOnly": 1
+                },
+                "hs_merged_object_ids": {
+                    "name": "hs_merged_object_ids",
+                    "title": "Merged record IDs",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_id": {
+                    "name": "hs_object_id",
+                    "title": "Record ID",
+                    "type": "number",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source": {
+                    "name": "hs_object_source",
+                    "title": "Record Creation Source",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source_detail_1": {
+                    "name": "hs_object_source_detail_1",
+                    "title": "Record Source Detail 1",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source_detail_2": {
+                    "name": "hs_object_source_detail_2",
+                    "title": "Record Source Detail 2",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source_detail_3": {
+                    "name": "hs_object_source_detail_3",
+                    "title": "Record Source Detail 3",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source_id": {
+                    "name": "hs_object_source_id",
+                    "title": "Record Creation Source ID",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source_label": {
+                    "name": "hs_object_source_label",
+                    "title": "Record Source",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source_user_id": {
+                    "name": "hs_object_source_user_id",
+                    "title": "Record Creation Source User ID",
+                    "type": "number",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_pinned_engagement_id": {
+                    "name": "hs_pinned_engagement_id",
+                    "title": "Pinned Engagement ID",
+                    "type": "number",
+                    "format": ""
+                },
+                "hs_read_only": {
+                    "name": "hs_read_only",
+                    "title": "Read Only Object",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_shared_team_ids": {
+                    "name": "hs_shared_team_ids",
+                    "title": "Shared Team IDs",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_shared_user_ids": {
+                    "name": "hs_shared_user_ids",
+                    "title": "Shared User IDs",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_unique_creation_key": {
+                    "name": "hs_unique_creation_key",
+                    "title": "Unique creation key",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_updated_by_user_id": {
+                    "name": "hs_updated_by_user_id",
+                    "title": "Updated by user ID",
+                    "type": "number",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_user_ids_of_all_notification_followers": {
+                    "name": "hs_user_ids_of_all_notification_followers",
+                    "title": "User IDs of all notification followers",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_user_ids_of_all_notification_unfollowers": {
+                    "name": "hs_user_ids_of_all_notification_unfollowers",
+                    "title": "User IDs of all notification unfollowers",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_user_ids_of_all_owners": {
+                    "name": "hs_user_ids_of_all_owners",
+                    "title": "User IDs of all owners",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_was_imported": {
+                    "name": "hs_was_imported",
+                    "title": "Performed in an import",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hubspot_owner_assigneddate": {
+                    "name": "hubspot_owner_assigneddate",
+                    "title": "Owner Assigned Date",
+                    "type": "string",
+                    "format": "date",
+                    "readOnly": 1
+                },
+                "hubspot_owner_id": {
+                    "name": "hubspot_owner_id",
+                    "title": "Owner",
+                    "type": "string",
+                    "format": ""
+                },
+                "hubspot_team_id": {
+                    "name": "hubspot_team_id",
+                    "title": "HubSpot Team",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                }
+            },
+            "title": "p46520094_CarSpot",
+            "additionalProperties": false
+        },
+        "p46520094_Obj_schema": {
+            "type": "object",
+            "properties": {
+                "condition": {
+                    "name": "condition",
+                    "title": "Condition",
+                    "type": "string",
+                    "format": "",
+                    "oneOf": [
+                        {
+                            "const": "new",
+                            "title": "New"
+                        },
+                        {
+                            "const": "used",
+                            "title": "Used"
+                        }
+                    ]
+                },
+                "date_received": {
+                    "name": "date_received",
+                    "title": "Date received",
+                    "type": "string",
+                    "format": "date"
+                },
+                "hs_all_accessible_team_ids": {
+                    "name": "hs_all_accessible_team_ids",
+                    "title": "All teams",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_all_assigned_business_unit_ids": {
+                    "name": "hs_all_assigned_business_unit_ids",
+                    "title": "Business units",
+                    "type": "string",
+                    "format": ""
+                },
+                "hs_all_owner_ids": {
+                    "name": "hs_all_owner_ids",
+                    "title": "All owner ids",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_all_team_ids": {
+                    "name": "hs_all_team_ids",
+                    "title": "All team ids",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_created_by_user_id": {
+                    "name": "hs_created_by_user_id",
+                    "title": "Created by user ID",
+                    "type": "number",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_createdate": {
+                    "name": "hs_createdate",
+                    "title": "Object create date\/time",
+                    "type": "string",
+                    "format": "date",
+                    "readOnly": 1
+                },
+                "hs_lastmodifieddate": {
+                    "name": "hs_lastmodifieddate",
+                    "title": "Object last modified date\/time",
+                    "type": "string",
+                    "format": "date",
+                    "readOnly": 1
+                },
+                "hs_merged_object_ids": {
+                    "name": "hs_merged_object_ids",
+                    "title": "Merged record IDs",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_id": {
+                    "name": "hs_object_id",
+                    "title": "Record ID",
+                    "type": "number",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source": {
+                    "name": "hs_object_source",
+                    "title": "Record Creation Source",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source_detail_1": {
+                    "name": "hs_object_source_detail_1",
+                    "title": "Record Source Detail 1",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source_detail_2": {
+                    "name": "hs_object_source_detail_2",
+                    "title": "Record Source Detail 2",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source_detail_3": {
+                    "name": "hs_object_source_detail_3",
+                    "title": "Record Source Detail 3",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source_id": {
+                    "name": "hs_object_source_id",
+                    "title": "Record Creation Source ID",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source_label": {
+                    "name": "hs_object_source_label",
+                    "title": "Record Source",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_object_source_user_id": {
+                    "name": "hs_object_source_user_id",
+                    "title": "Record Creation Source User ID",
+                    "type": "number",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_pinned_engagement_id": {
+                    "name": "hs_pinned_engagement_id",
+                    "title": "Pinned Engagement ID",
+                    "type": "number",
+                    "format": ""
+                },
+                "hs_read_only": {
+                    "name": "hs_read_only",
+                    "title": "Read Only Object",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_shared_team_ids": {
+                    "name": "hs_shared_team_ids",
+                    "title": "Shared Team IDs",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_shared_user_ids": {
+                    "name": "hs_shared_user_ids",
+                    "title": "Shared User IDs",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_unique_creation_key": {
+                    "name": "hs_unique_creation_key",
+                    "title": "Unique creation key",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_updated_by_user_id": {
+                    "name": "hs_updated_by_user_id",
+                    "title": "Updated by user ID",
+                    "type": "number",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_user_ids_of_all_notification_followers": {
+                    "name": "hs_user_ids_of_all_notification_followers",
+                    "title": "User IDs of all notification followers",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_user_ids_of_all_notification_unfollowers": {
+                    "name": "hs_user_ids_of_all_notification_unfollowers",
+                    "title": "User IDs of all notification unfollowers",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_user_ids_of_all_owners": {
+                    "name": "hs_user_ids_of_all_owners",
+                    "title": "User IDs of all owners",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hs_was_imported": {
+                    "name": "hs_was_imported",
+                    "title": "Performed in an import",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "hubspot_owner_assigneddate": {
+                    "name": "hubspot_owner_assigneddate",
+                    "title": "Owner Assigned Date",
+                    "type": "string",
+                    "format": "date",
+                    "readOnly": 1
+                },
+                "hubspot_owner_id": {
+                    "name": "hubspot_owner_id",
+                    "title": "Owner",
+                    "type": "string",
+                    "format": ""
+                },
+                "hubspot_team_id": {
+                    "name": "hubspot_team_id",
+                    "title": "HubSpot Team",
+                    "type": "string",
+                    "format": "",
+                    "readOnly": 1
+                },
+                "make": {
+                    "name": "make",
+                    "title": "Make",
+                    "type": "string",
+                    "format": "",
+                    "required": true
+                },
+                "model": {
+                    "name": "model",
+                    "title": "Model",
+                    "type": "string",
+                    "format": "",
+                    "required": true
+                },
+                "year": {
+                    "name": "year",
+                    "title": "Year",
+                    "type": "number",
+                    "format": "",
+                    "required": true
+                }
+            },
+            "title": "p46520094_Obj_schema",
             "additionalProperties": false
         }
     },

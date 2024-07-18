@@ -70,12 +70,12 @@ class HubspotSchema extends IntegrationSchema
      */
     public function getObjectSchema(Discovery $client): array
     {
-        // $standardCRMObjects contains standard objects and its required properties from HubSpot
+        // $standardCRMObjects contains standard objects from HubSpot
         $standardCRMObjects = [
-            ["fully_qualified_name" => "contacts", 'required_properties' => ['email', 'firstname', 'lastname']],
-            ["fully_qualified_name" => "companies", 'required_properties' => ['name', 'domain']],
-            ["fully_qualified_name" => "deals", 'required_properties' => ['dealname', 'dealstage']],
-            ["fully_qualified_name" => "tickets", 'required_properties' => ['subject', 'hs_pipeline_stage']]
+            ["fully_qualified_name" => "contacts"],
+            ["fully_qualified_name" => "companies"],
+            ["fully_qualified_name" => "deals"],
+            ["fully_qualified_name" => "tickets"]
         ];
 
         // Making an api call to crm/v3/schemas to get all the custom objects 
@@ -148,8 +148,8 @@ class HubspotSchema extends IntegrationSchema
             "format" => $this->getFormatFromProperty($property['fieldType'])
         ];
 
-        // If the field is a required key
-        if(in_array($property['name'], $object['required_properties'])){
+        // If the object contains a required_properties key and if the field is a required key
+        if(array_key_exists('required_properties', $object) && in_array($property['name'], $object['required_properties'])){
             // Providing a required key into the property
             $attributes = array_merge($attributes, ["required" => true]);
         }
