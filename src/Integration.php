@@ -55,7 +55,7 @@ class Integration extends AbstractIntegration implements OAuthInterface
      *
      * @return \Connector\Integrations\Response
      * 
-     * @throws \Connector\Exceptions\InvalidSchemaException
+     * @throws InvalidExecutionPlan
      */ 
     public function load(RecordLocator $recordLocator, Mapping $mapping, ?RecordKey $scope): Response
     {
