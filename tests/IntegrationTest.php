@@ -461,6 +461,7 @@ final class IntegrationTest extends TestCase
         $integration->setSchema(new IntegrationSchema($schema));
         $integration->begin();
         $recordLocator = new RecordLocator(["recordType" => $customObject]);
+        
         $mapping = new Mapping($baseData);
 
         $response = $integration->load($recordLocator, $mapping, null);
