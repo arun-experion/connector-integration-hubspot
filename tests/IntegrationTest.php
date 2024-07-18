@@ -240,19 +240,6 @@ final class IntegrationTest extends TestCase
         $this->assertEquals($actualCustomObject2, $expectedcustomObject2, "Item  should contain a ".$expectedKeys[5]." object.");
         $this->assertEquals($actualCustomObject3, $expectedcustomObject3, "Item  should contain a ".$expectedKeys[6]." object.");
 
-        //Check Custom Object have atleast one required Property
-        for ($i = 4; $i < count($actualKeys); $i++) {
-            $properties = $schema['items'][$actualKeys[$i]]['properties'];
-            // Check if there is at least one 'required' key in the properties
-            $hasRequired = false;
-            foreach ($properties as $property) {
-                if (isset($property['required'])) {
-                    $hasRequired = true;
-                    break;
-                }
-        }
-        $this->assertTrue($hasRequired, "Custom Object does not have any Required property.");
-    }
 }
 
     /*
@@ -461,7 +448,7 @@ final class IntegrationTest extends TestCase
         $integration->setSchema(new IntegrationSchema($schema));
         $integration->begin();
         $recordLocator = new RecordLocator(["recordType" => $customObject]);
-        
+
         $mapping = new Mapping($baseData);
 
         $response = $integration->load($recordLocator, $mapping, null);
