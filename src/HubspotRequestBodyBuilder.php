@@ -14,14 +14,13 @@ class HubspotRequestBodyBuilder
      */
     static public function toRequestBody(array $query, array $selectFields, HubspotOrderByClause $orderBy): array
     {
-       
-
         // Creating the filters and filterGroups inside request body
         $result = [];
         $body = self::createFilterGroupsAndFilters($query['where'], $result);
 
-         // To return a specific set of properties, include a properties array in the request body
-         $body['properties'] = $selectFields;
+        // To return a specific set of properties, include a properties array in the request body
+        $body['properties'] = $selectFields;
+        
         // By default results will be returned in order of object creation (oldest first)
         // Only if an order by is manually mentioned, a sort key will be prepared in the request body
         if (!empty($orderBy->column)) {
