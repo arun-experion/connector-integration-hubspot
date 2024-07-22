@@ -64,9 +64,6 @@ class Integration extends AbstractIntegration implements OAuthInterface
 
         $this->log('Selected ' . $recordLocator->recordType . ' ' . $result->getLoadedRecordKey()->recordId);
 
-        $res = (new Response())->setRecordKey($result->getLoadedRecordKey())->setRecordset($result->getExtractedRecordSet());
-        file_put_contents(__DIR__ . '/test.json', json_encode($res, JSON_PRETTY_PRINT));
-
         return (new Response())->setRecordKey($result->getLoadedRecordKey())->setRecordset($result->getExtractedRecordSet());
     }
 
