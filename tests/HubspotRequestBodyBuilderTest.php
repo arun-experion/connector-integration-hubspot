@@ -53,7 +53,7 @@ class HubspotRequestBodyBuilderTest extends TestCase
      * This test case verifies that the HubspotRequestBodyBuilder correctly constructs
      * a request body with an AND clause combining two conditions.
      */
-    function testANDClause()
+    function testAndClause()
     {
         // Define two conditions to be combined with AND
         $a   =  ['left' => 'domain', 'op' => '=', 'right' => 'example.com'];
@@ -95,7 +95,7 @@ class HubspotRequestBodyBuilderTest extends TestCase
      * This test case verifies that the HubspotRequestBodyBuilder correctly constructs
      * a request body with an OR clause combining two conditions.
      */
-    function testORClause()
+    function testOrClause()
     {
         // Define two conditions to be combined with OR  
         $a   =  ['left' => 'domain', 'op' => '=', 'right' => 'example.com'];

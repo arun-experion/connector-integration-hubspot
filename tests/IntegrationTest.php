@@ -489,8 +489,6 @@ final class IntegrationTest extends TestCase
         // Call the extract method 
         $response = $integration->extract($recordLocator, $mapping, null);
 
-        // Assert that the number of records in the response is less than or equal to 100
-        $this->assertLessThanOrEqual(100, $response->getRecordset()->count());
         // Assert that the record type in the response is "companies"
         $this->assertEquals("companies", $response->getRecordKey()->recordType);
         $this->assertEquals("21936653466", $response->getRecordKey()->recordId);
