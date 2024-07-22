@@ -13,8 +13,16 @@ class HubspotRecordLocator extends RecordLocator
      */
     public OperationTypes $type = OperationTypes::Create;
 
-    public  $query;
-    
+    /**
+     * @var array<string, string, string> $query Contains the query, with keys left, op and right
+     */
+    public array $query;
+
+    /**
+     * @var HubspotOrderByClause $orderBy Contains order by clause
+     */
+    public HubspotOrderByClause $orderBy;
+
     /**
      * @param mixed|null                               $params
      * @param \Connector\Schema\IntegrationSchema|null $schema
@@ -23,6 +31,7 @@ class HubspotRecordLocator extends RecordLocator
      */
     public function __construct(mixed $params = null, IntegrationSchema $schema = null)
     {
+        $this->orderBy = new HubspotOrderByClause();
         parent::__construct($params);
     }
 

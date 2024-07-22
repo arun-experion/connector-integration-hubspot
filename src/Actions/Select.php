@@ -2,6 +2,7 @@
 
 namespace Connector\Integrations\Hubspot\Actions;
 
+use Connector\Exceptions\RecordNotFound;
 use Connector\Integrations\Hubspot\Config;
 use Connector\Integrations\Hubspot\HubspotRecordLocator;
 use Connector\Integrations\Hubspot\HubspotRequestBodyBuilder;
@@ -42,7 +43,8 @@ class Select
     }
 
     /**
-     * 
+     * @throws RecordNotFound
+     * @throws InvalidArgumentException
      * @return \Connector\Operation\Result
      */
     public function execute(): Result
@@ -53,43 +55,12 @@ class Select
         $recordset = new Recordset();
 
         $selectFields = array_map(function (Mapping\Item $item) {
-            // $item->value contains the data
+            // Returning the field names
             return $item->key;
         }, $this->mapping->items);
 
-        // Mock request body
-        // $requestBody = [
-        //     "filterGroups" => [
-        //         [
-        //             "filters" => [
-        //                 [
-        //                     "propertyName" => "make",
-        //                     "operator" => "EQ",
-        //                     "value" => "Nissan"
-        //                 ],
-        //                 [
-        //                     "propertyName" => "model",
-        //                     "operator" => "EQ",
-        //                     "value" => "Frontier"
-        //                 ]
-        //             ]
-        //         ],
-        //         [
-        //             "filters" => [
-        //                 [
-        //                     "propertyName" => "year",
-        //                     "operator" => "EQ",
-        //                     "value" => "2019"
-        //                 ]
-        //             ]
-        //         ]
-        //     ],
-        //     "properties" => $selectFields,
-        //     "limit" => 100
-        // ];
-
-        $requestBody = HubspotRequestBodyBuilder::toRequestBody($this->recordLocator->query, $selectFields);
-        print_r($requestBody);die;
+        $requestBody = HubspotRequestBodyBuilder::toRequestBody($this->recordLocator->query, $selectFields, $this->recordLocator->orderBy);
+        
         if ($requestBody) {
             try {
                 $response = $httpClient->post(Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' . $this->recordLocator->recordType . '/search', [
@@ -100,23 +71,22 @@ class Select
                     'json' => $requestBody
                 ]);
                 $response = json_decode($response->getBody()); 
-                $totalResults = $response->total;
+                if($response->total === 0){
+                    throw new RecordNotFound("No records found for the given query");
+                }
             } catch (GuzzleException $exception) {
                 throw new InvalidArgumentException($exception->getMessage());
             }
-            $count = 0;
+            
             foreach ($response->results as $record) {
                 $key = new RecordKey($record->id, $this->recordLocator->recordType );
                 $attr = (array) $record;
                 $recordset[] = new Record($key, $attr);
-                
-                // Count the number of records
-                $count++;
             }
         }
-
+        
         return $result
             ->setExtractedRecordSet($recordset)
-            ->setLoadedRecordKey($recordset->records[0]->getKey() ?? null);
+            ->setLoadedRecordKey($recordset[0]->getKey() ?? "null");
     }
 }

@@ -64,9 +64,10 @@ class Integration extends AbstractIntegration implements OAuthInterface
 
         $this->log('Selected ' . $recordLocator->recordType . ' ' . $result->getLoadedRecordKey()->recordId);
 
-        $res = (new Response())->setRecordset($result->getExtractedRecordSet());
+        $res = (new Response())->setRecordKey($result->getLoadedRecordKey())->setRecordset($result->getExtractedRecordSet());
         file_put_contents(__DIR__ . '/test.json', json_encode($res, JSON_PRETTY_PRINT));
-        return (new Response())->setRecordset($result->getExtractedRecordSet());
+
+        return (new Response())->setRecordKey($result->getLoadedRecordKey())->setRecordset($result->getExtractedRecordSet());
     }
 
     /**
@@ -76,7 +77,7 @@ class Integration extends AbstractIntegration implements OAuthInterface
      *
      * @return \Connector\Integrations\Response
      * 
-     * @throws \Connector\Exceptions\InvalidSchemaException
+     * @throws InvalidExecutionPlan
      */
     public function load(RecordLocator $recordLocator, Mapping $mapping, ?RecordKey $scope): Response
     {
@@ -151,8 +152,15 @@ $integration->setSchema(new IntegrationSchema($schema));
 $integration->begin();
 
 // Configure the operation query and mapping
-$query = [['filters'=>[["name", "operator" => "EQ", "value" => "Nissan"], ["propertyName" => "name", "operator" => "EQ", "value" => "BMW"]]], ["filters" => ["propertyName" => "year", "operator" => "EQ", "value" => 2019]]];
-$recordLocator = new RecordLocator(["recordType" => 'p46520094_Obj_schema', "query" => $query]);
+// $query = ['where' => ['left' => ['left' => "make", "op" => "=", "right" => "Mercedez"], 'op' => 'OR', 'right' => ['left' => ["left" => "make", "op" => "=", "right" => "Nissan"], 'op' => 'AND', 'right' => ['left' => 'model', 'op' => '=', 'right' => "Frontier"]]]];
+// $query = ['where' => ['left' => ['left' => "make", "op" => "=", "right" => "BMW"], 'op' => 'OR', 'right' => ['left' => ["left" => "make", "op" => "=", "right" => "Nissan"], 'op' => 'OR', 'right' => ['left' => ['left' => 'year', 'op' => '=', 'right' => '2014'], 'op' => 'AND', 'right' => ['left' => 'model', 'op' => '=', 'right' => 'C-Class']]]]];
+$query = ['where' => ['left' => ['left' => "make", "op" => "=", "right" => "BMW"], 'op' => 'OR', 'right' => ['left' => ["left" => "make", "op" => "=", "right" => "Nissan"], 'op' => 'AND', 'right' => ['left' => ['left' => 'year', 'op' => '=', 'right' =>'2019'], 'op' => 'OR', 'right' => ['left' => 'model', 'op' => '=', 'right' =>'C-Class']]]]];
+// $query = ['where' => ['left' => 'make', "op" => '=', "right" => 'Mercedez']];
+
+// Ordering false = descending
+$orderBy = new HubspotOrderByClause('hs_createdate', false);
+
+$recordLocator = new RecordLocator(["recordType" => 'p46520094_Obj_schema', "query" => $query, 'orderBy' => $orderBy]);
 $mapping = new Mapping(["make" => null, "model" => null]);
 
 // Extract the data from Salesforce
