@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Connector\Integrations\Hubspot\Config;
+use Connector\Integrations\Hubspot\HubspotOrderByClause;
 use Connector\Integrations\Hubspot\Integration;
 use Connector\Mapping;
 use Connector\Record\RecordLocator;
@@ -461,5 +462,39 @@ final class IntegrationTest extends TestCase
         foreach ($requiredProperties as $requiredProperty) {
             $this->assertTrue($mapping->hasItem($requiredProperty), "Mapping is missing required property: $requiredProperty");
         }
+    }
+      /**
+     * Test the extract functionality of the Integration class.
+     *
+     * This test case verifies that the Integration class correctly extracts records
+     *  It ensures that the response contains
+     * the expected number of records and that the records contain the correct data.
+     */
+    function testExtract()
+    {
+        $integration = new Integration();
+        $schema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
+        $integration->setSchema(new IntegrationSchema($schema));
+        $integration->begin();
+
+        // Define the query condition for extracting records
+        $query = ["where" => ['left' => 'domain', 'op' => '=', 'right' => 'examplehubspot.com']];
+        // Create a new orderBy clause object for ordering the results
+        $orderBy = new HubspotOrderByClause();
+        // Create a record locator with the record type, query, and orderBy clause
+        $recordLocator = new RecordLocator(["recordType" => 'companies', "query" => $query, 'orderBy' => $orderBy]);
+        // Define the mapping for the fields to be extracted
+        $mapping = new Mapping(["domain" => null, "name" => null]);
+
+        // Call the extract method 
+        $response = $integration->extract($recordLocator, $mapping, null);
+
+        // Assert that the number of records in the response is less than or equal to 100
+        $this->assertLessThanOrEqual(100, $response->getRecordset()->count());
+        // Assert that the record type in the response is "companies"
+        $this->assertEquals("companies", $response->getRecordKey()->recordType);
+        $this->assertEquals("21936653466", $response->getRecordKey()->recordId);
+        $this->assertEquals("examplehubspot.com", $response->getRecordset()->records[0]->data['properties']->domain);
+        $this->assertEquals("Example Hubspot", $response->getRecordset()->records[0]->data['properties']->name);
     }
 }
