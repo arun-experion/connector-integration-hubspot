@@ -2,6 +2,8 @@
 
 namespace Tests;
 
+use Connector\Integrations\Hubspot\HubspotOrderByClause;
+use Connector\Integrations\Hubspot\HubspotRequestBodyBuilder;
 use PHPUnit\Framework\TestCase;
 
 final class HubspotRequestBodyBuilderTest extends TestCase
@@ -10,9 +12,10 @@ final class HubspotRequestBodyBuilderTest extends TestCase
     function testSimpleWhereClause()
     {
         $searchCondition = ["where" => ['left' => 'domain', 'op' => '=', 'right' => 'example.com']];
-        //calls the desired function to format $searchCondition
-        // $hubspotRequestBodyBuilder=new HubspotRequestBodyBuilder
-        // $hubspotRequestBody=$hubspotRequestBody->toRequestBody($searchCondition);
+        $selectFields=["domain", "name"];
+        $orderBy=new HubspotOrderByClause();
+        $hubspotRequestBodyBuilder=new HubspotRequestBodyBuilder;
+        $hubspotRequestBody=$hubspotRequestBodyBuilder->toRequestBody($searchCondition,$selectFields,$orderBy);
         $desiredRequestBody = [
             "filterGroups" => [
                 [
@@ -25,20 +28,23 @@ final class HubspotRequestBodyBuilderTest extends TestCase
                     ]
                 ]
             ],
+            "properties"=> ["domain", "name"],
+            'limit' => 100,
         ];
-        // $this->assertEquals($desiredRequestBody,$hubspotRequestBody)
+         $this->assertEquals($desiredRequestBody,$hubspotRequestBody);
 
     }
 
     function testANDClause()
     {
-        $a   = ["where" => ['left' => 'domain', 'op' => '=', 'right' => 'example.com']];
-        $b    = ["where" => ['left' => 'name', 'op' => '=', 'right' => 'example']];
-        $where  = ["where" => ['left' => $a, 'op' => "AND", 'right' => $b]];
-
-        //calls the desired function to format $where
-        // $hubspotRequestBodyBuilder=new HubspotRequestBodyBuilder
-        // $hubspotRequestBody=$hubspotRequestBody->toRequestBody($searchCondition);
+        $a   =  ['left' => 'domain', 'op' => '=', 'right' => 'example.com'];
+        $b    =  ['left' => 'name', 'op' => '=', 'right' => 'example'];
+        $searchCondition  = ["where" => ['left' => $a,  'op' => 'AND', 'right' => $b]];
+        $selectFields=["domain", "name"];
+        $orderBy=new HubspotOrderByClause();
+        $hubspotRequestBodyBuilder=new HubspotRequestBodyBuilder;
+        $hubspotRequestBody=$hubspotRequestBodyBuilder->toRequestBody($searchCondition,$selectFields,$orderBy);
+       
         $desiredRequestBody = [
             "filterGroups" => [
                 [
@@ -56,20 +62,23 @@ final class HubspotRequestBodyBuilderTest extends TestCase
                     ]
                 ],
             ],
+            "properties"=> ["domain", "name"],
+            'limit' => 100,
         ];
 
-        //$this->assertEquals($desiredRequestBody,$hubspotRequestBody)
+        $this->assertEquals($desiredRequestBody,$hubspotRequestBody);
     }
     function testORClause()
     {
-        $a   = ["where" => ['left' => 'domain', 'op' => '=', 'right' => 'example.com']];
-        $b    = ["where" => ['left' => 'domain', 'op' => '=', 'right' => 'examplehubspot.com']];
-        $where  = ["where" => ['left' => $a, 'op' => 'OR', 'right' => $b]];
-
-        //calls the desired function to format $where
-        // $hubspotRequestBodyBuilder=new HubspotRequestBodyBuilder
-        // $hubspotRequestBody=$hubspotRequestBody->toRequestBody($searchCondition);
-        $desiredRequestBody = $requestPayload = [
+        $a   =  ['left' => 'domain', 'op' => '=', 'right' => 'example.com'];
+        $b    =  ['left' => 'name', 'op' => '=', 'right' => 'example'];
+        $searchCondition  = ["where" => ['left' => $a,  'op' => 'OR', 'right' => $b]];
+        $selectFields=["domain", "name"];
+        $orderBy=new HubspotOrderByClause();
+        $hubspotRequestBodyBuilder=new HubspotRequestBodyBuilder;
+        $hubspotRequestBody=$hubspotRequestBodyBuilder->toRequestBody($searchCondition,$selectFields,$orderBy);
+       
+        $desiredRequestBody =[
             "filterGroups" => [
                 [
                     "filters" => [
@@ -90,20 +99,21 @@ final class HubspotRequestBodyBuilderTest extends TestCase
                     ]
                 ]
             ],
-
+            "properties"=> ["domain", "name"],
+            'limit' => 100,
         ];
-
-        //$this->assertEquals($desiredRequestBody,$hubspotRequestBody)
+        $this->assertEquals($desiredRequestBody,$hubspotRequestBody);
     }
 
     function testDescendingOrderByClause()
     {
-        $where = ["where" => ['left' => 'domain', 'op' => '=', 'right' => 'example.com']];
-        $orderBy = ['Created', 'Descending'];
-        //calls the desired function to format $where
-        // $hubspotRequestBodyBuilder=new HubspotRequestBodyBuilder
-        // $hubspotRequestBody=$hubspotRequestBody->toRequestBody($searchCondition);
-        $desiredRequestFormat = [
+        $searchCondition = ["where" => ['left' => 'domain', 'op' => '=', 'right' => 'example.com']];
+        $selectFields=["domain", "name"];
+        $orderBy=new HubspotOrderByClause('hs_createdate', false);
+        $hubspotRequestBodyBuilder=new HubspotRequestBodyBuilder;
+        $hubspotRequestBody=$hubspotRequestBodyBuilder->toRequestBody($searchCondition,$selectFields,$orderBy);
+   
+        $desiredRequestBody = [
             "filterGroups" => [
                 [
                     "filters" => [
@@ -115,25 +125,27 @@ final class HubspotRequestBodyBuilderTest extends TestCase
                     ]
                 ],
             ],
+            "properties"=> ["domain", "name"],
+            'limit' => 100,
             "sorts" => [
                 [
-                    "propertyName" => "createdate",
+                    "propertyName" => "hs_createdate",
                     "direction" => "DESCENDING"
                 ]
             ]
         ];
-
-        //$this->assertEquals($desiredRequestBody,$hubspotRequestBody)
+        $this->assertEquals($desiredRequestBody,$hubspotRequestBody);
     }
 
     function testAscendingOrderByClause()
     {
-        $where = ["where" => ['left' => 'domain', 'op' => '=', 'right' => 'example.com']];
-        $orderBy = ['Created', 'Ascending'];
-        //calls the desired function to format $where
-        // $hubspotRequestBodyBuilder=new HubspotRequestBodyBuilder
-        // $hubspotRequestBody=$hubspotRequestBody->toRequestBody($searchCondition);
-        $desiredRequestFormat = [
+        $searchCondition = ["where" => ['left' => 'domain', 'op' => '=', 'right' => 'example.com']];
+        $selectFields=["domain", "name"];
+        $orderBy=new HubspotOrderByClause('hs_createdate', true);
+        $hubspotRequestBodyBuilder=new HubspotRequestBodyBuilder;
+        $hubspotRequestBody=$hubspotRequestBodyBuilder->toRequestBody($searchCondition,$selectFields,$orderBy);
+   
+        $desiredRequestBody = [
             "filterGroups" => [
                 [
                     "filters" => [
@@ -145,14 +157,15 @@ final class HubspotRequestBodyBuilderTest extends TestCase
                     ]
                 ],
             ],
+            "properties"=> ["domain", "name"],
+            'limit' => 100,
             "sorts" => [
                 [
-                    "propertyName" => "createdate",
+                    "propertyName" => "hs_createdate",
                     "direction" => "ASCENDING"
                 ]
             ]
         ];
-
-        //$this->assertEquals($desiredRequestBody,$hubspotRequestBody)
+        $this->assertEquals($desiredRequestBody,$hubspotRequestBody);
     }
 }

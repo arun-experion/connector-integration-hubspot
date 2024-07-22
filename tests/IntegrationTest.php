@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Connector\Integrations\Hubspot\Config;
+use Connector\Integrations\Hubspot\HubspotOrderByClause;
 use Connector\Integrations\Hubspot\Integration;
 use Connector\Mapping;
 use Connector\Record\RecordLocator;
@@ -58,7 +59,6 @@ final class IntegrationTest extends TestCase
         $expectedSchema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
         // Compare the JSON schema with the expected schema stored in a file
         $this->assertTrue($expectedSchema === $jsonSchema, "Schema is different than expected.");
-
     }
 
     /**
@@ -217,30 +217,30 @@ final class IntegrationTest extends TestCase
      * This function verifies that the 'custom' object are present in the schema.
      * Check expected properties contain atleast one required Property.
      */
-    function testDiscoverCustomObject(){
+    function testDiscoverCustomObject()
+    {
         $integration = new Integration();
         $schema = $integration->discover()->schema;
-    
+
         //Decode the expected file for easier comparison.
         $expectedSchema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
 
         //Get the custom objects name from expected results
-        $expectedKeys = array_keys($expectedSchema['items']);    
-        $expectedcustomObject1 = isset($expectedKeys[4])?$expectedKeys[4]:null;
-        $expectedcustomObject2 = isset($expectedKeys[5])?$expectedKeys[5]:null;
-        $expectedcustomObject3 = isset($expectedKeys[6])?$expectedKeys[6]:null;
+        $expectedKeys = array_keys($expectedSchema['items']);
+        $expectedcustomObject1 = isset($expectedKeys[4]) ? $expectedKeys[4] : null;
+        $expectedcustomObject2 = isset($expectedKeys[5]) ? $expectedKeys[5] : null;
+        $expectedcustomObject3 = isset($expectedKeys[6]) ? $expectedKeys[6] : null;
 
         //Get the custom objects name from discover()
-        $actualKeys=(array_keys($schema['items']));
-        $actualCustomObject1=isset($actualKeys[4])?$actualKeys[4]:null;
-        $actualCustomObject2=isset($actualKeys[5])?$actualKeys[5]:null;
-        $actualCustomObject3=isset($actualKeys[6])?$actualKeys[6]:null;
+        $actualKeys = (array_keys($schema['items']));
+        $actualCustomObject1 = isset($actualKeys[4]) ? $actualKeys[4] : null;
+        $actualCustomObject2 = isset($actualKeys[5]) ? $actualKeys[5] : null;
+        $actualCustomObject3 = isset($actualKeys[6]) ? $actualKeys[6] : null;
         // Assert that the keys match the expected values
-        $this->assertEquals($actualCustomObject1, $expectedcustomObject1, "Item  should contain a ".$expectedKeys[4]." object.");
-        $this->assertEquals($actualCustomObject2, $expectedcustomObject2, "Item  should contain a ".$expectedKeys[5]." object.");
-        $this->assertEquals($actualCustomObject3, $expectedcustomObject3, "Item  should contain a ".$expectedKeys[6]." object.");
-
-}
+        $this->assertEquals($actualCustomObject1, $expectedcustomObject1, "Item  should contain a " . $expectedKeys[4] . " object.");
+        $this->assertEquals($actualCustomObject2, $expectedcustomObject2, "Item  should contain a " . $expectedKeys[5] . " object.");
+        $this->assertEquals($actualCustomObject3, $expectedcustomObject3, "Item  should contain a " . $expectedKeys[6] . " object.");
+    }
 
     /*
      * Test the load functionality of the integration.
@@ -365,7 +365,7 @@ final class IntegrationTest extends TestCase
         //Check the missing required fields
         $this->assertTrue($mapping->hasItem('dealstage'));
         $this->assertTrue($mapping->hasItem('dealname'));
-        
+
         $response = $integration->load($recordLocator, $mapping, null);
         // Check if recordType is in standard custom objects
         $recordType = $response->getRecordKey()->recordType;
@@ -436,7 +436,7 @@ final class IntegrationTest extends TestCase
 
         //Get the list of all Objects from actual schema
         foreach ($hubspotSchema['items'] as $key => $value) {
-                $listObject[] = $key;
+            $listObject[] = $key;
         }
 
         //Fetch the required properties of actual custom schema
@@ -461,5 +461,40 @@ final class IntegrationTest extends TestCase
         foreach ($requiredProperties as $requiredProperty) {
             $this->assertTrue($mapping->hasItem($requiredProperty), "Mapping is missing required property: $requiredProperty");
         }
+    }
+
+    /**
+     * Test the extract functionality of the Integration class.
+     *
+     * This test case verifies that the Integration class correctly extracts records
+     *  It ensures that the response contains
+     * the expected number of records and that the records contain the correct data.
+     */
+    function testExtract()
+    {
+        $integration = new Integration();
+        $schema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
+        $integration->setSchema(new IntegrationSchema($schema));
+        $integration->begin();
+
+        // Define the query condition for extracting records
+        $query = ["where" => ['left' => 'domain', 'op' => '=', 'right' => 'examplehubspot.com']];
+        // Create a new orderBy clause object for ordering the results
+        $orderBy = new HubspotOrderByClause();
+        // Create a record locator with the record type, query, and orderBy clause
+        $recordLocator = new RecordLocator(["recordType" => 'companies', "query" => $query, 'orderBy' => $orderBy]);
+        // Define the mapping for the fields to be extracted
+        $mapping = new Mapping(["domain" => null, "name" => null]);
+
+        // Call the extract method 
+        $response = $integration->extract($recordLocator, $mapping, null);
+
+        // Assert that the number of records in the response is less than or equal to 100
+        $this->assertLessThanOrEqual(100, $response->getRecordset()->count());
+        // Assert that the record type in the response is "companies"
+        $this->assertEquals("companies", $response->getRecordKey()->recordType);
+        $this->assertEquals("21936653466", $response->getRecordKey()->recordId);
+        $this->assertEquals("examplehubspot.com", $response->getRecordset()->records[0]->data['properties']->domain);
+        $this->assertEquals("Example Hubspot", $response->getRecordset()->records[0]->data['properties']->name);
     }
 }
