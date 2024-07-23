@@ -4,6 +4,8 @@ namespace Connector\Integrations\Hubspot;
 require __DIR__."/../vendor/autoload.php";
 
 use Connector\Exceptions\InvalidExecutionPlan;
+use Connector\Exceptions\RecordNotFound;
+use Connector\Exceptions\AbortedOperationException;
 use Connector\Integrations\AbstractIntegration;
 use Connector\Integrations\Authorizations\OAuthInterface;
 use Connector\Integrations\Authorizations\OAuthTrait;
@@ -18,7 +20,6 @@ use HubSpot\Client\Crm\Objects\ApiException;
 use HubSpot\Factory;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
-
 class Integration extends AbstractIntegration implements OAuthInterface
 {
     use OAuthTrait;
@@ -86,16 +87,19 @@ class Integration extends AbstractIntegration implements OAuthInterface
         // Mapping may contain fully-qualified names (remove record type and keep only property name)
         $mapping = $this->normalizeMapping($mapping);
 
-        // Initially, trying to create only. $recordLocator should contain $type which indicates the type of operation
+        // $recordLocator should contains $type which indicates the type of operation (Create or Update)
         if($recordLocator->isCreate()){
             $action = new Actions\Create($recordLocator, $mapping, $scope);
+        } elseif($recordLocator->isUpdate()){
+            // Finding the record id
+            $recordLocator = $this->lookupRecordsToUpdate($recordLocator, $scope);
+            $action = new Actions\Update($recordLocator, $mapping, $scope);
         } else {
             throw new InvalidExecutionPlan("Unknown operation type");
         }
         
         try {
             $result = $action->execute($this->client);
-            $this->log('Created ' . $recordLocator->recordType . ' ' . $result->getLoadedRecordKey()->recordId);
         } catch (ApiException $e) {
             throw new InvalidExecutionPlan($e->getMessage());
         }
@@ -139,24 +143,36 @@ class Integration extends AbstractIntegration implements OAuthInterface
         }
         return $mapping;
     }
+
+    /**
+     * lookupRecordsToUpdate method is used to return the recordId found using the query provided
+     * @param \Connector\Integrations\Hubspot\HubspotRecordLocator $recordLocator
+     * @param RecordKey|null $scope
+     * 
+     * @throws \Connector\Exceptions\RecordNotFound
+     * @throws \Connector\Exceptions\AbortedOperationException
+     * 
+     * @return \Connector\Integrations\Hubspot\HubspotRecordLocator
+     */
+    private function lookupRecordsToUpdate(HubspotRecordLocator $recordLocator, ?RecordKey $scope): HubspotRecordLocator
+    {
+        if(!empty($recordLocator->query))
+        {
+            $action = new Actions\Select($recordLocator, new Mapping(['Id' => null]), $scope);
+            $result = $action->execute();
+            $this->log(json_encode($action->getLog()));
+            // print_r($result); die;
+
+            if($result->getExtractedRecordSet()->count() > 0)
+            {
+                $recordLocator->recordId = $result->getExtractedRecordSet()->records[0]->data['id'];
+            } else {
+                throw new RecordNotFound("No records found.");
+            }
+        } else{
+            throw new AbortedOperationException("Empty query");
+        }
+
+        return $recordLocator;
+    }
 }
-
-$integration = new Integration();
-$schema = json_decode(file_get_contents(__DIR__ . "/../tests/schemas/DiscoverResult.json"), true);
-$integration->setSchema(new IntegrationSchema($schema));
-$integration->begin();
-
-// Configure the operation query and mapping
-// $query = ['where' => ['left' => ['left' => "make", "op" => "=", "right" => "Mercedez"], 'op' => 'OR', 'right' => ['left' => ["left" => "make", "op" => "=", "right" => "Nissan"], 'op' => 'AND', 'right' => ['left' => 'model', 'op' => '=', 'right' => "Frontier"]]]];
-// $query = ['where' => ['left' => ['left' => "make", "op" => "=", "right" => "BMW"], 'op' => 'OR', 'right' => ['left' => ["left" => "make", "op" => "=", "right" => "Nissan"], 'op' => 'OR', 'right' => ['left' => ['left' => 'year', 'op' => '=', 'right' => '2014'], 'op' => 'AND', 'right' => ['left' => 'model', 'op' => '=', 'right' => 'C-Class']]]]];
-$query = ['where' => ['left' => ['left' => "make", "op" => "=", "right" => "BMW"], 'op' => 'OR', 'right' => ['left' => ["left" => "make", "op" => "=", "right" => "Nissan"], 'op' => 'AND', 'right' => ['left' => ['left' => 'year', 'op' => '=', 'right' =>'2019'], 'op' => 'OR', 'right' => ['left' => 'model', 'op' => '=', 'right' =>'C-Class']]]]];
-// $query = ['where' => ['left' => 'make', "op" => '=', "right" => 'Mercedez']];
-
-// Ordering false = descending
-$orderBy = new HubspotOrderByClause('hs_createdate', false);
-
-$recordLocator = new RecordLocator(["recordType" => 'p46520094_Obj_schema', "query" => $query, 'orderBy' => $orderBy]);
-$mapping = new Mapping(["make" => null, "model" => null]);
-
-// Extract the data from Salesforce
-$response = $integration->extract($recordLocator, $mapping, null);
