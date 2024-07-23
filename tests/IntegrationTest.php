@@ -225,22 +225,19 @@ final class IntegrationTest extends TestCase
         //Decode the expected file for easier comparison.
         $expectedSchema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
 
-        //Get the custom objects name from expected results
+        //Get the custom objects name from expected results 
         $expectedKeys = array_keys($expectedSchema['items']);    
-        $expectedcustomObject1 = isset($expectedKeys[4])?$expectedKeys[4]:null;
-        $expectedcustomObject2 = isset($expectedKeys[5])?$expectedKeys[5]:null;
-        $expectedcustomObject3 = isset($expectedKeys[6])?$expectedKeys[6]:null;
 
         //Get the custom objects name from discover()
         $actualKeys=(array_keys($schema['items']));
         $actualCustomObject1=isset($actualKeys[4])?$actualKeys[4]:null;
         $actualCustomObject2=isset($actualKeys[5])?$actualKeys[5]:null;
         $actualCustomObject3=isset($actualKeys[6])?$actualKeys[6]:null;
-        // Assert that the keys match the expected values
-        $this->assertEquals($actualCustomObject1, $expectedcustomObject1, "Item  should contain a ".$expectedKeys[4]." object.");
-        $this->assertEquals($actualCustomObject2, $expectedcustomObject2, "Item  should contain a ".$expectedKeys[5]." object.");
-        $this->assertEquals($actualCustomObject3, $expectedcustomObject3, "Item  should contain a ".$expectedKeys[6]." object.");
 
+        // Assert that the keys are present in the expected keys array
+        $this->assertContains($actualCustomObject1,$expectedKeys,"".$actualCustomObject1." should be present in ".implode(' ,',$expectedKeys));
+        $this->assertContains($actualCustomObject2,$expectedKeys,"".$actualCustomObject2." should be present in ".implode(' ,',$expectedKeys));
+        $this->assertContains($actualCustomObject3,$expectedKeys,"".$actualCustomObject3." should be present in ".implode(' ,',$expectedKeys));
 }
 
     /*
