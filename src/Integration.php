@@ -161,7 +161,6 @@ class Integration extends AbstractIntegration implements OAuthInterface
             $action = new Actions\Select($recordLocator, new Mapping(['Id' => null]), $scope);
             $result = $action->execute();
             $this->log(json_encode($action->getLog()));
-            // print_r($result); die;
 
             if($result->getExtractedRecordSet()->count() > 0)
             {
