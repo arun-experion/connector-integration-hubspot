@@ -362,7 +362,6 @@ final class IntegrationTest extends TestCase
         //Check the missing required fields
         $this->assertTrue($mapping->hasItem('dealstage'));
         $this->assertTrue($mapping->hasItem('dealname'));
-
         $response = $integration->load($recordLocator, $mapping, null);
         // Check if recordType is in standard custom objects
         $recordType = $response->getRecordKey()->recordType;
