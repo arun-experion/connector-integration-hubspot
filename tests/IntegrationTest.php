@@ -84,7 +84,7 @@ final class IntegrationTest extends TestCase
 
         // Verify that the 'items' array contains at least 4 elements
         //To Ensure that all standard objects are present in schema
-        $this->assertGreaterThanOrEqual(4, count($schema->schema['items']), 'The items array should contain at least 4 arrays.');
+        $this->assertGreaterThan(4, count($schema->schema['items']), 'The items array should contain at least 4 arrays.');
 
         // Check if 'items' array contains standard objects key
         $this->assertArrayHasKey('companies', $schema->schema['items'], "Item  should contain a 'companies' key.");
