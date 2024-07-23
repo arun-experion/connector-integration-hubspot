@@ -84,7 +84,7 @@ final class IntegrationTest extends TestCase
 
         // Verify that the 'items' array contains at least 4 elements
         //To Ensure that all standard objects are present in schema
-        $this->assertGreaterThan(4, count($schema->schema['items']), 'The items array should contain at least 4 arrays.');
+        $this->assertGreaterThanOrEqual(4, count($schema->schema['items']), 'The items array should contain at least 4 arrays.');
 
         // Check if 'items' array contains standard objects key
         $this->assertArrayHasKey('companies', $schema->schema['items'], "Item  should contain a 'companies' key.");
@@ -222,7 +222,6 @@ final class IntegrationTest extends TestCase
     {
         $integration = new Integration();
         $schema = $integration->discover()->schema;
-
         //Decode the expected file for easier comparison.
         $expectedSchema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
 
@@ -234,7 +233,6 @@ final class IntegrationTest extends TestCase
         $actualCustomObject1 = isset($actualKeys[4]) ? $actualKeys[4] : null;
         $actualCustomObject2 = isset($actualKeys[5]) ? $actualKeys[5] : null;
         $actualCustomObject3 = isset($actualKeys[6]) ? $actualKeys[6] : null;
-
         // Assert that the keys are present in the expected keys array
         $this->assertContains($actualCustomObject1, $expectedKeys, "" . $actualCustomObject1 . " should be present in " . implode(' ,', $expectedKeys));
         $this->assertContains($actualCustomObject2, $expectedKeys, "" . $actualCustomObject2 . " should be present in " . implode(' ,', $expectedKeys));
@@ -489,7 +487,7 @@ final class IntegrationTest extends TestCase
         $this->assertEquals("companies", $response->getRecordKey()->recordType);
         $this->assertEquals("21936653466", $response->getRecordKey()->recordId);
         $this->assertEquals("examplehubspot.com", $response->getRecordset()->records[0]->data['properties']->domain);
-        $this->assertEquals("Test", $response->getRecordset()->records[0]->data['properties']->name);
+        $this->assertEquals("Hubspot", $response->getRecordset()->records[0]->data['properties']->name);
     }
     /**
      * Test the update functionality of the Integration class.
@@ -509,7 +507,7 @@ final class IntegrationTest extends TestCase
         $recordLocator = new RecordLocator(["recordType" => 'companies', "query" => $query, 'type' => OperationTypes::Update]);
         // Define the mapping for the update
         $mapping = new Mapping([
-            'name'   => 'Test',
+            'name'   => 'Hubspot',
             "city" => "Cambridge",
             "phone" => "555-555-555"
         ]);
@@ -542,10 +540,10 @@ final class IntegrationTest extends TestCase
         $recordLocator = new RecordLocator(["recordType" => 'contacts', "query" => $query, 'type' => OperationTypes::Update]);
         // Define the mapping for the update
         $mapping = new Mapping([
-            'firstname'   => 'Test",
+            'firstname'   => 'John',
             "phone" => "(555) 555-5555",
             "company" => "HubSpot",
-            "website" => "hubspot.com"'
+            "website" => "hubspot.com"
         ]);
         $response = $integration->load($recordLocator, $mapping, null);
 
@@ -577,7 +575,7 @@ final class IntegrationTest extends TestCase
         // Define the mapping for the update
         $mapping = new Mapping([
             'amount'   => '100',
-            "dealname" => "Test deal",
+            "dealname" => "Hubspot deal",
             "pipeline" => "default"
         ]);
         $response = $integration->load($recordLocator, $mapping, null);
@@ -611,7 +609,7 @@ final class IntegrationTest extends TestCase
         $mapping = new Mapping([
             "hs_pipeline_stage" => "1",
             "hs_ticket_priority" => "HIGH",
-            'subject'   => 'Test Ticket'
+            'subject'   => 'Hubspot Ticket'
         ]);
         $response = $integration->load($recordLocator, $mapping, null);
 
