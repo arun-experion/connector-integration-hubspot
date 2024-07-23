@@ -9,7 +9,7 @@ use Connector\Schema\IntegrationSchema;
 class HubspotRecordLocator extends RecordLocator
 {
     /**
-     * @var OperationTypes $type Type of Operation (create, update, select)
+     * @var OperationTypes $type Type of Operation (create, update)
      */
     public OperationTypes $type = OperationTypes::Create;
     
