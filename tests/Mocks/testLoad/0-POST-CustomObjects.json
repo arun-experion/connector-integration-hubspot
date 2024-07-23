@@ -4,7 +4,7 @@
     "title": "Hubspot",
     "type": "array",
     "items": {
-        "p46520094_cars": {
+        "p46582472_cars_Obj": {
             "type": "object",
             "properties": {
                 "color": {
@@ -239,7 +239,8 @@
                     "name": "make",
                     "title": "Make",
                     "type": "string",
-                    "format": ""
+                    "format": "",
+                    "required": true
                 },
                 "mileage": {
                     "name": "mileage",
@@ -251,7 +252,8 @@
                     "name": "model",
                     "title": "Model",
                     "type": "string",
-                    "format": ""
+                    "format": "",
+                    "required": true
                 },
                 "notes": {
                     "name": "notes",
@@ -269,22 +271,18 @@
                     "name": "vin",
                     "title": "VIN",
                     "type": "string",
-                    "format": ""
+                    "format": "",
+                    "required": true
                 },
                 "year": {
                     "name": "year",
                     "title": "Year",
                     "type": "number",
-                    "format": ""
+                    "format": "",
+                    "required": true
                 }
             },
-            "title": "p46520094_cars",
-            "required": [
-                "year",
-                "vin",
-                "model",
-                "make"
-            ],
+            "title": "p46582472_cars_Obj",
             "additionalProperties": false
         }
     },
