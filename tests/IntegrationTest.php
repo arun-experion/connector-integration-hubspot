@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Connector\Integrations\Hubspot\Config;
+use Connector\Integrations\Hubspot\Enumerations\OperationTypes;
 use Connector\Integrations\Hubspot\HubspotOrderByClause;
 use Connector\Integrations\Hubspot\Integration;
 use Connector\Mapping;
@@ -59,7 +60,6 @@ final class IntegrationTest extends TestCase
         $expectedSchema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
         // Compare the JSON schema with the expected schema stored in a file
         $this->assertTrue($expectedSchema === $jsonSchema, "Schema is different than expected.");
-
     }
 
     /**
@@ -84,7 +84,7 @@ final class IntegrationTest extends TestCase
 
         // Verify that the 'items' array contains at least 4 elements
         //To Ensure that all standard objects are present in schema
-        $this->assertGreaterThanOrEqual(4, count($schema->schema['items']), 'The items array should contain at least 4 arrays.');
+        $this->assertGreaterThan(4, count($schema->schema['items']), 'The items array should contain at least 4 arrays.');
 
         // Check if 'items' array contains standard objects key
         $this->assertArrayHasKey('companies', $schema->schema['items'], "Item  should contain a 'companies' key.");
@@ -218,28 +218,28 @@ final class IntegrationTest extends TestCase
      * This function verifies that the 'custom' object are present in the schema.
      * Check expected properties contain atleast one required Property.
      */
-    function testDiscoverCustomObject(){
+    function testDiscoverCustomObject()
+    {
         $integration = new Integration();
         $schema = $integration->discover()->schema;
-    
+
         //Decode the expected file for easier comparison.
         $expectedSchema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
 
         //Get the custom objects name from expected results 
-        $expectedKeys = array_keys($expectedSchema['items']);    
+        $expectedKeys = array_keys($expectedSchema['items']);
 
         //Get the custom objects name from discover()
-        $actualKeys=(array_keys($schema['items']));
-        $actualCustomObject1=isset($actualKeys[4])?$actualKeys[4]:null;
-        $actualCustomObject2=isset($actualKeys[5])?$actualKeys[5]:null;
-        $actualCustomObject3=isset($actualKeys[6])?$actualKeys[6]:null;
+        $actualKeys = (array_keys($schema['items']));
+        $actualCustomObject1 = isset($actualKeys[4]) ? $actualKeys[4] : null;
+        $actualCustomObject2 = isset($actualKeys[5]) ? $actualKeys[5] : null;
+        $actualCustomObject3 = isset($actualKeys[6]) ? $actualKeys[6] : null;
 
         // Assert that the keys are present in the expected keys array
-        $this->assertContains($actualCustomObject1,$expectedKeys,"".$actualCustomObject1." should be present in ".implode(' ,',$expectedKeys));
-        $this->assertContains($actualCustomObject2,$expectedKeys,"".$actualCustomObject2." should be present in ".implode(' ,',$expectedKeys));
-        $this->assertContains($actualCustomObject3,$expectedKeys,"".$actualCustomObject3." should be present in ".implode(' ,',$expectedKeys));
-
-}
+        $this->assertContains($actualCustomObject1, $expectedKeys, "" . $actualCustomObject1 . " should be present in " . implode(' ,', $expectedKeys));
+        $this->assertContains($actualCustomObject2, $expectedKeys, "" . $actualCustomObject2 . " should be present in " . implode(' ,', $expectedKeys));
+        $this->assertContains($actualCustomObject3, $expectedKeys, "" . $actualCustomObject3 . " should be present in " . implode(' ,', $expectedKeys));
+    }
 
     /*
      * Test the load functionality of the integration.
@@ -274,7 +274,7 @@ final class IntegrationTest extends TestCase
         $this->assertEquals($recordType, 'companies');
 
         // Check if URL is in the correct format and contains the recordId
-        $expectedUrlFormat = "https://api.hubapi.com/crm/v3/objects/" . $recordType . "/" . $recordId;
+        $expectedUrlFormat = Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' . $recordType . "/" . $recordId;
         $actualUrl = $response->getRecordset()->records[0]->data['FormAssemblyConnectorResult:Url'];
         $this->assertEquals($expectedUrlFormat, $actualUrl, "URL format is incorrect");
         // Check if FormAssemblyConnectorResult:Id contains the recordId
@@ -364,7 +364,7 @@ final class IntegrationTest extends TestCase
         //Check the missing required fields
         $this->assertTrue($mapping->hasItem('dealstage'));
         $this->assertTrue($mapping->hasItem('dealname'));
-        
+
         $response = $integration->load($recordLocator, $mapping, null);
         // Check if recordType is in standard custom objects
         $recordType = $response->getRecordKey()->recordType;
@@ -435,7 +435,7 @@ final class IntegrationTest extends TestCase
 
         //Get the list of all Objects from actual schema
         foreach ($hubspotSchema['items'] as $key => $value) {
-                $listObject[] = $key;
+            $listObject[] = $key;
         }
 
         //Fetch the required properties of actual custom schema
@@ -461,7 +461,7 @@ final class IntegrationTest extends TestCase
             $this->assertTrue($mapping->hasItem($requiredProperty), "Mapping is missing required property: $requiredProperty");
         }
     }
-      /**
+    /**
      * Test the extract functionality of the Integration class.
      *
      * This test case verifies that the Integration class correctly extracts records
@@ -479,18 +479,149 @@ final class IntegrationTest extends TestCase
         $query = ["where" => ['left' => 'domain', 'op' => '=', 'right' => 'examplehubspot.com']];
         // Create a new orderBy clause object for ordering the results
         $orderBy = new HubspotOrderByClause();
-        // Create a record locator with the record type, query, and orderBy clause
         $recordLocator = new RecordLocator(["recordType" => 'companies', "query" => $query, 'orderBy' => $orderBy]);
         // Define the mapping for the fields to be extracted
         $mapping = new Mapping(["domain" => null, "name" => null]);
 
-        // Call the extract method 
         $response = $integration->extract($recordLocator, $mapping, null);
 
         // Assert that the record type in the response is "companies"
         $this->assertEquals("companies", $response->getRecordKey()->recordType);
         $this->assertEquals("21936653466", $response->getRecordKey()->recordId);
         $this->assertEquals("examplehubspot.com", $response->getRecordset()->records[0]->data['properties']->domain);
-        $this->assertEquals("Example Hubspot", $response->getRecordset()->records[0]->data['properties']->name);
+        $this->assertEquals("Test", $response->getRecordset()->records[0]->data['properties']->name);
+    }
+    /**
+     * Test the update functionality of the Integration class.
+     *
+     * This test case verifies that the Integration class correctly updates company records
+     * based on the provided record locator and mapping. 
+     **/
+    function testUpdateCompanyRecord()
+    {
+        $integration = new Integration();
+        $schema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
+        $integration->setSchema(new IntegrationSchema($schema));
+        $integration->begin();
+
+        // Define the query condition for extracting records
+        $query = ["where" => ['left' => 'hs_object_id', 'op' => '=', 'right' => '21585771784']];
+        $recordLocator = new RecordLocator(["recordType" => 'companies', "query" => $query, 'type' => OperationTypes::Update]);
+        // Define the mapping for the update
+        $mapping = new Mapping([
+            'name'   => 'Test',
+            "city" => "Cambridge",
+            "phone" => "555-555-555"
+        ]);
+        $response = $integration->load($recordLocator, $mapping, null);
+
+        // Assertions to verify the record update
+        $this->assertEquals(1, $response->getRecordset()->count());
+        $this->assertEquals('companies', $response->getRecordKey()->recordType);
+        $this->assertEquals('21585771784',$response->getRecordKey()->recordId);
+        // Check if URL is in the correct format and contains the recordId
+        $expectedUrlFormat = Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' . $response->getRecordKey()->recordType . "/" . $response->getRecordKey()->recordId;
+        $actualUrl = $response->getRecordset()->records[0]->data['FormAssemblyConnectorResult:Url'];
+        $this->assertEquals($expectedUrlFormat, $actualUrl, "URL format is incorrect");
+    }
+       /**
+     * Test the update functionality of the Integration class.
+     *
+     * This test case verifies that the Integration class correctly updates contacts records
+     * based on the provided record locator and mapping. 
+     **/
+    function testUpdateContactsRecord()
+    {
+        $integration = new Integration();
+        $schema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
+        $integration->setSchema(new IntegrationSchema($schema));
+        $integration->begin();
+
+        // Define the query condition for extracting records
+        $query = ["where" => ['left' => 'hs_object_id', 'op' => '=', 'right' => '33013881138']];
+        $recordLocator = new RecordLocator(["recordType" => 'contacts', "query" => $query, 'type' => OperationTypes::Update]);
+        // Define the mapping for the update
+        $mapping = new Mapping([
+            'firstname'   => 'Test",
+            "phone" => "(555) 555-5555",
+            "company" => "HubSpot",
+            "website" => "hubspot.com"'
+        ]);
+        $response = $integration->load($recordLocator, $mapping, null);
+
+        // Assertions to verify the record update
+        $this->assertEquals(1, $response->getRecordset()->count());
+        $this->assertEquals('contacts', $response->getRecordKey()->recordType);
+        $this->assertEquals('33013881138',$response->getRecordKey()->recordId);
+        // Check if URL is in the correct format and contains the recordId
+        $expectedUrlFormat = Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' .$response->getRecordKey()->recordType . "/" . $response->getRecordKey()->recordId;
+        $actualUrl = $response->getRecordset()->records[0]->data['FormAssemblyConnectorResult:Url'];
+        $this->assertEquals($expectedUrlFormat, $actualUrl, "URL format is incorrect");
+    }
+          /**
+     * Test the update functionality of the Integration class.
+     *
+     * This test case verifies that the Integration class correctly updates deals records
+     * based on the provided record locator and mapping. 
+     **/
+    function testUpdateDealsRecord()
+    {
+        $integration = new Integration();
+        $schema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
+        $integration->setSchema(new IntegrationSchema($schema));
+        $integration->begin();
+
+        // Define the query condition for extracting records
+        $query = ["where" => ['left' => 'hs_object_id', 'op' => '=', 'right' => '20651824971']];
+        $recordLocator = new RecordLocator(["recordType" => 'deals', "query" => $query, 'type' => OperationTypes::Update]);
+        // Define the mapping for the update
+        $mapping = new Mapping([
+            'amount'   => '100',
+            "dealname" => "Test deal",
+            "pipeline" => "default"
+        ]);
+        $response = $integration->load($recordLocator, $mapping, null);
+
+        // Assertions to verify the record update
+        $this->assertEquals(1, $response->getRecordset()->count());
+        $this->assertEquals('deals', $response->getRecordKey()->recordType);
+        $this->assertEquals('20651824971',$response->getRecordKey()->recordId);
+        // Check if URL is in the correct format and contains the recordId
+        $expectedUrlFormat = Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' . $response->getRecordKey()->recordType . "/" . $response->getRecordKey()->recordId;
+        $actualUrl = $response->getRecordset()->records[0]->data['FormAssemblyConnectorResult:Url'];
+        $this->assertEquals($expectedUrlFormat, $actualUrl, "URL format is incorrect");
+    }
+            /**
+     * Test the update functionality of the Integration class.
+     *
+     * This test case verifies that the Integration class correctly updates tickets records
+     * based on the provided record locator and mapping. 
+     **/
+    function testUpdateTicketsRecord()
+    {
+        $integration = new Integration();
+        $schema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
+        $integration->setSchema(new IntegrationSchema($schema));
+        $integration->begin();
+
+        // Define the query condition for extracting records
+        $query = ["where" => ['left' => 'hs_object_id', 'op' => '=', 'right' => '2946238838']];
+        $recordLocator = new RecordLocator(["recordType" => 'tickets', "query" => $query, 'type' => OperationTypes::Update]);
+        // Define the mapping for the update
+        $mapping = new Mapping([
+            "hs_pipeline_stage" => "1",
+            "hs_ticket_priority" => "HIGH",
+            'subject'   => 'Test Ticket'
+        ]);
+        $response = $integration->load($recordLocator, $mapping, null);
+
+        // Assertions to verify the record update
+        $this->assertEquals(1, $response->getRecordset()->count());
+        $this->assertEquals('tickets', $response->getRecordKey()->recordType);
+        $this->assertEquals('2946238838',$response->getRecordKey()->recordId);
+        // Check if URL is in the correct format and contains the recordId
+        $expectedUrlFormat = Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' .$response->getRecordKey()->recordType . "/" . $response->getRecordKey()->recordId;
+        $actualUrl = $response->getRecordset()->records[0]->data['FormAssemblyConnectorResult:Url'];
+        $this->assertEquals($expectedUrlFormat, $actualUrl, "URL format is incorrect");
     }
 }
