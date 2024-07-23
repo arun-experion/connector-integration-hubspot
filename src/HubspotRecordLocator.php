@@ -33,4 +33,14 @@ class HubspotRecordLocator extends RecordLocator
     {
         return $this->type === OperationTypes::Create;
     }
+
+    /**
+     * Check if the operation type is 'update'.
+     *
+     * @return bool Returns true if the operation type is 'create', false otherwise.
+     */
+    public function isUpdate(): bool
+    {
+        return $this->type === OperationTypes::Update;
+    }
 }
