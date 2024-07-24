@@ -13,21 +13,30 @@ use Connector\Type\JsonSchemaTypes;
 use HubSpot\Client\Crm\Schemas\ApiException as SchemasApiException;
 use HubSpot\Client\Crm\Properties\ApiException as PropertiesApiException;
 use HubSpot\Discovery\Discovery;
+use HubSpot\Factory;
 
 class HubspotSchema extends IntegrationSchema
 {
+    /**
+     *  @var \HubSpot\Discovery\Discovery $client
+     */
+    private $client;
+
     /**
      * @param \HubSpot\Discovery\Discovery $client
      * 
      * @throws InvalidExecutionPlan
      */
-    public function __construct(Discovery $client)
+    public function __construct()
     {
+        // Creating an \HubSpot\Discovery\Discovery to access functions in Hubspot library
+        $this->client = Factory::createWithAccessToken(Config::HUBSPOT_ACCESS_TOKEN);
+        
         // Get name of CRM objects from getObjectSchema() and store the data returned 
-        $crmObjects = $this->getObjectSchema($client);
+        $crmObjects = $this->getObjectSchema($this->client);
 
         // Get properties from combineProperties() and store the data returned 
-        $combinedObjectProperties = $this->combineProperties($client, $crmObjects);
+        $combinedObjectProperties = $this->combineProperties($this->client, $crmObjects);
 
         // Initialize the schema builder
         $builder = new Builder("http://formassembly.com/integrations/hubspot", "Hubspot");

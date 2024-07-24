@@ -4,14 +4,12 @@ namespace Connector\Integrations\Hubspot\Actions;
 
 use Connector\Exceptions\AbortedOperationException;
 use Connector\Exceptions\InvalidMappingException;
-use Connector\Integrations\Hubspot\Config;
 use Connector\Integrations\Hubspot\HubspotRecordLocator;
 use Connector\Integrations\Hubspot\HubspotSchema;
 use Connector\Mapping;
 use Connector\Operation\Result;
 use Connector\Record\RecordKey;
 use GuzzleHttp\Exception\GuzzleException;
-use HubSpot\Discovery\Discovery;
 use GuzzleHttp\Client;
 
 class Create
@@ -42,18 +40,17 @@ class Create
     }
 
     /**
-     * @param \HubSpot\Discovery\Discovery $client
+     * @param Client $client
      * 
      * @return \Connector\Operation\Result
      * 
      * @throws InvalidMappingException
      * @throws \Connector\Exceptions\AbortedOperationException
      */
-    public function execute(Discovery $client): Result
+    public function execute(Client $httpClient): Result
     {
-        $httpClient = new Client();
         // Getting the HubspotSchema
-        $hubspotSchema = new HubspotSchema($client);
+        $hubspotSchema = new HubspotSchema();
         $hubspotSchemaArray = json_decode(json_encode($hubspotSchema), true);
 
         if (!in_array($this->recordLocator->recordType, ['contacts', 'companies', 'deals', 'tickets'])) {
@@ -73,12 +70,8 @@ class Create
         if ($requiredProperties === array_intersect($requiredProperties, $mappingKeys)) {
             try {
                 $response = $httpClient->post(
-                    Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' . $this->recordLocator->recordType,
+                    $this->recordLocator->recordType,
                     [
-                        'headers' => [
-                            'Authorization' => 'Bearer ' . Config::HUBSPOT_ACCESS_TOKEN,
-                            'Content-Type' => 'application/json',
-                        ],
                         "json" => ["properties" => $this->mappingAsArray()],
                     ]
                 );
