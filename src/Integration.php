@@ -151,32 +151,3 @@ class Integration extends AbstractIntegration implements OAuthInterface
         return $mapping;
     }
 }
-
-$integration = new Integration();   
-$schema = json_decode(file_get_contents(__DIR__ . "/../tests/schemas/DiscoverResult.json"), true);
-$integration->setSchema(new IntegrationSchema($schema));
-$integration->begin();
-
-// Configure the operation query and mapping
-// $query = ['where' => ['left' => ['left' => "make", "op" => "=", "right" => "Mercedez"], 'op' => 'OR', 'right' => ['left' => ["left" => "make", "op" => "=", "right" => "Nissan"], 'op' => 'AND', 'right' => ['left' => 'model', 'op' => '=', 'right' => "Frontier"]]]];
-// $query = ['where' => ['left' => ['left' => "make", "op" => "=", "right" => "BMW"], 'op' => 'OR', 'right' => ['left' => ["left" => "make", "op" => "=", "right" => "Nissan"], 'op' => 'OR', 'right' => ['left' => ['left' => 'year', 'op' => '=', 'right' => '2014'], 'op' => 'AND', 'right' => ['left' => 'model', 'op' => '=', 'right' => 'C-Class']]]]];
-$query = ['where' => ['left' => ['left' => "make", "op" => "=", "right" => "BMW"], 'op' => 'OR', 'right' => ['left' => ["left" => "make", "op" => "=", "right" => "Nissan"], 'op' => 'AND', 'right' => ['left' => ['left' => 'year', 'op' => '=', 'right' =>'2019'], 'op' => 'OR', 'right' => ['left' => 'model', 'op' => '=', 'right' =>'C-Class']]]]];
-// $query = ['where' => ['left' => 'make', "op" => '=', "right" => 'Mercedez']];
-
-// Ordering false = descending
-$orderBy = new HubspotOrderByClause('hs_createdate', false);
-
-$recordLocator = new RecordLocator(["recordType" => 'p46520094_Obj_schema', "query" => $query, 'orderBy' => $orderBy]);
-$mapping = new Mapping(["make" => null, "model" => null]);
-
-// Extract the data from Salesforce
-$response = $integration->extract($recordLocator, $mapping, null);
-
-// Create
-// $recordLocator = new RecordLocator(["recordType" => 'companies']);
-// $mapping = new Mapping([
-//     "name"=> "Infos",
-//     "domain" => "www.info.com",
-//     "city" => "New York"
-// ]);
-// $integration->load($recordLocator, $mapping, null);
