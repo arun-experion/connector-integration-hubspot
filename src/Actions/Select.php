@@ -3,7 +3,6 @@
 namespace Connector\Integrations\Hubspot\Actions;
 
 use Connector\Exceptions\RecordNotFound;
-use Connector\Integrations\Hubspot\Config;
 use Connector\Integrations\Hubspot\HubspotRecordLocator;
 use Connector\Integrations\Hubspot\HubspotRequestBodyBuilder;
 use Connector\Mapping;
@@ -13,7 +12,7 @@ use Connector\Record\RecordKey;
 use Connector\Record\Recordset;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
-use InvalidArgumentException;
+use Connector\Exceptions\AbortedOperationException;
 
 class Select
 {
@@ -43,14 +42,13 @@ class Select
     }
 
     /**
+     * @param Client $httpClient
      * @throws RecordNotFound
-     * @throws InvalidArgumentException
+     * @throws \Connector\Exceptions\AbortedOperationException
      * @return \Connector\Operation\Result
      */
-    public function execute(): Result
+    public function execute(Client $httpClient): Result
     {
-        $httpClient = new Client();
-
         $result = new Result();
         $recordset = new Recordset();
 
@@ -60,31 +58,27 @@ class Select
         }, $this->mapping->items);
 
         $requestBody = HubspotRequestBodyBuilder::toRequestBody($this->recordLocator->query, $selectFields, $this->recordLocator->orderBy);
-        
+
         if ($requestBody) {
             try {
-                $response = $httpClient->post(Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' . $this->recordLocator->recordType . '/search', [
-                    'headers' => [
-                        'Authorization' => 'Bearer ' . Config::HUBSPOT_ACCESS_TOKEN,
-                        'Content-Type' => 'application/json',
-                    ],
+                $response = $httpClient->post($this->recordLocator->recordType . '/search', [
                     'json' => $requestBody
                 ]);
-                $response = json_decode($response->getBody()); 
-                if($response->total === 0){
+                $response = json_decode($response->getBody());
+                if ($response->total === 0) {
                     throw new RecordNotFound("No records found for the given query");
                 }
             } catch (GuzzleException $exception) {
-                throw new InvalidArgumentException($exception->getMessage());
+                throw new AbortedOperationException($exception->getMessage());
             }
-            
+
             foreach ($response->results as $record) {
-                $key = new RecordKey($record->id, $this->recordLocator->recordType );
+                $key = new RecordKey($record->id, $this->recordLocator->recordType);
                 $attr = (array) $record;
                 $recordset[] = new Record($key, $attr);
             }
         }
-        
+
         return $result
             ->setExtractedRecordSet($recordset)
             ->setLoadedRecordKey($recordset[0]->getKey() ?? "null");

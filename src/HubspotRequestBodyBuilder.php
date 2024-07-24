@@ -154,10 +154,6 @@ class HubspotRequestBodyBuilder
                 return 'NOT_IN';
             case 'BETWEEN':
                 return 'BETWEEN';
-            case 'HASPROPERTY':
-                return 'HAS_PROPERTY';
-            case 'NOTHASPROPERTY':
-                return 'NOT_HAS_PROPERTY';
             case 'LIKE':
                 return 'CONTAINS_TOKEN';
             case 'NOTLIKE':
