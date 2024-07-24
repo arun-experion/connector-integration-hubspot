@@ -2,7 +2,6 @@
 
 namespace Connector\Integrations\Hubspot\Actions;
 
-use Connector\Integrations\Hubspot\Config;
 use Connector\Integrations\Hubspot\HubspotRecordLocator;
 use Connector\Mapping;
 use Connector\Operation\Result;
@@ -10,7 +9,6 @@ use Connector\Record\RecordKey;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Connector\Exceptions\AbortedOperationException;
-use HubSpot\Discovery\Discovery;
 
 class Update
 {
@@ -42,27 +40,21 @@ class Update
     }
 
     /**
-     * Excecute is used to update the record
-     * @param \HubSpot\Discovery\Discovery $client
+     * @param Client $httpClient
      * 
      * @throws \Connector\Exceptions\AbortedOperationException
      * 
      * @return \Connector\Operation\Result
      */
-    public function execute(Discovery $client): Result
+    public function execute(Client $httpClient): Result
     {
-        $httpClient = new Client();
         $result = new Result();
 
         try {
             // Providing an PATCH request to crm/v3/objects/{objectType}/{recordId}
             $httpClient->patch(
-                Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' . $this->recordLocator->recordType . '/' . $this->recordLocator->recordId,
+                $this->recordLocator->recordType . '/' . $this->recordLocator->recordId,
                 [
-                    'headers' => [
-                        'Authorization' => 'Bearer ' . Config::HUBSPOT_ACCESS_TOKEN,
-                        'Content-Type' => 'application/json',
-                    ],
                     "json" => ["properties" => $this->mappingAsArray()],
                 ]
             );

@@ -16,8 +16,8 @@ use Connector\Record\RecordKey;
 use Connector\Record\RecordLocator;
 use Connector\Record\Recordset;
 use Connector\Schema\IntegrationSchema;
+use GuzzleHttp\Client;
 use HubSpot\Client\Crm\Objects\ApiException;
-use HubSpot\Factory;
 use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 class Integration extends AbstractIntegration implements OAuthInterface
@@ -25,13 +25,26 @@ class Integration extends AbstractIntegration implements OAuthInterface
     use OAuthTrait;
 
     /**
-     *  @var \HubSpot\Discovery\Discovery $client
+     * @var Client $httpClient
      */
-    private $client;
+    private Client $httpClient;
+
+    /**
+     * @var string $baseUrl
+     */
+    private string $baseUrl = Config::BASE_URL;
+
+    /**
+     * @var string $apiVersion
+     */
+    private string $apiVersion = Config::API_VERSION;
 
     public function __construct()
     {
-        $this->client = Factory::createWithAccessToken(Config::HUBSPOT_ACCESS_TOKEN);
+        $options['base_uri'] = $this->baseUrl . 'crm/v' . $this->apiVersion . '/objects/';
+        $options['headers']['Authorization'] = 'Bearer ' . Config::HUBSPOT_ACCESS_TOKEN;
+        $options['headers']['Content-Type'] = 'application/json';
+        $this->httpClient = new Client($options);
     }
 
     /**
@@ -40,7 +53,7 @@ class Integration extends AbstractIntegration implements OAuthInterface
      */
     public function discover(): IntegrationSchema
     {
-        $hubspotSchema = new HubspotSchema($this->client);
+        $hubspotSchema = new HubspotSchema();
         return $hubspotSchema;
     }
 
@@ -53,14 +66,12 @@ class Integration extends AbstractIntegration implements OAuthInterface
      */
     public function extract(RecordLocator $recordLocator, Mapping $mapping, ?RecordKey $scope): Response
     {
-        // TODO: Implement extract() method.
-
         // Recast to Hubspot child class
         $recordLocator = new HubspotRecordLocator($recordLocator, $this->getSchema());
 
         $action = new Actions\Select($recordLocator, $mapping, $scope);
 
-        $result = $action->execute();
+        $result = $action->execute($this->httpClient);
 
         $this->log('Selected ' . $recordLocator->recordType . ' ' . $result->getLoadedRecordKey()->recordId);
 
@@ -99,7 +110,7 @@ class Integration extends AbstractIntegration implements OAuthInterface
         }
         
         try {
-            $result = $action->execute($this->client);
+            $result = $action->execute($this->httpClient);
         } catch (ApiException $e) {
             throw new InvalidExecutionPlan($e->getMessage());
         }
@@ -159,7 +170,7 @@ class Integration extends AbstractIntegration implements OAuthInterface
         if(!empty($recordLocator->query))
         {
             $action = new Actions\Select($recordLocator, new Mapping(['Id' => null]), $scope);
-            $result = $action->execute();
+            $result = $action->execute($this->httpClient);
             $this->log(json_encode($action->getLog()));
 
             if($result->getExtractedRecordSet()->count() > 0)
