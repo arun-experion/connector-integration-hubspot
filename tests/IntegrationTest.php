@@ -162,11 +162,9 @@ final class IntegrationTest extends TestCase
         $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('deals', 'dealname')->type);
         $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('deals', 'dealname')->format);
 
-
         $this->assertTrue($schema->hasProperty('deals', 'amount'));
         $this->assertEquals(JsonSchemaTypes::Number, $schema->getDataType('deals', 'amount')->type);
         $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('deals', 'amount')->format);
-
 
         $this->assertTrue($schema->hasProperty('deals', 'closedate'));
         $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('deals', 'closedate')->type);
@@ -197,7 +195,6 @@ final class IntegrationTest extends TestCase
         $this->assertTrue($schema->hasProperty('tickets', 'content'));
         $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('tickets', 'content')->type);
         $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('tickets', 'content')->format);
-
 
         $this->assertTrue($schema->hasProperty('tickets', 'hs_pipeline'));
         $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('tickets', 'hs_pipeline')->type);
