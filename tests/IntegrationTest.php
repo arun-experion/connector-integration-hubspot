@@ -1,5 +1,4 @@
 <?php
-
 namespace Tests;
 
 use Connector\Integrations\Hubspot\Config;
@@ -54,10 +53,18 @@ final class IntegrationTest extends TestCase
     {
         $integration = new Integration();
         $schema = $integration->discover()->schema;
-        // Reformat to PRETTY_PRINT for easier comparison when test fails.
-        $jsonSchema = json_decode(json_encode($schema, JSON_PRETTY_PRINT), true);
+        //  Extract the portion from index 4 to the end
+        $customObject= array_slice($schema['items'], 4, null, true);
+        //Sort the extracted portion
+        ksort($customObject);
+        $standardObjects = array_slice($schema['items'], 0, 4, true);
+        //Merge the sorted portion back with the rest of the array
+        $sortedItems = array_merge($standardObjects , $customObject);
+        //Update the items key in the original schema
+        $schema['items'] = $sortedItems;
+        $jsonSchema = json_decode(json_encode($schema, JSON_PRETTY_PRINT),true);
         //Decode the expected file for easier comparison.
-        $expectedSchema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
+        $expectedSchema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);  
         // Compare the JSON schema with the expected schema stored in a file
         $this->assertTrue($expectedSchema === $jsonSchema, "Schema is different than expected.");
     }
@@ -227,7 +234,6 @@ final class IntegrationTest extends TestCase
 
         //Get the custom objects name from expected results 
         $expectedKeys = array_keys($expectedSchema['items']);
-
         //Get the custom objects name from discover()
         $actualKeys = (array_keys($schema['items']));
         $actualCustomObject1 = isset($actualKeys[4]) ? $actualKeys[4] : null;
@@ -322,7 +328,7 @@ final class IntegrationTest extends TestCase
 
         $recordLocator = new RecordLocator(["recordType" => 'contacts']);
         //Email should be a unique key
-        $email = "exampleHubspot" . rand(100, 999) . "@email.com";
+        $email = "exampleHubspot" . rand(100, 9999) . "@email.com";
         $mapping = new Mapping([
             "email" => $email,
             "phone" => "(555) 555-5555",
@@ -515,13 +521,13 @@ final class IntegrationTest extends TestCase
         // Assertions to verify the record update
         $this->assertEquals(1, $response->getRecordset()->count());
         $this->assertEquals('companies', $response->getRecordKey()->recordType);
-        $this->assertEquals('21585771784',$response->getRecordKey()->recordId);
+        $this->assertEquals('21585771784', $response->getRecordKey()->recordId);
         // Check if URL is in the correct format and contains the recordId
         $expectedUrlFormat = Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' . $response->getRecordKey()->recordType . "/" . $response->getRecordKey()->recordId;
         $actualUrl = $response->getRecordset()->records[0]->data['FormAssemblyConnectorResult:Url'];
         $this->assertEquals($expectedUrlFormat, $actualUrl, "URL format is incorrect");
     }
-       /**
+    /**
      * Test the update functionality of the Integration class.
      *
      * This test case verifies that the Integration class correctly updates contacts records
@@ -549,13 +555,13 @@ final class IntegrationTest extends TestCase
         // Assertions to verify the record update
         $this->assertEquals(1, $response->getRecordset()->count());
         $this->assertEquals('contacts', $response->getRecordKey()->recordType);
-        $this->assertEquals('33013881138',$response->getRecordKey()->recordId);
+        $this->assertEquals('33013881138', $response->getRecordKey()->recordId);
         // Check if URL is in the correct format and contains the recordId
-        $expectedUrlFormat = Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' .$response->getRecordKey()->recordType . "/" . $response->getRecordKey()->recordId;
+        $expectedUrlFormat = Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' . $response->getRecordKey()->recordType . "/" . $response->getRecordKey()->recordId;
         $actualUrl = $response->getRecordset()->records[0]->data['FormAssemblyConnectorResult:Url'];
         $this->assertEquals($expectedUrlFormat, $actualUrl, "URL format is incorrect");
     }
-          /**
+    /**
      * Test the update functionality of the Integration class.
      *
      * This test case verifies that the Integration class correctly updates deals records
@@ -582,13 +588,13 @@ final class IntegrationTest extends TestCase
         // Assertions to verify the record update
         $this->assertEquals(1, $response->getRecordset()->count());
         $this->assertEquals('deals', $response->getRecordKey()->recordType);
-        $this->assertEquals('20651824971',$response->getRecordKey()->recordId);
+        $this->assertEquals('20651824971', $response->getRecordKey()->recordId);
         // Check if URL is in the correct format and contains the recordId
         $expectedUrlFormat = Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' . $response->getRecordKey()->recordType . "/" . $response->getRecordKey()->recordId;
         $actualUrl = $response->getRecordset()->records[0]->data['FormAssemblyConnectorResult:Url'];
         $this->assertEquals($expectedUrlFormat, $actualUrl, "URL format is incorrect");
     }
-            /**
+    /**
      * Test the update functionality of the Integration class.
      *
      * This test case verifies that the Integration class correctly updates tickets records
@@ -615,9 +621,9 @@ final class IntegrationTest extends TestCase
         // Assertions to verify the record update
         $this->assertEquals(1, $response->getRecordset()->count());
         $this->assertEquals('tickets', $response->getRecordKey()->recordType);
-        $this->assertEquals('2946238838',$response->getRecordKey()->recordId);
+        $this->assertEquals('2946238838', $response->getRecordKey()->recordId);
         // Check if URL is in the correct format and contains the recordId
-        $expectedUrlFormat = Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' .$response->getRecordKey()->recordType . "/" . $response->getRecordKey()->recordId;
+        $expectedUrlFormat = Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' . $response->getRecordKey()->recordType . "/" . $response->getRecordKey()->recordId;
         $actualUrl = $response->getRecordset()->records[0]->data['FormAssemblyConnectorResult:Url'];
         $this->assertEquals($expectedUrlFormat, $actualUrl, "URL format is incorrect");
     }
