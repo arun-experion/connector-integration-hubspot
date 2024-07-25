@@ -9,7 +9,7 @@ use Connector\Schema\IntegrationSchema;
 class HubspotRecordLocator extends RecordLocator
 {
     /**
-     * @var OperationTypes $type Type of Operation (create, update, select)
+     * @var OperationTypes $type Type of Operation (create, update)
      */
     public OperationTypes $type = OperationTypes::Create;
     
@@ -32,5 +32,15 @@ class HubspotRecordLocator extends RecordLocator
     public function isCreate(): bool
     {
         return $this->type === OperationTypes::Create;
+    }
+
+    /**
+     * Check if the operation type is 'update'.
+     *
+     * @return bool Returns true if the operation type is 'create', false otherwise.
+     */
+    public function isUpdate(): bool
+    {
+        return $this->type === OperationTypes::Update;
     }
 }

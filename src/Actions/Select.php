@@ -17,9 +17,9 @@ use Connector\Exceptions\AbortedOperationException;
 class Select
 {
     /**
-     * @var string $log
+     * @var array $log
      */
-    private string $log;
+    private array $log = [];
 
     /**
      * @var \Connector\Integrations\Hubspot\HubspotRecordLocator
@@ -77,10 +77,19 @@ class Select
                 $attr = (array) $record;
                 $recordset[] = new Record($key, $attr);
             }
+            $this->log[] = 'Query found ' . count($recordset) . ' ' . $this->recordLocator->recordType . ' record' . (count($recordset)>1?'s':'');
         }
 
         return $result
             ->setExtractedRecordSet($recordset)
             ->setLoadedRecordKey($recordset[0]->getKey() ?? "null");
+    }
+
+    /**
+     * @return array
+     */
+    public function getLog(): array
+    {
+        return $this->log;
     }
 }

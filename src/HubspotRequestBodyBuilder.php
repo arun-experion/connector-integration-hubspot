@@ -9,10 +9,11 @@ class HubspotRequestBodyBuilder
      * Function to create the required JSON structure for the request body.
      * @param array $query
      * @param array $selectFields
-     * @param \Connector\Integrations\Hubspot\HubspotOrderByClause $orderBy
+     * @param \Connector\Integrations\Hubspot\HubspotOrderByClause|null $orderBy
+     * 
      * @return array
      */
-    static public function toRequestBody(array $query, array $selectFields, HubspotOrderByClause $orderBy): array
+    static public function toRequestBody(array $query, array $selectFields, HubspotOrderByClause|null $orderBy = null): array
     {
         // Creating the filters and filterGroups inside request body
         $result = [];
@@ -36,6 +37,7 @@ class HubspotRequestBodyBuilder
      * This method is used to create the filterGroups and filters in the request body
      * @param array $query
      * @param array $result
+     * 
      * @return array
      */
     static public function createFilterGroupsAndFilters(array $query, array &$result): array
@@ -111,6 +113,7 @@ class HubspotRequestBodyBuilder
     /**
      * Function to format an indivudal filter for the request body
      * @param array $query
+     * 
      * @return array
      */
     static public function formatFilter(array $query): array

@@ -15,9 +15,9 @@ use GuzzleHttp\Client;
 class Create
 {
     /**
-     * @var string $log
+     * @var array $log
      */
-    private string $log;
+    private array $log = [];
 
     /**
      * @var \Connector\Integrations\Hubspot\HubspotRecordLocator
@@ -85,6 +85,7 @@ class Create
             throw new InvalidMappingException($exceptionMessage);
         }
 
+        $this->log[] = 'Created ' . $this->recordLocator->recordType . ' ' . $this->recordLocator->recordId;
         // Return the ID of the created record.
         return (new Result())->setLoadedRecordKey(new RecordKey($response->id, $this->recordLocator->recordType));
     }
@@ -99,5 +100,13 @@ class Create
             $map[$item->key] = $item->value;
         }
         return $map;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLog(): array
+    {
+        return $this->log;
     }
 }
