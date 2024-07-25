@@ -10,6 +10,7 @@ class HubspotRequestBodyBuilder
      * @param array $query
      * @param array $selectFields
      * @param \Connector\Integrations\Hubspot\HubspotOrderByClause|null $orderBy
+     * 
      * @return array
      */
     static public function toRequestBody(array $query, array $selectFields, HubspotOrderByClause|null $orderBy = null): array
@@ -36,6 +37,7 @@ class HubspotRequestBodyBuilder
      * This method is used to create the filterGroups and filters in the request body
      * @param array $query
      * @param array $result
+     * 
      * @return array
      */
     static public function createFilterGroupsAndFilters(array $query, array &$result): array
@@ -111,6 +113,7 @@ class HubspotRequestBodyBuilder
     /**
      * Function to format an indivudal filter for the request body
      * @param array $query
+     * 
      * @return array
      */
     static public function formatFilter(array $query): array
@@ -154,10 +157,6 @@ class HubspotRequestBodyBuilder
                 return 'NOT_IN';
             case 'BETWEEN':
                 return 'BETWEEN';
-            case 'HASPROPERTY':
-                return 'HAS_PROPERTY';
-            case 'NOTHASPROPERTY':
-                return 'NOT_HAS_PROPERTY';
             case 'LIKE':
                 return 'CONTAINS_TOKEN';
             case 'NOTLIKE':
