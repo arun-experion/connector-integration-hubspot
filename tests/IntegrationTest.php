@@ -15,6 +15,12 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Connector\Integrations\Hubspot\Integration
+ * @covers \Connector\Integrations\Hubspot\Actions\Select
+ * @covers \Connector\Integrations\Hubspot\Actions\Create
+ * @covers \Connector\Integrations\Hubspot\Actions\Update
+ * @covers \Connector\Record\RecordLocator
+ * @covers \Connector\Schema\IntegrationSchema
+ * @covers \Connector\Integrations\Hubspot\HubspotOrderByClause
  */
 final class IntegrationTest extends TestCase
 {
