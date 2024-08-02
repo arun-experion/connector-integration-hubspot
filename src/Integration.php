@@ -1,7 +1,6 @@
 <?php
 
 namespace Connector\Integrations\Hubspot;
-require __DIR__."/../vendor/autoload.php";
 
 use Connector\Exceptions\InvalidExecutionPlan;
 use Connector\Exceptions\RecordNotFound;

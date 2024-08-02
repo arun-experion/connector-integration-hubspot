@@ -14,7 +14,16 @@ use HubSpot\Factory;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Connector\Integrations\Hubspot\Integration
+ * @covers \Connector\Integrations\Hubspot\Integration 
+ * @covers \Connector\Integrations\Hubspot\HubspotOrderByClause
+ * @covers \Connector\Schema\IntegrationSchema
+ * @covers \HubSpot\Factory
+ * @covers \Connector\Integrations\Hubspot\Actions\Create
+ * @covers \Connector\Integrations\Hubspot\HubspotRecordLocator
+ * @covers \Connector\Integrations\Hubspot\HubspotSchema
+ * @covers \Connector\Integrations\Hubspot\Actions\Select
+ * @covers \Connector\Integrations\Hubspot\Actions\Update
+ * @covers \Connector\Integrations\Hubspot\HubspotRequestBodyBuilder
  */
 final class IntegrationTest extends TestCase
 {

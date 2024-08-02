@@ -2,6 +2,7 @@
 namespace Connector\Integrations\Hubspot;
 
 use InvalidArgumentException;
+use Connector\Exceptions\AbortedOperationException;
 
 class HubspotRequestBodyBuilder
 {
@@ -55,10 +56,7 @@ class HubspotRequestBodyBuilder
                 // Merge the filter groups from the left part into the result
                 $result['filterGroups'] = array_merge($result['filterGroups'], $leftGroup['filterGroups']);
             } else {
-                // Add the single filter from the left part to the result
-                $result['filterGroups'][] = [
-                    'filters' => [self::formatFilter($query['left'])]
-                ];
+               throw new AbortedOperationException("Left key should contain an array");
             }
 
             if (is_array($query['right'])) {
@@ -68,10 +66,8 @@ class HubspotRequestBodyBuilder
                 // Merge the filter groups from the right part into the result
                 $result['filterGroups'] = array_merge($result['filterGroups'], $rightGroup['filterGroups']);
             } else {
-                // Add the single filter from the right part to the result
-                $result['filterGroups'][] = [
-                    'filters' => [self::formatFilter($query['right'])]
-                ];
+                throw new AbortedOperationException("Right key should contain an array");
+
             }
         } else if (isset($query['op']) && self::translateOperator(strtoupper($query['op'])) == 'AND') {
             // When a AND is encountered, the query should be appended to filter array
@@ -85,8 +81,7 @@ class HubspotRequestBodyBuilder
                 // Merge the filters from the left part into the group array
                 $group = array_merge($group, $leftGroup['filterGroups'][0]['filters']);
             } else {
-                // Add the single filter from the left part to the group array
-                $group[] = self::formatFilter($query['left']);
+                throw new AbortedOperationException("Left key should contain an array");
             }
 
             if (is_array($query['right'])) {
@@ -96,8 +91,7 @@ class HubspotRequestBodyBuilder
                 // Merge the filters from the right part into the group array
                 $group = array_merge($group, $rightGroup['filterGroups'][0]['filters']);
             } else {
-                // Add the single filter from the right part to the group array
-                $group[] = self::formatFilter($query['right']);
+                throw new AbortedOperationException("Right key should contain an array");
             }
 
             // Add the combined filters as a new filter group to the result
