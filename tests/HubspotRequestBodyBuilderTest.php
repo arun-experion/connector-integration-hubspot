@@ -2,8 +2,11 @@
 
 namespace Tests;
 
+use Connector\Exceptions\AbortedExecutionException;
+use Connector\Exceptions\AbortedOperationException;
 use Connector\Integrations\Hubspot\HubspotOrderByClause;
 use Connector\Integrations\Hubspot\HubspotRequestBodyBuilder;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -538,5 +541,87 @@ class HubspotRequestBodyBuilderTest extends TestCase
             'limit' => 100,
         ];
         $this->assertEquals($desiredRequestBody, $hubspotRequestBody);
+    }
+     /**
+     * Test the Invalid operator for HubspotRequestBodyBuilder.
+     */
+    function testInvalidClause()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage("Invalid operator: ");
+        $searchCondition = ["where" => ['left' => 'domain', 'op' =>0, 'right' => 'example.com']];
+        $selectFields = ["domain", "name"];
+        $orderBy = new HubspotOrderByClause();
+        // Generate the request body using the HubspotRequestBodyBuilder
+        $hubspotRequestBodyBuilder = new HubspotRequestBodyBuilder;
+        $hubspotRequestBodyBuilder->toRequestBody($searchCondition, $selectFields, $orderBy);
+    }
+
+     /**
+     * Test the Invalid Left Clause for OR clause in HubspotRequestBodyBuilder.
+     */
+    function testInvalidLeftOperationOrClause()
+    {
+        $this->expectException(AbortedOperationException::class);
+        $this->expectExceptionMessage("Left key should contain an array");
+        $a = '';
+        $b = ['left' => 'name', 'op' => '=', 'right' => 'example'];
+        $searchCondition  = ["where" => ['left' => $a,  'op' => 'OR', 'right' => $b]];
+        $selectFields = ["domain", "name"];
+        $orderBy = new HubspotOrderByClause();
+        // Generate the request body using the HubspotRequestBodyBuilder
+        $hubspotRequestBodyBuilder = new HubspotRequestBodyBuilder;
+        $hubspotRequestBodyBuilder->toRequestBody($searchCondition, $selectFields, $orderBy);
+    }
+
+    /**
+     * Test the Invalid Right Clause for OR clause in HubspotRequestBodyBuilder.
+     */
+    function testInvalidRightOperationOrClause()
+    {
+        $this->expectException(AbortedOperationException::class);
+        $this->expectExceptionMessage("Right key should contain an array");
+        $a    =  ['left' => 'name', 'op' => '=', 'right' => 'example'];
+        $b= '';
+        $searchCondition  = ["where" => ['left' => $a,  'op' => 'OR', 'right' => $b]];
+        $selectFields = ["domain", "name"];
+        $orderBy = new HubspotOrderByClause();
+        // Generate the request body using the HubspotRequestBodyBuilder
+        $hubspotRequestBodyBuilder = new HubspotRequestBodyBuilder;
+        $hubspotRequestBodyBuilder->toRequestBody($searchCondition, $selectFields, $orderBy);
+    }
+
+    /**
+     * Test the Invalid Left Clause for AND clause in HubspotRequestBodyBuilder.
+     */
+    function testInvalidLeftOperationAndClause()
+    {
+        $this->expectException(AbortedOperationException::class);
+        $this->expectExceptionMessage("Left key should contain an array");
+         $a    =  '';
+        $b= ['left' => 'name', 'op' => '=', 'right' => 'example'];
+        $searchCondition  = ["where" => ['left' => $a,  'op' => 'AND', 'right' => $b]];
+        $selectFields = ["domain", "name"];
+        $orderBy = new HubspotOrderByClause();
+        // Generate the request body using the HubspotRequestBodyBuilder
+        $hubspotRequestBodyBuilder = new HubspotRequestBodyBuilder;
+        $hubspotRequestBodyBuilder->toRequestBody($searchCondition, $selectFields, $orderBy);
+    }
+    
+    /**
+     * Test the Invalid Right Clause for OR clause in HubspotRequestBodyBuilder.
+     */
+    function testInvalidRightOperationAndClause()
+    {
+        $this->expectException(AbortedOperationException::class);
+        $this->expectExceptionMessage("Right key should contain an array");
+        $a    =  ['left' => 'name', 'op' => '=', 'right' => 'example'];
+        $b= '';
+        $searchCondition  = ["where" => ['left' => $a,  'op' => 'AND', 'right' => $b]];
+        $selectFields = ["domain", "name"];
+        $orderBy = new HubspotOrderByClause();
+        // Generate the request body using the HubspotRequestBodyBuilder
+        $hubspotRequestBodyBuilder = new HubspotRequestBodyBuilder;
+        $hubspotRequestBodyBuilder->toRequestBody($searchCondition, $selectFields, $orderBy);
     }
 }

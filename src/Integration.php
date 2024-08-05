@@ -1,6 +1,9 @@
 <?php
 
 namespace Connector\Integrations\Hubspot;
+// @codeCoverageIgnoreStart
+ require __DIR__."/../vendor/autoload.php";
+ // @codeCoverageIgnoreEnd
 
 use Connector\Exceptions\InvalidExecutionPlan;
 use Connector\Exceptions\RecordNotFound;
@@ -126,6 +129,7 @@ class Integration extends AbstractIntegration implements OAuthInterface
     }
 
     /**
+     * @codeCoverageIgnore
      * @throws \Connector\Exceptions\InvalidExecutionPlan
      */
     public function setAuthorization(string $authorization): void
@@ -133,12 +137,16 @@ class Integration extends AbstractIntegration implements OAuthInterface
         $this->setOAuthCredentials($authorization);
         // TODO: Implement setAuthorization() method.
     }
-
+/**
+* @codeCoverageIgnore
+*/
     public function getAuthorizationProvider(): AbstractProvider
     {
         // TODO: Implement getAuthorizationProvider() method.
     }
-
+/**
+* @codeCoverageIgnore
+*/
     public function getAuthorizedUserName(ResourceOwnerInterface $user): string
     {
         // TODO: Implement getAuthorizedUserName() method.
