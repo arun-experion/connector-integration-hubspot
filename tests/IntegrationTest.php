@@ -540,7 +540,6 @@ final class IntegrationTest extends TestCase
             "subject" => "troubleshoot report"
         ]);
         $integration->load($recordLocator, $mapping, null);
-        print_r($integration->load($recordLocator, $mapping, null));
     }
     /**
      * Test the load functionality using Missing Required Fields
@@ -572,7 +571,6 @@ final class IntegrationTest extends TestCase
         $mapping = new Mapping($baseData);
 
         $response = $integration->load($recordLocator, $mapping, null);
-        print_r($response);
     }
 
     /**
