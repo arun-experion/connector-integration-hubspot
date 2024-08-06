@@ -37,7 +37,8 @@
         "formassembly/connector-core": "^1.0",
         "guzzlehttp/guzzle": "^7.8",
         "league/oauth2-client": "^2.4",
-        "hubspot/api-client": "^11.1"
+        "hubspot/api-client": "^11.1",
+        "phpunit/php-code-coverage": "^10.1"
     },
     "require-dev": {
         "monolog/monolog": "^3.4",
