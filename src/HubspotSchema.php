@@ -54,17 +54,12 @@ class HubspotSchema extends IntegrationSchema
                         $property = json_decode($property, true);
                         $recordType->addProperty($this->getHubspotObjectFields($property, $object));
                     }
-                } else {
-                    throw new InvalidExecutionPlan("Empty properties");
-                }
+                } 
                 $builder->addRecordType($recordType);
             }
             
             parent::__construct($builder->toArray());
-        } else {
-            throw new InvalidExecutionPlan("Empty CRM Objects");
-        }
-
+        } 
     }
 
     /**
