@@ -54,17 +54,12 @@ class HubspotSchema extends IntegrationSchema
                         $property = json_decode($property, true);
                         $recordType->addProperty($this->getHubspotObjectFields($property, $object));
                     }
-                } else {
-                    throw new InvalidExecutionPlan("Empty properties");
-                }
+                } 
                 $builder->addRecordType($recordType);
             }
             
             parent::__construct($builder->toArray());
-        } else {
-            throw new InvalidExecutionPlan("Empty CRM Objects");
-        }
-
+        } 
     }
 
     /**
@@ -154,7 +149,7 @@ class HubspotSchema extends IntegrationSchema
             "name" => $property['name'],
             "title" => $property['label'],
             "type" => $this->getDataTypeFromProperty($property['type']),
-            "format" => $this->getFormatFromProperty($property['fieldType'])
+            "format" => $this->getFormatFromProperty($property['type'])
         ];
 
         // If the object contains a required_properties key and if the field is a required key
@@ -191,10 +186,7 @@ class HubspotSchema extends IntegrationSchema
             case 'number':
                 $type = JsonSchemaTypes::Number;
                 break;
-            case 'integer':
-                $type = JsonSchemaTypes::Integer;
-                break;
-            case 'boolean':
+            case 'bool':
                 $type = JsonSchemaTypes::Boolean;
                 break;
             default:
@@ -204,22 +196,19 @@ class HubspotSchema extends IntegrationSchema
     }
 
     /**
-     * Determines the JSON schema format based on the provided property field type.
+     * Determines the JSON schema format based on the provided property type.
      *
-     * @param string $propertyFieldType The field type of the property to determine JSON schema format for.
+     * @param string $propertyType The type of the property to determine JSON schema format for.
      * @return JsonSchemaFormats The corresponding JSON schema format.
      */
-    public function getFormatFromProperty(string $propertyFieldType): JsonSchemaFormats
+    public function getFormatFromProperty(string $propertyType): JsonSchemaFormats
     {
-        switch ($propertyFieldType) {
+        switch ($propertyType) {
             case 'date':
                 $format = JsonSchemaFormats::Date;
                 break;
-            case 'dateTime':
+            case 'datetime':
                 $format = JsonSchemaFormats::DateTime;
-                break;
-            case 'time':
-                $format = JsonSchemaFormats::Time;
                 break;
             default:
                 $format = JsonSchemaFormats::None;

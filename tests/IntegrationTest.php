@@ -1,9 +1,16 @@
 <?php
+
 namespace Tests;
 
+use Connector\Exceptions\AbortedOperationException;
+use Connector\Exceptions\InvalidExecutionPlan;
+use Connector\Exceptions\InvalidMappingException;
+use Connector\Exceptions\RecordNotFound;
+use Connector\Integrations\Hubspot\Actions\Create;
 use Connector\Integrations\Hubspot\Config;
 use Connector\Integrations\Hubspot\Enumerations\OperationTypes;
 use Connector\Integrations\Hubspot\HubspotOrderByClause;
+use Connector\Integrations\Hubspot\HubspotRecordLocator;
 use Connector\Integrations\Hubspot\Integration;
 use Connector\Mapping;
 use Connector\Record\RecordLocator;
@@ -14,7 +21,16 @@ use HubSpot\Factory;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Connector\Integrations\Hubspot\Integration
+ * @covers \Connector\Integrations\Hubspot\Integration 
+ * @covers \Connector\Integrations\Hubspot\HubspotOrderByClause
+ * @covers \Connector\Schema\IntegrationSchema
+ * @covers \HubSpot\Factory
+ * @covers \Connector\Integrations\Hubspot\Actions\Create
+ * @covers \Connector\Integrations\Hubspot\HubspotRecordLocator
+ * @covers \Connector\Integrations\Hubspot\HubspotSchema
+ * @covers \Connector\Integrations\Hubspot\Actions\Select
+ * @covers \Connector\Integrations\Hubspot\Actions\Update
+ * @covers \Connector\Integrations\Hubspot\HubspotRequestBodyBuilder
  */
 final class IntegrationTest extends TestCase
 {
@@ -54,17 +70,17 @@ final class IntegrationTest extends TestCase
         $integration = new Integration();
         $schema = $integration->discover()->schema;
         //  Extract the portion from index 4 to the end
-        $customObject= array_slice($schema['items'], 4, null, true);
+        $customObject = array_slice($schema['items'], 4, null, true);
         //Sort the extracted portion
         ksort($customObject);
         $standardObjects = array_slice($schema['items'], 0, 4, true);
         //Merge the sorted portion back with the rest of the array
-        $sortedItems = array_merge($standardObjects , $customObject);
+        $sortedItems = array_merge($standardObjects, $customObject);
         //Update the items key in the original schema
         $schema['items'] = $sortedItems;
-        $jsonSchema = json_decode(json_encode($schema, JSON_PRETTY_PRINT),true);
+        $jsonSchema = json_decode(json_encode($schema, JSON_PRETTY_PRINT), true);
         //Decode the expected file for easier comparison.
-        $expectedSchema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);  
+        $expectedSchema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
         // Compare the JSON schema with the expected schema stored in a file
         $this->assertTrue($expectedSchema === $jsonSchema, "Schema is different than expected.");
     }
@@ -119,6 +135,10 @@ final class IntegrationTest extends TestCase
         $this->assertTrue($schema->hasProperty('companies', 'domain'));
         $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('companies', 'domain')->type);
         $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('companies', 'domain')->format);
+
+        $this->assertTrue($schema->hasProperty('companies', 'hs_is_target_account'));
+        $this->assertEquals(JsonSchemaTypes::Boolean, $schema->getDataType('companies', 'hs_is_target_account')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('companies', 'hs_is_target_account')->format);
     }
 
     /**
@@ -168,7 +188,7 @@ final class IntegrationTest extends TestCase
 
         $this->assertTrue($schema->hasProperty('deals', 'closedate'));
         $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('deals', 'closedate')->type);
-        $this->assertEquals(JsonSchemaFormats::Date, $schema->getDataType('deals', 'closedate')->format);
+        $this->assertEquals(JsonSchemaFormats::DateTime, $schema->getDataType('deals', 'closedate')->format);
 
 
         $this->assertTrue($schema->hasProperty('deals', 'pipeline'));
@@ -265,7 +285,6 @@ final class IntegrationTest extends TestCase
         ]);
 
         $response = $integration->load($recordLocator, $mapping, null);
-
         // Check if recordId is present
         $recordId = $response->getRecordKey()->recordId;
         $this->assertNotEmpty($recordId, "Record ID should not be empty");
@@ -273,7 +292,9 @@ final class IntegrationTest extends TestCase
         // Check if recordType is in standard custom objects
         $recordType = $response->getRecordKey()->recordType;
         $this->assertEquals($recordType, 'companies');
-
+        $logs = $integration->getLog();
+        $this->assertEquals('Created ' . $response->getRecordKey()->recordType. ' ', $logs[0]);
+       
         // Check if URL is in the correct format and contains the recordId
         $expectedUrlFormat = Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' . $recordType . "/" . $recordId;
         $actualUrl = $response->getRecordset()->records[0]->data['FormAssemblyConnectorResult:Url'];
@@ -462,6 +483,97 @@ final class IntegrationTest extends TestCase
         }
     }
     /**
+     * Test the load functionality using unknown Operator.
+     */
+    function testLoadUnknownOperator()
+    {
+        $this->expectException(InvalidExecutionPlan::class);
+        $this->expectExceptionMessage("Unknown operation type");
+        $integration = new Integration();
+        $schema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
+        $integration->setSchema(new IntegrationSchema($schema));
+        $integration->begin();
+        $recordLocator = new RecordLocator(["recordType" => 'contacts', 'type' => OperationTypes::Select]);
+        // Define the mapping for the update
+        $mapping = new Mapping([
+            'firstname'   => 'John',
+            "phone" => "(555) 555-5555",
+            "company" => "HubSpot",
+            "website" => "hubspot.com"
+        ]);
+        $integration->load($recordLocator, $mapping, null);
+    }
+
+    /**
+     * Test the load functionality using Missing Fields
+     */
+    function testLoadMissingFields()
+    {
+        $this->expectException(AbortedOperationException::class);
+        $integration = new Integration();
+        $schema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
+        $integration->setSchema(new IntegrationSchema($schema));
+        $integration->begin();
+
+        $recordLocator = new RecordLocator(["recordType" => 'companies']);
+
+        $mapping = new Mapping();
+        $integration->load($recordLocator, $mapping, null);
+    }
+    /**
+     * Test the load functionality using Missing Required Fields
+     * for Standard Objects
+     */
+    function testLoadRequiredMissingFieldsStandard()
+    {
+        $this->expectException(AbortedOperationException::class);
+        $integration = new Integration();
+        $schema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
+        $integration->setSchema(new IntegrationSchema($schema));
+        $integration->begin();
+
+        $recordLocator = new RecordLocator(["recordType" => 'tickets']);
+
+        $mapping = new Mapping([
+            "hs_pipeline" => "0",
+            "hs_ticket_priority" => "HIGH",
+            "subject" => "troubleshoot report"
+        ]);
+        $integration->load($recordLocator, $mapping, null);
+    }
+    /**
+     * Test the load functionality using Missing Required Fields
+     * for Custom Objects
+     */
+    function testLoadRequiredMissingFieldsCustom()
+    {
+        $this->expectException(InvalidMappingException::class);
+        $integration = new Integration();
+        $schema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
+        $integration->setSchema(new IntegrationSchema($schema));
+        $integration->begin();
+        //Decode the excepted custom schema
+        $customSchema = json_decode(file_get_contents(__DIR__ . '/Mocks/testLoad/0-POST-CustomObjects.json'), true);
+        //Get the name of the excepted custom schema
+        $customObject = array_keys($customSchema['items'])[0];
+        $integration->setSchema(new IntegrationSchema($schema));
+        $integration->begin();
+        $recordLocator = new RecordLocator(["recordType" => $customObject]);
+        $propertyKey = array_keys($customSchema['items'][$customObject]['properties'])[0];
+        $baseData = [];
+        if ($customSchema['items'][$customObject]['properties'][$propertyKey]['type'] === 'number') {
+            // Generate a random number for number type fields
+            $baseData[$propertyKey] = rand(0, 9999);
+        } else {
+            // Generate a random string for other types
+            $baseData[$propertyKey] = uniqid();
+        }
+        $mapping = new Mapping($baseData);
+
+        $response = $integration->load($recordLocator, $mapping, null);
+    }
+
+    /**
      * Test the extract functionality of the Integration class.
      *
      * This test case verifies that the Integration class correctly extracts records
@@ -484,7 +596,8 @@ final class IntegrationTest extends TestCase
         $mapping = new Mapping(["domain" => null, "name" => null]);
 
         $response = $integration->extract($recordLocator, $mapping, null);
-
+        $logs = $integration->getLog();
+        $this->assertEquals('Selected ' . $response->getRecordKey()->recordType . ' ' . $response->getRecordKey()->recordId, $logs[0]);
         // Assert that the record type in the response is "companies"
         $this->assertEquals("companies", $response->getRecordKey()->recordType);
         $this->assertEquals("21936653466", $response->getRecordKey()->recordId);
@@ -623,5 +736,69 @@ final class IntegrationTest extends TestCase
         $expectedUrlFormat = Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' . $response->getRecordKey()->recordType . "/" . $response->getRecordKey()->recordId;
         $actualUrl = $response->getRecordset()->records[0]->data['FormAssemblyConnectorResult:Url'];
         $this->assertEquals($expectedUrlFormat, $actualUrl, "URL format is incorrect");
+    }
+    /**
+     * Test the update functionality of the Integration class 
+     * using Invalid Querry
+     **/
+    function testNoRecordFound()
+    {
+        $this->expectException(RecordNotFound::class);
+        $integration = new Integration();
+        $schema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
+        $integration->setSchema(new IntegrationSchema($schema));
+        $integration->begin();
+        // Define the query condition for extracting records
+        $query = ["where" => ['left' => 'name', 'op' => '=', 'right' => 'Invalid']];
+        $recordLocator = new RecordLocator(["recordType" => 'companies', "query" => $query, 'type' => OperationTypes::Update]);
+        // Define the mapping for the update
+        $mapping = new Mapping([
+            'name'   => 'Hubspot',
+            "city" => "Cambridge",
+            "phone" => "555-555-555"
+        ]);
+        $integration->load($recordLocator, $mapping, null);
+    }
+    /**
+     * Test the update functionality of the Integration class 
+     * using Empty Querry
+     **/
+    function testNoQuerryFound()
+    {
+        $this->expectException(AbortedOperationException::class);
+        $this->expectExceptionMessage("Empty query");
+        $integration = new Integration();
+        $schema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
+        $integration->setSchema(new IntegrationSchema($schema));
+        $integration->begin();
+
+        $query = '';
+        $recordLocator = new RecordLocator(["recordType" => 'companies', "query" => $query, 'type' => OperationTypes::Update]);
+        // Define the mapping for the update
+        $mapping = new Mapping([
+            'name'   => 'Hubspot',
+            "city" => "Cambridge",
+            "phone" => "555-555-555"
+        ]);
+        $integration->load($recordLocator, $mapping, null);
+    }
+    /**
+     * Test the update functionality of the Integration class 
+     * using Missing Fields
+     **/
+    function testUpdateMissingFields()
+    {
+        $this->expectException(AbortedOperationException::class);
+        $integration = new Integration();
+        $schema = json_decode(file_get_contents(__DIR__ . "/schemas/DiscoverResult.json"), true);
+        $integration->setSchema(new IntegrationSchema($schema));
+        $integration->begin();
+
+        // Define the query condition for extracting records
+        $query = ["where" => ['left' => 'hs_object_id', 'op' => '=', 'right' => '21585771784']];
+        $recordLocator = new RecordLocator(["recordType" => 'companies', "query" => $query, 'type' => OperationTypes::Update]);
+        // Define the mapping for the update
+        $mapping = new Mapping();
+        $integration->load($recordLocator, $mapping, null);
     }
 }
