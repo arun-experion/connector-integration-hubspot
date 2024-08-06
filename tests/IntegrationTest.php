@@ -135,6 +135,10 @@ final class IntegrationTest extends TestCase
         $this->assertTrue($schema->hasProperty('companies', 'domain'));
         $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('companies', 'domain')->type);
         $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('companies', 'domain')->format);
+
+        $this->assertTrue($schema->hasProperty('companies', 'hs_is_target_account'));
+        $this->assertEquals(JsonSchemaTypes::Boolean, $schema->getDataType('companies', 'hs_is_target_account')->type);
+        $this->assertEquals(JsonSchemaFormats::None, $schema->getDataType('companies', 'hs_is_target_account')->format);
     }
 
     /**
@@ -184,7 +188,7 @@ final class IntegrationTest extends TestCase
 
         $this->assertTrue($schema->hasProperty('deals', 'closedate'));
         $this->assertEquals(JsonSchemaTypes::String, $schema->getDataType('deals', 'closedate')->type);
-        $this->assertEquals(JsonSchemaFormats::Date, $schema->getDataType('deals', 'closedate')->format);
+        $this->assertEquals(JsonSchemaFormats::DateTime, $schema->getDataType('deals', 'closedate')->format);
 
 
         $this->assertTrue($schema->hasProperty('deals', 'pipeline'));
@@ -288,10 +292,9 @@ final class IntegrationTest extends TestCase
         // Check if recordType is in standard custom objects
         $recordType = $response->getRecordKey()->recordType;
         $this->assertEquals($recordType, 'companies');
-        $recordLocatorLog = new HubspotRecordLocator(["recordType" => 'companies']);
-        $create = new Create($recordLocatorLog, $mapping, null);
-        $log = $create->getLog();
-        print_r($log);
+        $logs = $integration->getLog();
+        $this->assertEquals('Created ' . $response->getRecordKey()->recordType. ' ', $logs[0]);
+       
         // Check if URL is in the correct format and contains the recordId
         $expectedUrlFormat = Config::BASE_URL . 'crm/v' . Config::API_VERSION . '/objects/' . $recordType . "/" . $recordId;
         $actualUrl = $response->getRecordset()->records[0]->data['FormAssemblyConnectorResult:Url'];

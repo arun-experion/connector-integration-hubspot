@@ -97,9 +97,6 @@ class Integration extends AbstractIntegration implements OAuthInterface
         // $recordLocator->recordType should contain the fullyQualifiedName of the CRM Object record that is to be created
         $recordLocator = new HubspotRecordLocator($recordLocator, $this->getSchema());
         
-        // Mapping may contain fully-qualified names (remove record type and keep only property name)
-        $mapping = $this->normalizeMapping($mapping);
-
         // $recordLocator should contains $type which indicates the type of operation (Create or Update)
         if($recordLocator->isCreate()){
             $action = new Actions\Create($recordLocator, $mapping, $scope);
@@ -113,6 +110,7 @@ class Integration extends AbstractIntegration implements OAuthInterface
         
         try {
             $result = $action->execute($this->httpClient);
+            $this->log($action->getLog());
         } catch (ApiException $e) {
             throw new InvalidExecutionPlan($e->getMessage());
         }
@@ -152,15 +150,6 @@ class Integration extends AbstractIntegration implements OAuthInterface
         // TODO: Implement getAuthorizedUserName() method.
     }
 
-    private function normalizeMapping(Mapping $mapping): Mapping
-    {
-        foreach($mapping as $item) {
-            if($this->schema->isFullyQualifiedName($item->key)) {
-                $item->key = $this->schema->getPropertyNameFromFQN($item->key);
-            }
-        }
-        return $mapping;
-    }
 
     /**
      * lookupRecordsToUpdate method is used to return the recordId found using the query provided
@@ -183,9 +172,7 @@ class Integration extends AbstractIntegration implements OAuthInterface
             if($result->getExtractedRecordSet()->count() > 0)
             {
                 $recordLocator->recordId = $result->getExtractedRecordSet()->records[0]->data['id'];
-            } else {
-                throw new RecordNotFound("No records found.");
-            }
+            } 
         } else{
             throw new AbortedOperationException("Empty query");
         }

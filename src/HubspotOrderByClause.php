@@ -44,8 +44,8 @@ class HubspotOrderByClause
                 return 'ASCENDING';
             case false:
                 return 'DESCENDING';
-            default:
-                throw new InvalidArgumentException("Invalid clause for ordering: ", $operator);
+           // default:
+                // throw new InvalidArgumentException("Invalid clause for ordering: ", $operator);
         }
     }
 

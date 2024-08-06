@@ -56,6 +56,7 @@ class HubspotRequestBodyBuilder
                 // Merge the filter groups from the left part into the result
                 $result['filterGroups'] = array_merge($result['filterGroups'], $leftGroup['filterGroups']);
             } else {
+                // When the query operation (query[op]) is 'OR', ensure that the left operand (query[left]) is an array.
                throw new AbortedOperationException("Left key should contain an array");
             }
 
@@ -66,6 +67,7 @@ class HubspotRequestBodyBuilder
                 // Merge the filter groups from the right part into the result
                 $result['filterGroups'] = array_merge($result['filterGroups'], $rightGroup['filterGroups']);
             } else {
+                // When the query operation (query[op]) is 'OR', ensure that the right operand (query[right]) is an array.
                 throw new AbortedOperationException("Right key should contain an array");
 
             }
@@ -81,6 +83,7 @@ class HubspotRequestBodyBuilder
                 // Merge the filters from the left part into the group array
                 $group = array_merge($group, $leftGroup['filterGroups'][0]['filters']);
             } else {
+                // When the query operation (query[op]) is 'AND', ensure that the left operand (query[left]) is an array.
                 throw new AbortedOperationException("Left key should contain an array");
             }
 
@@ -91,6 +94,7 @@ class HubspotRequestBodyBuilder
                 // Merge the filters from the right part into the group array
                 $group = array_merge($group, $rightGroup['filterGroups'][0]['filters']);
             } else {
+                // When the query operation (query[op]) is 'AND', ensure that the right operand (query[right]) is an array.
                 throw new AbortedOperationException("Right key should contain an array");
             }
 
