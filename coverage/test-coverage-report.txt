@@ -1,0 +1,26 @@
+
+
+Code Coverage Report:      
+  2024-08-06 08:04:38      
+                           
+ Summary:                  
+  Classes: 62.50% (5/8)    
+  Methods: 87.50% (28/32)  
+  Lines:   97.37% (259/266)
+
+Connector\Integrations\Hubspot\Actions\Create
+  Methods: 100.00% ( 4/ 4)   Lines: 100.00% ( 30/ 30)
+Connector\Integrations\Hubspot\Actions\Select
+  Methods:  66.67% ( 2/ 3)   Lines:  96.30% ( 26/ 27)
+Connector\Integrations\Hubspot\Actions\Update
+  Methods: 100.00% ( 4/ 4)   Lines: 100.00% ( 20/ 20)
+Connector\Integrations\Hubspot\HubspotOrderByClause
+  Methods: 100.00% ( 3/ 3)   Lines: 100.00% (  7/  7)
+Connector\Integrations\Hubspot\HubspotRecordLocator
+  Methods: 100.00% ( 3/ 3)   Lines: 100.00% (  3/  3)
+Connector\Integrations\Hubspot\HubspotRequestBodyBuilder
+  Methods: 100.00% ( 4/ 4)   Lines: 100.00% ( 67/ 67)
+Connector\Integrations\Hubspot\HubspotSchema
+  Methods:  66.67% ( 4/ 6)   Lines:  93.15% ( 68/ 73)
+Connector\Integrations\Hubspot\Integration
+  Methods:  80.00% ( 4/ 5)   Lines:  97.44% ( 38/ 39)
